@@ -1,6 +1,7 @@
 package de.yoyosource.test.blocks;
 
-import de.yoyosource.test.ModInit;
+import de.yoyosource.test.BlockEntityInit;
+import de.yoyosource.test.BlockInit;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
@@ -34,12 +35,12 @@ public class SolarPanelBlock extends BlockWithEntity {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		return checkType(type, ModInit.SOLAR_PANEL_ENTITY, SolarPanelEntity::tick);
+		return checkType(type, BlockEntityInit.SOLAR_PANEL_ENTITY, SolarPanelEntity::tick);
 	}
 
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		ModInit.network.remove((SolarPanelEntity) world.getBlockEntity(pos));
+		BlockEntityInit.network.remove((SolarPanelEntity) world.getBlockEntity(pos));
 		super.onBreak(world, pos, state, player);
 	}
 }

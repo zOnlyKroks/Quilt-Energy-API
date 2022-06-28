@@ -2,13 +2,12 @@ package de.yoyosource.test.blocks;
 
 import de.yoyosource.energy.api.EnergyOutput;
 import de.yoyosource.energy.api.EnergyUnit;
-import de.yoyosource.test.ModInit;
+import de.yoyosource.test.BlockEntityInit;
+import de.yoyosource.test.BlockInit;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.state.property.IntProperty;
-import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
 public class LampEntity extends BlockEntity implements EnergyOutput {
@@ -42,7 +41,7 @@ public class LampEntity extends BlockEntity implements EnergyOutput {
 	}
 
 	public LampEntity(BlockPos blockPos, BlockState blockState) {
-		super(ModInit.LAMP_ENTITY, blockPos, blockState);
+		super(BlockEntityInit.LAMP_ENTITY, blockPos, blockState);
 	}
 
 	@Override
@@ -50,7 +49,7 @@ public class LampEntity extends BlockEntity implements EnergyOutput {
 		if (getWorld() != null) return;
 		super.setWorld(world);
 		if (!world.isClient()) {
-			ModInit.network.add(this);
+			BlockEntityInit.network.add(this);
 		}
 	}
 }

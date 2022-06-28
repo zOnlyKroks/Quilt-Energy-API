@@ -3,7 +3,8 @@ package de.yoyosource.test.blocks;
 import de.yoyosource.energy.api.EnergyInput;
 import de.yoyosource.energy.api.EnergyOutput;
 import de.yoyosource.energy.api.EnergyUnit;
-import de.yoyosource.test.ModInit;
+import de.yoyosource.test.BlockEntityInit;
+import de.yoyosource.test.BlockInit;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
@@ -43,7 +44,7 @@ public class BatteryEntity extends BlockEntity implements EnergyInput, EnergyOut
 	}
 
 	public BatteryEntity(BlockPos blockPos, BlockState blockState) {
-		super(ModInit.BATTERY_ENTITY, blockPos, blockState);
+		super(BlockEntityInit.BATTERY_ENTITY, blockPos, blockState);
 	}
 
 	@Override
@@ -51,7 +52,7 @@ public class BatteryEntity extends BlockEntity implements EnergyInput, EnergyOut
 		if (getWorld() != null) return;
 		super.setWorld(world);
 		if (!world.isClient()) {
-			ModInit.network.add(this);
+			BlockEntityInit.network.add(this);
 		}
 	}
 }

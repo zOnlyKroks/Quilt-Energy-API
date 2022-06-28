@@ -17,7 +17,8 @@
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
-			"init": "de.zonlykroks.energy.EnergyApi"
+			"init": "de.zonlykroks.energy.EnergyApi",
+			"client_init": "de.zonlykroks.energy.EnergyApiClient"
 		},
 		"depends": [
 			{
