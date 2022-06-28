@@ -13,12 +13,13 @@ import net.minecraft.world.World;
 
 public class LampEntity extends BlockEntity implements EnergyOutput {
 
-	// public static IntProperty LIGHT_LEVEL = IntProperty.of("lightLevel", 0, 15);
-	public static IntProperty LIGHT_LEVEL = Properties.LEVEL_15;
+	public static IntProperty LIGHT_LEVEL = IntProperty.of("light_level", 0, 15);
 
 	private double gotAmount = 0;
 
 	public static void tick(World world, BlockPos pos, BlockState state, LampEntity lampEntity) {
+		lampEntity.setWorld(world);
+		System.out.println("TICK LAMP: " + lampEntity.gotAmount + " " + lampEntity + " " + pos);
 		state = state.with(LIGHT_LEVEL, Math.max(Math.min((int) lampEntity.gotAmount, 15), 0));
 		world.setBlockState(pos, state);
 		markDirty(world, pos, state);
@@ -42,6 +43,14 @@ public class LampEntity extends BlockEntity implements EnergyOutput {
 
 	public LampEntity(BlockPos blockPos, BlockState blockState) {
 		super(ModInit.LAMP_ENTITY, blockPos, blockState);
-		ModInit.network.add(this);
+	}
+
+	@Override
+	public void setWorld(World world) {
+		if (getWorld() != null) return;
+		super.setWorld(world);
+		if (!world.isClient()) {
+			ModInit.network.add(this);
+		}
 	}
 }

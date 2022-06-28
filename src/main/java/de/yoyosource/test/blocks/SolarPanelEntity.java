@@ -13,6 +13,7 @@ public class SolarPanelEntity extends BlockEntity implements EnergyInput {
 	private double storedAmount = 0;
 
 	public static void tick(World world, BlockPos pos, BlockState state, SolarPanelEntity solarPanelEntity) {
+		solarPanelEntity.setWorld(world);
 		if (world.isSkyVisible(pos.up()) && world.getTimeOfDay() > 0 && world.getTimeOfDay() <= 12000) {
 			double sunlight = Math.min(Math.max(world.getTimeOfDay(), 0), 12000) / 1000.0;
 
@@ -40,6 +41,14 @@ public class SolarPanelEntity extends BlockEntity implements EnergyInput {
 
 	public SolarPanelEntity(BlockPos blockPos, BlockState blockState) {
 		super(ModInit.SOLAR_PANEL_ENTITY, blockPos, blockState);
-		ModInit.network.add(this);
+	}
+
+	@Override
+	public void setWorld(World world) {
+		if (getWorld() != null) return;
+		super.setWorld(world);
+		if (!world.isClient()) {
+			ModInit.network.add(this);
+		}
 	}
 }

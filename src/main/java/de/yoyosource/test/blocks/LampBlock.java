@@ -13,12 +13,11 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.block.extensions.api.QuiltBlockSettings;
 
+import java.util.Arrays;
+
 public class LampBlock extends BlockWithEntity {
 	public LampBlock() {
-		super(QuiltBlockSettings.of(Material.GLASS).collidable(true).strength(2).hardness(2).luminance(value -> {
-			System.out.println(value);
-			return value.get(LampEntity.LIGHT_LEVEL);
-		}));
+		super(QuiltBlockSettings.of(Material.GLASS).collidable(true).strength(2).hardness(2).luminance(value -> value.get(LampEntity.LIGHT_LEVEL)));
 		this.setDefaultState(this.getStateManager().getDefaultState().with(LampEntity.LIGHT_LEVEL, 0));
 	}
 
@@ -36,6 +35,7 @@ public class LampBlock extends BlockWithEntity {
 	@Nullable
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+		// System.out.println("createBlockEntity LampEntity " + state + " " + Arrays.toString(new Exception().getStackTrace()));
 		return new LampEntity(pos, state);
 	}
 
