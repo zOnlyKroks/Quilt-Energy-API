@@ -1,5 +1,6 @@
 package de.zonlykroks.energy;
 
+import de.yoyosource.test.ModInit;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.slf4j.Logger;
@@ -11,5 +12,6 @@ public class EnergyApi implements ModInitializer {
 	@Override
 	public void onInitialize(ModContainer mod) {
 		LOGGER.info("Initializing Quilt Energy Api v: " + mod.metadata().version().raw());
+		new ModInit();
 	}
 }

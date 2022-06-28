@@ -80,6 +80,16 @@ public class Network {
 		}
 	}
 
+	public void remove(Unitable unitable) {
+		if (unitable instanceof EnergyOutput) {
+			energyOutputs.remove(unitable);
+			energyStorageOutputs.remove(unitable);
+		}
+		if (unitable instanceof EnergyInput) {
+			energyInputs.remove(unitable);
+		}
+	}
+
 	public static void main(String[] args) {
 		Network network = new Network();
 
