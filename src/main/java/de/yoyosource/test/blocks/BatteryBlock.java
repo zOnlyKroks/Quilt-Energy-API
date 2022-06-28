@@ -1,6 +1,7 @@
 package de.yoyosource.test.blocks;
 
-import de.yoyosource.test.ModInit;
+import de.yoyosource.test.BlockEntityInit;
+import de.yoyosource.test.BlockInit;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
@@ -33,12 +34,12 @@ public class BatteryBlock extends BlockWithEntity {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		return checkType(type, ModInit.BATTERY_ENTITY, BatteryEntity::tick);
+		return checkType(type, BlockEntityInit.BATTERY_ENTITY, BatteryEntity::tick);
 	}
 
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		ModInit.network.remove((BatteryEntity) world.getBlockEntity(pos));
+		BlockEntityInit.network.remove((BatteryEntity) world.getBlockEntity(pos));
 		super.onBreak(world, pos, state, player);
 	}
 }

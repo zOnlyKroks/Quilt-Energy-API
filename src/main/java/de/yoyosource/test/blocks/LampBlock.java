@@ -1,6 +1,7 @@
 package de.yoyosource.test.blocks;
 
-import de.yoyosource.test.ModInit;
+import de.yoyosource.test.BlockEntityInit;
+import de.yoyosource.test.BlockInit;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -12,8 +13,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.block.extensions.api.QuiltBlockSettings;
-
-import java.util.Arrays;
 
 public class LampBlock extends BlockWithEntity {
 	public LampBlock() {
@@ -47,12 +46,12 @@ public class LampBlock extends BlockWithEntity {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		return checkType(type, ModInit.LAMP_ENTITY, LampEntity::tick);
+		return checkType(type, BlockEntityInit.LAMP_ENTITY, LampEntity::tick);
 	}
 
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		ModInit.network.remove((LampEntity) world.getBlockEntity(pos));
+		BlockEntityInit.network.remove((LampEntity) world.getBlockEntity(pos));
 		super.onBreak(world, pos, state, player);
 	}
 }

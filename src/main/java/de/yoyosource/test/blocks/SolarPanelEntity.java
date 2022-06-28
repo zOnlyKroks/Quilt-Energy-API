@@ -2,7 +2,8 @@ package de.yoyosource.test.blocks;
 
 import de.yoyosource.energy.api.EnergyInput;
 import de.yoyosource.energy.api.EnergyUnit;
-import de.yoyosource.test.ModInit;
+import de.yoyosource.test.BlockEntityInit;
+import de.yoyosource.test.BlockInit;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
@@ -40,7 +41,7 @@ public class SolarPanelEntity extends BlockEntity implements EnergyInput {
 	}
 
 	public SolarPanelEntity(BlockPos blockPos, BlockState blockState) {
-		super(ModInit.SOLAR_PANEL_ENTITY, blockPos, blockState);
+		super(BlockEntityInit.SOLAR_PANEL_ENTITY, blockPos, blockState);
 	}
 
 	@Override
@@ -48,7 +49,7 @@ public class SolarPanelEntity extends BlockEntity implements EnergyInput {
 		if (getWorld() != null) return;
 		super.setWorld(world);
 		if (!world.isClient()) {
-			ModInit.network.add(this);
+			BlockEntityInit.network.add(this);
 		}
 	}
 }
