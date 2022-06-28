@@ -5,24 +5,24 @@ import lombok.Getter;
 public interface EnergyOutput extends Unitable {
 
 	static class EnergyOutputSink implements EnergyOutput {
-		private long rate;
+		private double rate;
 		private EnergyUnit unit;
 
 		@Getter
 		private long provided = 0;
 
-		public EnergyOutputSink(long rate, EnergyUnit unit) {
+		public EnergyOutputSink(double rate, EnergyUnit unit) {
 			this.rate = rate;
 			this.unit = unit;
 		}
 
 		@Override
-		public long desiredAmount() {
+		public double desiredAmount() {
 			return rate;
 		}
 
 		@Override
-		public void provide(long amount) {
+		public void provide(double amount) {
 			provided += amount;
 		}
 
@@ -34,35 +34,35 @@ public interface EnergyOutput extends Unitable {
 
 	class EnergyStore implements EnergyInput, EnergyOutput {
 
-		private long maxStorage;
+		private double maxStorage;
 		@Getter
-		private long currentStorage;
-		private long maxPassthrough;
+		private double currentStorage;
+		private double maxPassthrough;
 		private EnergyUnit unit;
 
-		public EnergyStore(long maxStorage, long maxPassthrough, EnergyUnit unit) {
+		public EnergyStore(double maxStorage, double maxPassthrough, EnergyUnit unit) {
 			this.maxStorage = maxStorage;
 			this.unit = unit;
 			this.maxPassthrough = maxPassthrough;
 		}
 
 		@Override
-		public long extractableAmount() {
+		public double extractableAmount() {
 			return Math.min(currentStorage, maxPassthrough);
 		}
 
 		@Override
-		public void extract(long amount) {
+		public void extract(double amount) {
 			currentStorage -= amount;
 		}
 
 		@Override
-		public long desiredAmount() {
+		public double desiredAmount() {
 			return Math.min(maxStorage - currentStorage, maxPassthrough);
 		}
 
 		@Override
-		public void provide(long amount) {
+		public void provide(double amount) {
 			currentStorage += amount;
 		}
 
@@ -72,6 +72,6 @@ public interface EnergyOutput extends Unitable {
 		}
 	}
 
-	long desiredAmount(); // in unit as specified by unit()
-	void provide(long amount);
+	double desiredAmount(); // in unit as specified by unit()
+	void provide(double amount);
 }

@@ -5,24 +5,24 @@ import lombok.Getter;
 public interface EnergyInput extends Unitable {
 
 	static class EnergyInputCreator implements EnergyInput {
-		private long rate;
+		private double rate;
 		private EnergyUnit unit;
 
 		@Getter
-		private long extracted = 0;
+		private double extracted = 0;
 
-		public EnergyInputCreator(long rate, EnergyUnit unit) {
+		public EnergyInputCreator(double rate, EnergyUnit unit) {
 			this.rate = rate;
 			this.unit = unit;
 		}
 
 		@Override
-		public long extractableAmount() {
+		public double extractableAmount() {
 			return rate;
 		}
 
 		@Override
-		public void extract(long amount) {
+		public void extract(double amount) {
 			extracted += amount;
 		}
 
@@ -32,6 +32,6 @@ public interface EnergyInput extends Unitable {
 		}
 	}
 
-	long extractableAmount(); // in unit as specified by unit()
-	void extract(long amount);
+	double extractableAmount(); // in unit as specified by unit()
+	void extract(double amount);
 }

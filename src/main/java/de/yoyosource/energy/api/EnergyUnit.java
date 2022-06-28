@@ -19,23 +19,23 @@ public interface EnergyUnit {
 		}
 
 		@Override
-		public long conversionToBase(long amount) {
-			return (long) (amount * conversionFactor * lossFactor);
+		public double conversionToBase(double amount) {
+			return amount * conversionFactor * lossFactor;
 		}
 
 		@Override
-		public long conversionFromBase(long amount) {
-			return (long) (amount / conversionFactor * lossFactor);
+		public double conversionFromBase(double amount) {
+			return amount / conversionFactor * lossFactor;
 		}
 	}
 
 	double conversionToBaseUnit();
 
-	default long conversionToBase(long amount) {
-		return (long) (amount * conversionToBaseUnit());
+	default double conversionToBase(double amount) {
+		return amount * conversionToBaseUnit();
 	}
 
-	default long conversionFromBase(long amount) {
-		return (long) (amount / conversionToBaseUnit());
+	default double conversionFromBase(double amount) {
+		return amount / conversionToBaseUnit();
 	}
 }

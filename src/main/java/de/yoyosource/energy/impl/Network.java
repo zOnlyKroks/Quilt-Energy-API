@@ -18,29 +18,31 @@ public class Network {
 		if (energyOutputs.size() > 1) energyOutputs.add(energyOutputs.remove(0));
 		if (energyStorageOutputs.size() > 1) energyStorageOutputs.add(energyStorageOutputs.remove(0));
 
-		long neededAmount = energyOutputs.stream().mapToLong(value -> value.unit().conversionToBase(value.desiredAmount())).sum();
-		long nonStorageProvidedAmount = 0;
-		long totalProvidedAmount = 0;
+		double neededAmount = energyOutputs.stream().mapToDouble(value -> value.unit().conversionToBase(value.desiredAmount())).sum();
+		double nonStorageProvidedAmount = 0;
+		double totalProvidedAmount = 0;
 		for (EnergyInput energyInput : energyInputs) {
-			long amount = energyInput.unit().conversionToBase(energyInput.extractableAmount());
+			double amount = energyInput.unit().conversionToBase(energyInput.extractableAmount());
 			totalProvidedAmount += amount;
 			if (!(energyInput instanceof EnergyOutput)) {
 				nonStorageProvidedAmount += amount;
 			}
 		}
 		boolean storage = neededAmount <= nonStorageProvidedAmount;
-		long availableAmount = storage ? nonStorageProvidedAmount : totalProvidedAmount;
+		double availableAmount = storage ? nonStorageProvidedAmount : totalProvidedAmount;
 
-		long toRemove = availableAmount;
+		System.out.println("neededAmount: " + neededAmount + " availableAmount: " + availableAmount + " storage: " + storage + " nonStorageProvidedAmount: " + nonStorageProvidedAmount + " totalProvidedAmount: " + totalProvidedAmount);
+
+		double toRemove = availableAmount;
 		for (EnergyInput input : energyInputs) {
-			long amount = input.extractableAmount();
-			long baseAmount = input.unit().conversionToBase(amount);
+			double amount = input.extractableAmount();
+			double baseAmount = input.unit().conversionToBase(amount);
 
 			if (toRemove > baseAmount) {
-				input.extract(baseAmount);
+				input.extract(amount);
 				toRemove -= baseAmount;
 			} else {
-				input.extract(toRemove);
+				input.extract(input.unit().conversionFromBase(toRemove));
 				break;
 			}
 		}
@@ -49,10 +51,10 @@ public class Network {
 		if (storage && availableAmount > 0) distribute(availableAmount, energyStorageOutputs);
 	}
 
-	private long distribute(long availableAmount, List<EnergyOutput> outputs) {
+	private double distribute(double availableAmount, List<EnergyOutput> outputs) {
 		for (EnergyOutput output : outputs) {
-			long amount = output.desiredAmount();
-			long baseAmount = output.unit().conversionToBase(amount);
+			double amount = output.desiredAmount();
+			double baseAmount = output.unit().conversionToBase(amount);
 			if (baseAmount > availableAmount) {
 				output.provide(output.unit().conversionFromBase(availableAmount));
 				availableAmount = 0;
@@ -81,7 +83,19 @@ public class Network {
 	public static void main(String[] args) {
 		Network network = new Network();
 
-		if (false) {
+		if (true) {
+			EnergyInput.EnergyInputCreator inputCreator = new EnergyInput.EnergyInputCreator(3, new EnergyUnit.LosingEnergyUnit(0.3, 1));
+			EnergyOutput.EnergyOutputSink outputSink = new EnergyOutput.EnergyOutputSink(100, new EnergyUnit.LosingEnergyUnit(0.01, 1));
+			network.add(inputCreator);
+			network.add(outputSink);
+
+			network.tick();
+
+			System.out.println(inputCreator.getExtracted());
+			System.out.println(outputSink.getProvided());
+			return;
+		}
+		if (true) {
 			EnergyInput.EnergyInputCreator inputCreator = new EnergyInput.EnergyInputCreator(11, EnergyUnit.BASE_UNIT);
 			EnergyOutput.EnergyOutputSink outputSink = new EnergyOutput.EnergyOutputSink(100, new EnergyUnit.LosingEnergyUnit(0.01, 1));
 			network.add(inputCreator);
