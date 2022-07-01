@@ -1,9 +1,8 @@
-package de.yoyosource.test.blocks;
+package de.flow.test.blocks;
 
-import de.yoyosource.energy.api.EnergyInput;
-import de.yoyosource.energy.api.EnergyUnit;
-import de.yoyosource.test.BlockEntityInit;
-import de.yoyosource.test.BlockInit;
+import de.flow.api.EnergyInput;
+import de.flow.api.EnergyUnit;
+import de.flow.test.BlockEntityInit;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;

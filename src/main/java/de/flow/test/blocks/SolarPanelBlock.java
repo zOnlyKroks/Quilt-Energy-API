@@ -1,7 +1,6 @@
-package de.yoyosource.test.blocks;
+package de.flow.test.blocks;
 
-import de.yoyosource.test.BlockEntityInit;
-import de.yoyosource.test.BlockInit;
+import de.flow.test.BlockEntityInit;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;

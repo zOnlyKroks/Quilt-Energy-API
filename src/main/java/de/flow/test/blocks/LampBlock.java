@@ -1,7 +1,6 @@
-package de.yoyosource.test.blocks;
+package de.flow.test.blocks;
 
-import de.yoyosource.test.BlockEntityInit;
-import de.yoyosource.test.BlockInit;
+import de.flow.test.BlockEntityInit;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;

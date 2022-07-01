@@ -1,9 +1,8 @@
-package de.yoyosource.test.blocks;
+package de.flow.test.blocks;
 
-import de.yoyosource.energy.api.EnergyOutput;
-import de.yoyosource.energy.api.EnergyUnit;
-import de.yoyosource.test.BlockEntityInit;
-import de.yoyosource.test.BlockInit;
+import de.flow.api.EnergyOutput;
+import de.flow.api.EnergyUnit;
+import de.flow.test.BlockEntityInit;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.state.property.IntProperty;
@@ -18,11 +17,12 @@ public class LampEntity extends BlockEntity implements EnergyOutput {
 
 	public static void tick(World world, BlockPos pos, BlockState state, LampEntity lampEntity) {
 		lampEntity.setWorld(world);
-		System.out.println("TICK LAMP: " + lampEntity.gotAmount + " " + lampEntity + " " + pos);
-		state = state.with(LIGHT_LEVEL, Math.max(Math.min((int) lampEntity.gotAmount, 15), 0));
-		world.setBlockState(pos, state);
-		markDirty(world, pos, state);
-		lampEntity.gotAmount = 0;
+		if (!world.isClient) {
+			state = state.with(LIGHT_LEVEL, Math.max(Math.min((int) lampEntity.gotAmount, 15), 0));
+			world.setBlockState(pos, state);
+			markDirty(world, pos, state);
+			lampEntity.gotAmount = 0;
+		}
 	}
 
 	@Override

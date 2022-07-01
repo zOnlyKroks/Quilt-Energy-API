@@ -1,9 +1,9 @@
-package de.yoyosource.energy.impl;
+package de.flow.impl;
 
-import de.yoyosource.energy.api.EnergyInput;
-import de.yoyosource.energy.api.EnergyOutput;
-import de.yoyosource.energy.api.EnergyUnit;
-import de.yoyosource.energy.api.Unitable;
+import de.flow.api.EnergyInput;
+import de.flow.api.EnergyOutput;
+import de.flow.api.EnergyUnit;
+import de.flow.api.Unitable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ public class Network {
 		boolean storage = neededAmount <= nonStorageProvidedAmount;
 		double availableAmount = storage ? nonStorageProvidedAmount : totalProvidedAmount;
 
-		System.out.println("neededAmount: " + neededAmount + " availableAmount: " + availableAmount + " storage: " + storage + " nonStorageProvidedAmount: " + nonStorageProvidedAmount + " totalProvidedAmount: " + totalProvidedAmount);
+		// System.out.println("neededAmount: " + neededAmount + " availableAmount: " + availableAmount + " storage: " + storage + " nonStorageProvidedAmount: " + nonStorageProvidedAmount + " totalProvidedAmount: " + totalProvidedAmount);
 
 		double toRemove = availableAmount;
 		for (EnergyInput input : energyInputs) {

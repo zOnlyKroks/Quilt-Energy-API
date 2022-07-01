@@ -1,4 +1,4 @@
-package de.yoyosource.energy.api;
+package de.flow.api;
 
 public interface Unitable {
 	EnergyUnit unit();

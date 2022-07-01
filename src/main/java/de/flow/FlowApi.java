@@ -1,13 +1,13 @@
-package de.zonlykroks.energy;
+package de.flow;
 
-import de.yoyosource.test.BlockEntityInit;
-import de.yoyosource.test.BlockInit;
+import de.flow.test.BlockEntityInit;
+import de.flow.test.BlockInit;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EnergyApi implements ModInitializer {
+public class FlowApi implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("EnergyAPI");
 
 	@Override

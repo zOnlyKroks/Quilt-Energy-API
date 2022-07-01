@@ -1,16 +1,12 @@
-package de.yoyosource.test;
+package de.flow.test;
 
-import de.yoyosource.energy.impl.Network;
-import de.yoyosource.test.blocks.*;
-import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
+import de.flow.test.blocks.*;
 import net.minecraft.block.Block;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.quiltmc.qsl.item.setting.api.QuiltItemSettings;
-import org.quiltmc.qsl.lifecycle.api.event.ServerTickEvents;
 
 public class BlockInit {
 	public static final Block SOLAR_PANEL_BLOCK = new SolarPanelBlock();

@@ -1,4 +1,4 @@
-package de.yoyosource.energy.api;
+package de.flow.api;
 
 @FunctionalInterface
 public interface EnergyUnit {

@@ -2,13 +2,14 @@
 	"schema_version": 1,
 	"quilt_loader": {
 		"group": "de.zonlykroks",
-		"id": "energy",
+		"id": "flow",
 		"version": "${version}",
 		"metadata": {
-			"name": "Quilt Energy Api",
-			"description": "Universal Energy Api",
+			"name": "Quilt Flow API",
+			"description": "Universal Flow Api",
 			"contributors": {
-				"zOnlyKroks": "Owner"
+				"zOnlyKroks": "Owner",
+				"YoyoNow": "Contributor"
 			},
 			"contact": {
 			},
@@ -17,8 +18,8 @@
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
-			"init": "de.zonlykroks.energy.EnergyApi",
-			"client_init": "de.zonlykroks.energy.EnergyApiClient"
+			"init": "de.flow.FlowApi",
+			"client_init": "de.flow.FlowApiClient"
 		},
 		"depends": [
 			{
@@ -35,5 +36,5 @@
 			}
 		]
 	},
-	"mixin": "energy.mixins.json"
+	"mixin": "flow.mixins.json"
 }
