@@ -18,6 +18,8 @@ public interface Type<T, C> {
 
 	C min(C c1, C c2);
 
+	T minValue(T t1, T t2);
+
 	C copy(C container);
 
 	class NumberType implements Type<Double, AtomicDouble> {
@@ -60,6 +62,11 @@ public interface Type<T, C> {
 		@Override
 		public AtomicDouble min(AtomicDouble c1, AtomicDouble c2) {
 			return c1.get() < c2.get() ? c1 : c2;
+		}
+
+		@Override
+		public Double minValue(Double t1, Double t2) {
+			return t1 < t2 ? t1 : t2;
 		}
 
 		@Override
