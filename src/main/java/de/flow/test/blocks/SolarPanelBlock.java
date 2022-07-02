@@ -39,7 +39,7 @@ public class SolarPanelBlock extends BlockWithEntity {
 
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		BlockEntityInit.network.remove((SolarPanelEntity) world.getBlockEntity(pos));
+		BlockEntityInit.network.iterate(((SolarPanelEntity) world.getBlockEntity(pos)), BlockEntityInit.network::remove);
 		super.onBreak(world, pos, state, player);
 	}
 }

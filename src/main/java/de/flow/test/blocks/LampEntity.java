@@ -1,7 +1,8 @@
 package de.flow.test.blocks;
 
-import de.flow.api.EnergyOutput;
-import de.flow.api.EnergyUnit;
+import com.google.common.util.concurrent.AtomicDouble;
+import de.flow.api.Outputs;
+import de.flow.api.Unit;
 import de.flow.test.BlockEntityInit;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -9,7 +10,7 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class LampEntity extends BlockEntity implements EnergyOutput {
+public class LampEntity extends BlockEntity implements Outputs {
 
 	public static IntProperty LIGHT_LEVEL = IntProperty.of("light_level", 0, 15);
 
@@ -25,20 +26,22 @@ public class LampEntity extends BlockEntity implements EnergyOutput {
 		}
 	}
 
-	@Override
-	public double desiredAmount() {
-		return 15;
-	}
+	public Output<Double, AtomicDouble> output = new Output<>() {
+		@Override
+		public Double desiredAmount() {
+			return 15.0;
+		}
 
-	@Override
-	public void provide(double amount) {
-		gotAmount = amount;
-	}
+		@Override
+		public void provide(Double amount) {
+			gotAmount = amount;
+		}
 
-	@Override
-	public EnergyUnit unit() {
-		return EnergyUnit.BASE_UNIT;
-	}
+		@Override
+		public Unit<Double, AtomicDouble> unit() {
+			return Unit.energyUnit(1);
+		}
+	};
 
 	public LampEntity(BlockPos blockPos, BlockState blockState) {
 		super(BlockEntityInit.LAMP_ENTITY, blockPos, blockState);
@@ -49,7 +52,7 @@ public class LampEntity extends BlockEntity implements EnergyOutput {
 		if (getWorld() != null) return;
 		super.setWorld(world);
 		if (!world.isClient()) {
-			BlockEntityInit.network.add(this);
+			BlockEntityInit.network.iterate(this, BlockEntityInit.network::add);
 		}
 	}
 }

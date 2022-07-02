@@ -1,15 +1,17 @@
 package de.flow.test.blocks;
 
-import de.flow.api.EnergyInput;
-import de.flow.api.EnergyOutput;
-import de.flow.api.EnergyUnit;
+import com.google.common.util.concurrent.AtomicDouble;
+import de.flow.api.*;
 import de.flow.test.BlockEntityInit;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BatteryEntity extends BlockEntity implements EnergyInput, EnergyOutput {
+import java.util.function.Consumer;
+
+public class BatteryEntity extends BlockEntity implements Inputs, Outputs {
 
 	private double storedAmount = 0;
 
@@ -17,33 +19,48 @@ public class BatteryEntity extends BlockEntity implements EnergyInput, EnergyOut
 		lampEntity.setWorld(world);
 	}
 
-	@Override
-	public double extractableAmount() {
-		return Math.min(storedAmount, 600);
-	}
+	@RegisterToNetwork
+	private Store<Double, AtomicDouble> store = new Store<>() {
+		@Override
+		public Double extractableAmount() {
+			return Math.min(storedAmount, 600);
+		}
 
-	@Override
-	public void extract(double amount) {
-		storedAmount -= amount;
-	}
+		@Override
+		public void extract(Double amount) {
+			storedAmount -= amount;
+		}
 
-	@Override
-	public double desiredAmount() {
-		return Math.min(500000 - storedAmount, 600);
-	}
+		@Override
+		public Double desiredAmount() {
+			return Math.min(500000 - storedAmount, 600);
+		}
 
-	@Override
-	public void provide(double amount) {
-		storedAmount += amount;
-	}
+		@Override
+		public void provide(Double amount) {
+			storedAmount += amount;
+		}
 
-	@Override
-	public EnergyUnit unit() {
-		return EnergyUnit.BASE_UNIT;
-	}
+		@Override
+		public Unit<Double, AtomicDouble> unit() {
+			return Unit.energyUnit(1);
+		}
+	};
 
 	public BatteryEntity(BlockPos blockPos, BlockState blockState) {
 		super(BlockEntityInit.BATTERY_ENTITY, blockPos, blockState);
+	}
+
+	@Override
+	public void readNbt(NbtCompound nbt) {
+		if (nbt.contains("storedAmount")) {
+			storedAmount = nbt.getDouble("storedAmount");
+		}
+	}
+
+	@Override
+	protected void writeNbt(NbtCompound nbt) {
+		nbt.putDouble("storedAmount", storedAmount);
 	}
 
 	@Override
@@ -51,7 +68,7 @@ public class BatteryEntity extends BlockEntity implements EnergyInput, EnergyOut
 		if (getWorld() != null) return;
 		super.setWorld(world);
 		if (!world.isClient()) {
-			BlockEntityInit.network.add(this);
+			BlockEntityInit.network.iterate(this, BlockEntityInit.network::add);
 		}
 	}
 }

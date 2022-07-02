@@ -1,14 +1,15 @@
 package de.flow.test.blocks;
 
-import de.flow.api.EnergyInput;
-import de.flow.api.EnergyUnit;
+import com.google.common.util.concurrent.AtomicDouble;
+import de.flow.api.Inputs;
+import de.flow.api.Unit;
 import de.flow.test.BlockEntityInit;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class SolarPanelEntity extends BlockEntity implements EnergyInput {
+public class SolarPanelEntity extends BlockEntity implements Inputs {
 
 	private double storedAmount = 0;
 
@@ -24,20 +25,22 @@ public class SolarPanelEntity extends BlockEntity implements EnergyInput {
 		// System.out.println("ENERGY: " + solarPanelEntity.storedAmount);
 	}
 
-	@Override
-	public double extractableAmount() {
-		return storedAmount;
-	}
+	private Input<Double, AtomicDouble> input = new Input<>() {
+		@Override
+		public Double extractableAmount() {
+			return storedAmount;
+		}
 
-	@Override
-	public void extract(double amount) {
-		storedAmount -= amount;
-	}
+		@Override
+		public void extract(Double amount) {
+			storedAmount -= amount;
+		}
 
-	@Override
-	public EnergyUnit unit() {
-		return EnergyUnit.BASE_UNIT;
-	}
+		@Override
+		public Unit<Double, AtomicDouble> unit() {
+			return Unit.energyUnit(1);
+		}
+	};
 
 	public SolarPanelEntity(BlockPos blockPos, BlockState blockState) {
 		super(BlockEntityInit.SOLAR_PANEL_ENTITY, blockPos, blockState);
@@ -48,7 +51,7 @@ public class SolarPanelEntity extends BlockEntity implements EnergyInput {
 		if (getWorld() != null) return;
 		super.setWorld(world);
 		if (!world.isClient()) {
-			BlockEntityInit.network.add(this);
+			BlockEntityInit.network.iterate(this, BlockEntityInit.network::add);
 		}
 	}
 }
