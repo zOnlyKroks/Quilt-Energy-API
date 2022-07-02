@@ -20,32 +20,10 @@ public class BatteryEntity extends BlockEntity implements Inputs, Outputs {
 	}
 
 	@RegisterToNetwork
-	private Store<Double, AtomicDouble> store = new Store<>() {
-		@Override
-		public Double extractableAmount() {
-			return Math.min(storedAmount, 600);
-		}
-
-		@Override
-		public void extract(Double amount) {
-			storedAmount -= amount;
-		}
-
-		@Override
-		public Double desiredAmount() {
-			return Math.min(500000 - storedAmount, 600);
-		}
-
-		@Override
-		public void provide(Double amount) {
-			storedAmount += amount;
-		}
-
-		@Override
-		public Unit<Double, AtomicDouble> unit() {
-			return Unit.energyUnit(1);
-		}
-	};
+	private Store<Double, AtomicDouble> store = new Store.DefaultStore<>(
+			new LimitedDefaultInput<>(() -> 500000 - storedAmount, aDouble -> storedAmount += aDouble, Unit.energyUnit(1), 600.0),
+			new LimitedDefaultOutput<>(() -> storedAmount, aDouble -> storedAmount -= aDouble, Unit.energyUnit(1), 600.0)
+	);
 
 	public BatteryEntity(BlockPos blockPos, BlockState blockState) {
 		super(BlockEntityInit.BATTERY_ENTITY, blockPos, blockState);

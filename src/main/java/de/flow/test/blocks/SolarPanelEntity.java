@@ -2,6 +2,7 @@ package de.flow.test.blocks;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.flow.api.Inputs;
+import de.flow.api.RegisterToNetwork;
 import de.flow.api.Unit;
 import de.flow.test.BlockEntityInit;
 import net.minecraft.block.BlockState;
@@ -25,22 +26,8 @@ public class SolarPanelEntity extends BlockEntity implements Inputs {
 		// System.out.println("ENERGY: " + solarPanelEntity.storedAmount);
 	}
 
-	private Input<Double, AtomicDouble> input = new Input<>() {
-		@Override
-		public Double extractableAmount() {
-			return storedAmount;
-		}
-
-		@Override
-		public void extract(Double amount) {
-			storedAmount -= amount;
-		}
-
-		@Override
-		public Unit<Double, AtomicDouble> unit() {
-			return Unit.energyUnit(1);
-		}
-	};
+	@RegisterToNetwork
+	private Input<Double, AtomicDouble> input = new LimitedDefaultInput<>(() -> storedAmount, aDouble -> storedAmount += aDouble, Unit.energyUnit(1), 600.0);
 
 	public SolarPanelEntity(BlockPos blockPos, BlockState blockState) {
 		super(BlockEntityInit.SOLAR_PANEL_ENTITY, blockPos, blockState);

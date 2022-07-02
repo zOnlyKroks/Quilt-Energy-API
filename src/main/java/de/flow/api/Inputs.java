@@ -43,8 +43,8 @@ public interface Inputs extends NetworkableCollection {
 
 		private T limit;
 
-		public LimitedDefaultInput(DefaultInput<T, C> output, T limit) {
-			super(output.supply, output.consume, output.unit);
+		public LimitedDefaultInput(DefaultInput<T, C> input, T limit) {
+			super(input.supply, input.consume, input.unit);
 			this.limit = limit;
 		}
 

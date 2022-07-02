@@ -2,6 +2,7 @@ package de.flow.test.blocks;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.flow.api.Outputs;
+import de.flow.api.RegisterToNetwork;
 import de.flow.api.Unit;
 import de.flow.test.BlockEntityInit;
 import net.minecraft.block.BlockState;
@@ -26,22 +27,8 @@ public class LampEntity extends BlockEntity implements Outputs {
 		}
 	}
 
-	public Output<Double, AtomicDouble> output = new Output<>() {
-		@Override
-		public Double desiredAmount() {
-			return 15.0;
-		}
-
-		@Override
-		public void provide(Double amount) {
-			gotAmount = amount;
-		}
-
-		@Override
-		public Unit<Double, AtomicDouble> unit() {
-			return Unit.energyUnit(1);
-		}
-	};
+	@RegisterToNetwork
+	public LimitedDefaultOutput<Double, AtomicDouble> output = new LimitedDefaultOutput<>(() -> gotAmount, aDouble -> gotAmount -= aDouble, Unit.energyUnit(1), 600.0);
 
 	public LampEntity(BlockPos blockPos, BlockState blockState) {
 		super(BlockEntityInit.LAMP_ENTITY, blockPos, blockState);
