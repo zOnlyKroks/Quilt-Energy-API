@@ -21,6 +21,7 @@ public interface Network<T, C> extends Typeable<T, C> {
 		for (Field field : fields) {
 			if (field.isAnnotationPresent(RegisterToNetwork.class)) {
 				try {
+					field.setAccessible(true);
 					Networkable<T, C> networkable = (Networkable<T, C>) field.get(networkBlock);
 					consumer.test(networkable);
 				} catch (Exception e) {

@@ -28,7 +28,7 @@ public class LampEntity extends BlockEntity implements NetworkBlock {
 	}
 
 	@RegisterToNetwork
-	public LimitedDefaultOutput<Double, AtomicDouble> output = new LimitedDefaultOutput<>(() -> gotAmount, aDouble -> gotAmount -= aDouble, Unit.energyUnit(1), 600.0);
+	public Output<Double, AtomicDouble> output = new DefaultOutput<>(() -> 15.0, aDouble -> gotAmount = aDouble, Unit.energyUnit(1));
 
 	public LampEntity(BlockPos blockPos, BlockState blockState) {
 		super(BlockEntityInit.LAMP_ENTITY, blockPos, blockState);

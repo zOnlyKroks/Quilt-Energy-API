@@ -1,6 +1,9 @@
 package de.flow.impl;
 
-import de.flow.api.*;
+import de.flow.api.Network;
+import de.flow.api.NetworkBlock;
+import de.flow.api.Networkable;
+import de.flow.api.Type;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,19 +99,19 @@ public class NetworkImpl<T, C> implements Network<T, C> {
 		if (networkable.unit().type() != type) return false;
 		if (networkable instanceof NetworkBlock.Output<T, C> output) {
 			if (networkable instanceof NetworkBlock.Input<T, C> input) {
-				if (!inputs.contains(networkable)) {
+				if (!inputs.contains(input)) {
 					inputs.add(input);
 				}
-				if (!storageOutputs.contains(networkable)) {
+				if (!storageOutputs.contains(output)) {
 					storageOutputs.add(output);
 				}
 			} else {
-				if (!outputs.contains(networkable)) {
+				if (!outputs.contains(output)) {
 					outputs.add(output);
 				}
 			}
 		} else if (networkable instanceof NetworkBlock.Input<T, C> input) {
-			if (!inputs.contains(networkable)) {
+			if (!inputs.contains(input)) {
 				inputs.add(0, input);
 			}
 		} else {
