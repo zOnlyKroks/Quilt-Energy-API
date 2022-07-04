@@ -25,7 +25,7 @@ public class BlockEntityInit {
 
 		LAMP_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, "quilt-energy-api:lamp_entity", FabricBlockEntityTypeBuilder.create(LampEntity::new, BlockInit.LAMP_BLOCK).build(null));
 
-		BATTERY_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, "quilt-energy-api:battery_lamp", FabricBlockEntityTypeBuilder.create(BatteryEntity::new, BlockInit.BATTERY_BLOCK).build(null));
+		BATTERY_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, "quilt-energy-api:battery_entity", FabricBlockEntityTypeBuilder.create(BatteryEntity::new, BlockInit.BATTERY_BLOCK).build(null));
 
 		ServerTickEvents.START.register(server -> network.tick());
 	}
