@@ -1,7 +1,9 @@
 package de.flow.test.blocks;
 
 import com.google.common.util.concurrent.AtomicDouble;
-import de.flow.api.*;
+import de.flow.api.NetworkBlock;
+import de.flow.api.RegisterToNetwork;
+import de.flow.api.Unit;
 import de.flow.test.BlockEntityInit;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -9,9 +11,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.function.Consumer;
-
-public class BatteryEntity extends BlockEntity implements Inputs, Outputs {
+public class BatteryEntity extends BlockEntity implements NetworkBlock {
 
 	private double storedAmount = 0;
 
@@ -20,7 +20,7 @@ public class BatteryEntity extends BlockEntity implements Inputs, Outputs {
 	}
 
 	@RegisterToNetwork
-	private Store<Double, AtomicDouble> store = new Store.DefaultStore<>(
+	private Store<Double, AtomicDouble> store = new DefaultStore<>(
 			new LimitedDefaultInput<>(() -> 500000 - storedAmount, aDouble -> storedAmount += aDouble, Unit.energyUnit(1), 600.0),
 			new LimitedDefaultOutput<>(() -> storedAmount, aDouble -> storedAmount -= aDouble, Unit.energyUnit(1), 600.0)
 	);

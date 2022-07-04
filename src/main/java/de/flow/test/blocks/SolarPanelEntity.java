@@ -1,7 +1,7 @@
 package de.flow.test.blocks;
 
 import com.google.common.util.concurrent.AtomicDouble;
-import de.flow.api.Inputs;
+import de.flow.api.NetworkBlock;
 import de.flow.api.RegisterToNetwork;
 import de.flow.api.Unit;
 import de.flow.test.BlockEntityInit;
@@ -10,7 +10,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class SolarPanelEntity extends BlockEntity implements Inputs {
+public class SolarPanelEntity extends BlockEntity implements NetworkBlock {
 
 	private double storedAmount = 0;
 

@@ -9,19 +9,19 @@ public interface Network<T, C> extends Typeable<T, C> {
 	boolean add(Networkable<T, C> networkable);
 	boolean remove(Networkable<T, C> networkable);
 
-	default void add(NetworkableCollection networkableCollection) {
-		iterate(networkableCollection, this::add);
+	default void add(NetworkBlock networkBlock) {
+		iterate(networkBlock, this::add);
 	}
-	default void remove(NetworkableCollection networkableCollection) {
-		iterate(networkableCollection, this::remove);
+	default void remove(NetworkBlock networkBlock) {
+		iterate(networkBlock, this::remove);
 	}
 
-	default void iterate(NetworkableCollection networkableCollection, Predicate<Networkable<T, C>> consumer) {
-		Field[] fields = networkableCollection.getClass().getDeclaredFields();
+	default void iterate(NetworkBlock networkBlock, Predicate<Networkable<T, C>> consumer) {
+		Field[] fields = networkBlock.getClass().getDeclaredFields();
 		for (Field field : fields) {
 			if (field.isAnnotationPresent(RegisterToNetwork.class)) {
 				try {
-					Networkable<T, C> networkable = (Networkable<T, C>) field.get(networkableCollection);
+					Networkable<T, C> networkable = (Networkable<T, C>) field.get(networkBlock);
 					consumer.test(networkable);
 				} catch (Exception e) {
 					// Ignore

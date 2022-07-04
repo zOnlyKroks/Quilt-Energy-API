@@ -9,9 +9,9 @@ public class NetworkImpl<T, C> implements Network<T, C> {
 
 	private Type<T, C> type;
 
-	private List<Inputs.Input<T, C>> inputs = new ArrayList<>();
-	private List<Outputs.Output<T, C>> outputs = new ArrayList<>();
-	private List<Outputs.Output<T, C>> storageOutputs = new ArrayList<>();
+	private List<NetworkBlock.Input<T, C>> inputs = new ArrayList<>();
+	private List<NetworkBlock.Output<T, C>> outputs = new ArrayList<>();
+	private List<NetworkBlock.Output<T, C>> storageOutputs = new ArrayList<>();
 
 	public NetworkImpl(Type<T, C> type) {
 		this.type = type;
@@ -25,14 +25,14 @@ public class NetworkImpl<T, C> implements Network<T, C> {
 
 		C neededAmount = type.container();
 		C totalNeededAmount = type.container();
-		for (Outputs.Output<T, C> output : outputs) {
+		for (NetworkBlock.Output<T, C> output : outputs) {
 			T amount = output.unit().convertToBaseUnit(output.desiredAmount());
 			type.add(totalNeededAmount, amount);
-			if (!(output instanceof Inputs.Input)) {
+			if (!(output instanceof NetworkBlock.Input)) {
 				type.add(neededAmount, amount);
 			}
 		}
-		for (Outputs.Output<T, C> output : storageOutputs) {
+		for (NetworkBlock.Output<T, C> output : storageOutputs) {
 			T amount = output.unit().convertToBaseUnit(output.desiredAmount());
 			type.add(totalNeededAmount, amount);
 		}
@@ -41,10 +41,10 @@ public class NetworkImpl<T, C> implements Network<T, C> {
 
 		C nonStorageProvidedAmount = type.container();
 		C totalProvidedAmount = type.container();
-		for (Inputs.Input<T, C> input : inputs) {
+		for (NetworkBlock.Input<T, C> input : inputs) {
 			T amount = input.unit().convertToBaseUnit(input.extractableAmount());
 			type.add(totalProvidedAmount, amount);
-			if (!(input instanceof Outputs.Output)) {
+			if (!(input instanceof NetworkBlock.Output)) {
 				type.add(nonStorageProvidedAmount, amount);
 			}
 		}
@@ -63,7 +63,7 @@ public class NetworkImpl<T, C> implements Network<T, C> {
 		// System.out.println("neededAmount: " + neededAmount + " totalNeededAmount: " + totalNeededAmount + " availableAmount: " + availableAmount + " storage: " + storage + " nonStorageProvidedAmount: " + nonStorageProvidedAmount + " totalProvidedAmount: " + totalProvidedAmount);
 
 		C toRemove = type.copy(availableAmount);
-		for (Inputs.Input<T, C> input : inputs) {
+		for (NetworkBlock.Input<T, C> input : inputs) {
 			T amount = input.extractableAmount();
 			T baseAmount = input.unit().convertToBaseUnit(amount);
 
@@ -79,8 +79,8 @@ public class NetworkImpl<T, C> implements Network<T, C> {
 		if (storage && !type.isEmpty(availableAmount)) distribute(availableAmount, storageOutputs);
 	}
 
-	private void distribute(C availableAmount, List<Outputs.Output<T, C>> outputs) {
-		for (Outputs.Output<T, C> output : outputs) {
+	private void distribute(C availableAmount, List<NetworkBlock.Output<T, C>> outputs) {
+		for (NetworkBlock.Output<T, C> output : outputs) {
 			T baseAmount = output.unit().convertToBaseUnit(output.desiredAmount());
 
 			T available = type.available(availableAmount, baseAmount);
@@ -94,22 +94,22 @@ public class NetworkImpl<T, C> implements Network<T, C> {
 	@Override
 	public boolean add(Networkable<T, C> networkable) {
 		if (networkable.unit().type() != type) return false;
-		if (networkable instanceof Outputs.Output<T, C>) {
-			if (networkable instanceof Inputs.Input<T, C>) {
+		if (networkable instanceof NetworkBlock.Output<T, C> output) {
+			if (networkable instanceof NetworkBlock.Input<T, C> input) {
 				if (!inputs.contains(networkable)) {
-					inputs.add((Inputs.Input<T, C>) networkable);
+					inputs.add(input);
 				}
 				if (!storageOutputs.contains(networkable)) {
-					storageOutputs.add((Outputs.Output<T, C>) networkable);
+					storageOutputs.add(output);
 				}
 			} else {
 				if (!outputs.contains(networkable)) {
-					outputs.add((Outputs.Output<T, C>) networkable);
+					outputs.add(output);
 				}
 			}
-		} else if (networkable instanceof Inputs.Input<T, C>) {
+		} else if (networkable instanceof NetworkBlock.Input<T, C> input) {
 			if (!inputs.contains(networkable)) {
-				inputs.add(0, (Inputs.Input<T, C>) networkable);
+				inputs.add(0, input);
 			}
 		} else {
 			return false;
@@ -120,11 +120,11 @@ public class NetworkImpl<T, C> implements Network<T, C> {
 	@Override
 	public boolean remove(Networkable<T, C> networkable) {
 		if (networkable.unit().type() != type) return false;
-		if (networkable instanceof Outputs.Output<T, C>) {
+		if (networkable instanceof NetworkBlock.Output<T, C>) {
 			outputs.remove(networkable);
 			storageOutputs.remove(networkable);
 		}
-		if (networkable instanceof Inputs.Input<T, C>) {
+		if (networkable instanceof NetworkBlock.Input<T, C>) {
 			inputs.remove(networkable);
 		}
 		return true;

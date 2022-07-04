@@ -1,7 +1,7 @@
 package de.flow.test.blocks;
 
 import com.google.common.util.concurrent.AtomicDouble;
-import de.flow.api.Outputs;
+import de.flow.api.NetworkBlock;
 import de.flow.api.RegisterToNetwork;
 import de.flow.api.Unit;
 import de.flow.test.BlockEntityInit;
@@ -11,7 +11,7 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class LampEntity extends BlockEntity implements Outputs {
+public class LampEntity extends BlockEntity implements NetworkBlock {
 
 	public static IntProperty LIGHT_LEVEL = IntProperty.of("light_level", 0, 15);
 
