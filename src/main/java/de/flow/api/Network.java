@@ -9,6 +9,13 @@ public interface Network<T, C> extends Typeable<T, C> {
 	boolean add(Networkable<T, C> networkable);
 	boolean remove(Networkable<T, C> networkable);
 
+	default void add(NetworkableCollection networkableCollection) {
+		iterate(networkableCollection, this::add);
+	}
+	default void remove(NetworkableCollection networkableCollection) {
+		iterate(networkableCollection, this::remove);
+	}
+
 	default void iterate(NetworkableCollection networkableCollection, Predicate<Networkable<T, C>> consumer) {
 		Field[] fields = networkableCollection.getClass().getDeclaredFields();
 		for (Field field : fields) {

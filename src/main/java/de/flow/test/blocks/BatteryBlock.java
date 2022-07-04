@@ -38,7 +38,7 @@ public class BatteryBlock extends BlockWithEntity {
 
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		BlockEntityInit.network.iterate(((BatteryEntity) world.getBlockEntity(pos)), BlockEntityInit.network::remove);
+		BlockEntityInit.network.remove(((BatteryEntity) world.getBlockEntity(pos)));
 		super.onBreak(world, pos, state, player);
 	}
 }

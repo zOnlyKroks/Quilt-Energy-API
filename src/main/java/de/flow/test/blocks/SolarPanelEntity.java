@@ -38,7 +38,7 @@ public class SolarPanelEntity extends BlockEntity implements Inputs {
 		if (getWorld() != null) return;
 		super.setWorld(world);
 		if (!world.isClient()) {
-			BlockEntityInit.network.iterate(this, BlockEntityInit.network::add);
+			BlockEntityInit.network.add(this);
 		}
 	}
 }

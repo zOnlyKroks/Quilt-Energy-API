@@ -39,7 +39,7 @@ public class LampEntity extends BlockEntity implements Outputs {
 		if (getWorld() != null) return;
 		super.setWorld(world);
 		if (!world.isClient()) {
-			BlockEntityInit.network.iterate(this, BlockEntityInit.network::add);
+			BlockEntityInit.network.add(this);
 		}
 	}
 }

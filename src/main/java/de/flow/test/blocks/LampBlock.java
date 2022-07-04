@@ -50,7 +50,7 @@ public class LampBlock extends BlockWithEntity {
 
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		BlockEntityInit.network.iterate(((LampEntity) world.getBlockEntity(pos)), BlockEntityInit.network::remove);
+		BlockEntityInit.network.remove(((LampEntity) world.getBlockEntity(pos)));
 		super.onBreak(world, pos, state, player);
 	}
 }
