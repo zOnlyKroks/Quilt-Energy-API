@@ -21,11 +21,11 @@ public class BlockEntityInit {
 	public static BlockEntityType<BatteryEntity> BATTERY_ENTITY;
 
 	public static void onInitialize() {
-		SOLAR_PANEL_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, "quilt-energy-api:solar_panel_entity", FabricBlockEntityTypeBuilder.create(SolarPanelEntity::new, BlockInit.SOLAR_PANEL_BLOCK).build(null));
+		SOLAR_PANEL_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, "quilt-flow-api:solar_panel_entity", FabricBlockEntityTypeBuilder.create(SolarPanelEntity::new, BlockInit.SOLAR_PANEL_BLOCK).build(null));
 
-		LAMP_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, "quilt-energy-api:lamp_entity", FabricBlockEntityTypeBuilder.create(LampEntity::new, BlockInit.LAMP_BLOCK).build(null));
+		LAMP_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, "quilt-flow-api:lamp_entity", FabricBlockEntityTypeBuilder.create(LampEntity::new, BlockInit.LAMP_BLOCK).build(null));
 
-		BATTERY_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, "quilt-energy-api:battery_entity", FabricBlockEntityTypeBuilder.create(BatteryEntity::new, BlockInit.BATTERY_BLOCK).build(null));
+		BATTERY_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, "quilt-flow-api:battery_entity", FabricBlockEntityTypeBuilder.create(BatteryEntity::new, BlockInit.BATTERY_BLOCK).build(null));
 
 		ServerTickEvents.START.register(server -> network.tick());
 	}
