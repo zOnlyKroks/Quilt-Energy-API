@@ -23,6 +23,6 @@ public class FlowApi implements ModInitializer {
 		BlockEntityInit.onInitialize();
 		BlockInit.onInitialize();
 
-		LOGGER.info("Initializing Quilt Energy Api v: " + mod.metadata().version().raw());
+		LOGGER.info("Initializing Quilt Flow API v: " + mod.metadata().version().raw());
 	}
 }
