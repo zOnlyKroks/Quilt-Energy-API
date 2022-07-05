@@ -1,2 +1,52 @@
 {
+  "variants": {
+    "light_level=0": {
+      "model": "quilt-flow-api:block/lamp_block_0"
+    },
+    "light_level=1": {
+      "model": "quilt-flow-api:block/lamp_block_1"
+    },
+    "light_level=2": {
+      "model": "quilt-flow-api:block/lamp_block_2"
+    },
+    "light_level=3": {
+      "model": "quilt-flow-api:block/lamp_block_3"
+    },
+    "light_level=4": {
+      "model": "quilt-flow-api:block/lamp_block_4"
+    },
+    "light_level=5": {
+      "model": "quilt-flow-api:block/lamp_block_5"
+    },
+    "light_level=6": {
+      "model": "quilt-flow-api:block/lamp_block_6"
+    },
+    "light_level=7": {
+      "model": "quilt-flow-api:block/lamp_block_7"
+    },
+    "light_level=8": {
+      "model": "quilt-flow-api:block/lamp_block_8"
+    },
+    "light_level=9": {
+      "model": "quilt-flow-api:block/lamp_block_9"
+    },
+    "light_level=10": {
+      "model": "quilt-flow-api:block/lamp_block_10"
+    },
+    "light_level=11": {
+      "model": "quilt-flow-api:block/lamp_block_11"
+    },
+    "light_level=12": {
+      "model": "quilt-flow-api:block/lamp_block_12"
+    },
+    "light_level=13": {
+      "model": "quilt-flow-api:block/lamp_block_13"
+    },
+    "light_level=14": {
+      "model": "quilt-flow-api:block/lamp_block_14"
+    },
+    "light_level=15": {
+      "model": "quilt-flow-api:block/lamp_block_15"
+    }
+  }
 }

@@ -1,2 +1,7 @@
 {
+  "variants": {
+    "": {
+      "model": "quilt-flow-api:block/battery_block"
+    }
+  }
 }
