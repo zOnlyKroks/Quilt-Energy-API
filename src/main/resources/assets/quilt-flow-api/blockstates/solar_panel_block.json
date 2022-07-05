@@ -1,2 +1,7 @@
 {
+  "variants": {
+    "": {
+      "model": "quilt-flow-api:block/solar_panel_block"
+    }
+  }
 }
