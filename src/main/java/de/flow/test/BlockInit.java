@@ -1,5 +1,6 @@
 package de.flow.test;
 
+import de.flow.FlowApi;
 import de.flow.test.blocks.*;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
@@ -17,13 +18,13 @@ public class BlockInit {
 
 	static {
 		Registry.register(Registry.BLOCK, new Identifier("quilt-flow-api", "solar_panel_block"), SOLAR_PANEL_BLOCK);
-		Registry.register(Registry.ITEM, new Identifier("quilt-flow-api", "solar_panel_block"), new BlockItem(SOLAR_PANEL_BLOCK, new QuiltItemSettings().group(ItemGroup.MISC)));
+		Registry.register(Registry.ITEM, new Identifier("quilt-flow-api", "solar_panel_block"), new BlockItem(SOLAR_PANEL_BLOCK, new QuiltItemSettings().group(FlowApi.ITEM_GROUP)));
 
 		Registry.register(Registry.BLOCK, new Identifier("quilt-flow-api", "lamp_block"), LAMP_BLOCK);
-		Registry.register(Registry.ITEM, new Identifier("quilt-flow-api", "lamp_block"), new BlockItem(LAMP_BLOCK, new QuiltItemSettings().group(ItemGroup.MISC)));
+		Registry.register(Registry.ITEM, new Identifier("quilt-flow-api", "lamp_block"), new BlockItem(LAMP_BLOCK, new QuiltItemSettings().group(FlowApi.ITEM_GROUP)));
 
 		Registry.register(Registry.BLOCK, new Identifier("quilt-flow-api", "battery_block"), BATTERY_BLOCK);
-		Registry.register(Registry.ITEM, new Identifier("quilt-flow-api", "battery_block"), new BlockItem(BATTERY_BLOCK, new QuiltItemSettings().group(ItemGroup.MISC)));
+		Registry.register(Registry.ITEM, new Identifier("quilt-flow-api", "battery_block"), new BlockItem(BATTERY_BLOCK, new QuiltItemSettings().group(FlowApi.ITEM_GROUP)));
 	}
 
 	public static void onInitialize() {
