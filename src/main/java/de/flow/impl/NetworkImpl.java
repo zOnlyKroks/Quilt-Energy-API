@@ -2,7 +2,9 @@ package de.flow.impl;
 
 import de.flow.api.*;
 import net.minecraft.block.Block;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
@@ -41,7 +43,16 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			throw new IllegalArgumentException("Block not found: " + nbtCompound.getString("network-type"));
 		}
 		this.type = ((NetworkCable<C>) block.get()).type();
-		throw new UnsupportedOperationException("Not implemented yet");
+		this.cablePositions = convertBlocks(nbtCompound.getList("cable-positions", NbtElement.LIST_TYPE), worlds);
+		this.io = convertBlocks(nbtCompound.getList("io", NbtElement.LIST_TYPE), worlds);
+		for (Map.Entry<World, Set<BlockPos>> ioEntry : io.entrySet()) {
+			for (BlockPos pos : ioEntry.getValue()) {
+				BlockEntity blockEntity = ioEntry.getKey().getBlockEntity(pos);
+				if (blockEntity instanceof Networkable networkable) {
+					internalAdd(networkable);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -123,10 +134,7 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 		}
 	}
 
-	@Override
-	public boolean add(World world, BlockPos pos, Networkable<C> networkable) {
-		if (networkable.unit().type() != type) return false;
-		if (io.containsKey(world) && io.get(world).contains(pos)) return false;
+	private boolean internalAdd(Networkable<C> networkable) {
 		if (networkable instanceof NetworkBlock.Output<C> output) {
 			if (networkable instanceof NetworkBlock.Input<C> input) {
 				if (!inputs.contains(input)) {
@@ -147,6 +155,14 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 		} else {
 			return false;
 		}
+		return true;
+	}
+
+	@Override
+	public boolean add(World world, BlockPos pos, Networkable<C> networkable) {
+		if (networkable.unit().type() != type) return false;
+		if (io.containsKey(world) && io.get(world).contains(pos)) return false;
+		if (!internalAdd(networkable)) return false;
 		markDirty();
 		io.computeIfAbsent(world, k -> new HashSet<>()).add(pos);
 		return true;
@@ -230,5 +246,17 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			}
 		}
 		return blockPositionsList;
+	}
+
+	private Map<World, Set<BlockPos>> convertBlocks(NbtList nbtList, Map<String, World> worlds) {
+		Map<World, Set<BlockPos>> blockPositions = new HashMap<>();
+		for (NbtElement nbtBase : nbtList) {
+			NbtCompound element = (NbtCompound) nbtBase;
+			World world = worlds.get(element.getString("world"));
+			if (world == null) continue;
+			BlockPos blockPos = new BlockPos(element.getInt("x"), element.getInt("y"), element.getInt("z"));
+			blockPositions.computeIfAbsent(world, k -> new HashSet<>()).add(blockPos);
+		}
+		return blockPositions;
 	}
 }
