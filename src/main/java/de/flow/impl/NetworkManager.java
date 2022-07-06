@@ -9,13 +9,9 @@ import de.flow.api.Network;
 import de.flow.api.Type;
 import lombok.experimental.UtilityClass;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.PersistentStateManager;
-import net.minecraft.world.World;
-import org.quiltmc.qsl.lifecycle.api.event.ServerTickEvents;
-import org.quiltmc.qsl.lifecycle.api.event.ServerWorldLoadEvents;
-import org.quiltmc.qsl.networking.api.ServerLoginConnectionEvents;
+import org.checkerframework.checker.units.qual.C;
 
 import java.io.File;
 import java.util.*;
@@ -37,6 +33,18 @@ public class NetworkManager {
 		networks.computeIfAbsent(network.type(), ignore -> new ArrayList<>()).remove(network);
 		persistentStateManager.set(network.getId().toString(), null);
 		new File(networksDir, network.getId().toString()).delete();
+	}
+
+	public List<Type<?>> types() {
+		return new ArrayList<>(networks.keySet());
+	}
+
+	public <T extends Network<C>, C> List<T> get(Type<C> type) {
+		return (List<T>) networks.getOrDefault(type, Collections.emptyList());
+	}
+
+	public <T extends Network<C>, C> T get(UUID uuid) {
+		return (T) networks.values().stream().flatMap(Collection::stream).filter(network -> network.getId().equals(uuid)).findFirst().orElse(null);
 	}
 
 	public void loadNetworks(File networksDir, MinecraftServer minecraftServer) {
