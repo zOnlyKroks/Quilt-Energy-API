@@ -1,12 +1,13 @@
 package de.flow.impl;
 
-import de.flow.api.Network;
-import de.flow.api.NetworkBlock;
-import de.flow.api.Networkable;
-import de.flow.api.Type;
+import de.flow.api.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class NetworkImpl<C> implements Network<C> {
 
@@ -131,6 +132,21 @@ public class NetworkImpl<C> implements Network<C> {
 			inputs.remove(networkable);
 		}
 		return true;
+	}
+
+	@Override
+	public Map<World, Set<BlockPos>> cablePositions() {
+		return null;
+	}
+
+	@Override
+	public boolean add(BlockPos pos, NetworkCable<C> networkCable) {
+		return false;
+	}
+
+	@Override
+	public boolean remove(BlockPos pos, NetworkCable<C> networkCable) {
+		return false;
 	}
 
 	@Override

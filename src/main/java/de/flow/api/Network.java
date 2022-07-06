@@ -1,6 +1,11 @@
 package de.flow.api;
 
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
 import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public interface Network<C> extends Typeable<C> {
@@ -30,4 +35,9 @@ public interface Network<C> extends Typeable<C> {
 			}
 		}
 	}
+
+	Map<World, Set<BlockPos>> cablePositions();
+
+	boolean add(BlockPos pos, NetworkCable<C> networkCable);
+	boolean remove(BlockPos pos, NetworkCable<C> networkCable);
 }
