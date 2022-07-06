@@ -8,15 +8,15 @@ import de.flow.api.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NetworkImpl<T, C> implements Network<T, C> {
+public class NetworkImpl<C> implements Network<C> {
 
-	private Type<T, C> type;
+	private Type<C> type;
 
-	private List<NetworkBlock.Input<T, C>> inputs = new ArrayList<>();
-	private List<NetworkBlock.Output<T, C>> outputs = new ArrayList<>();
-	private List<NetworkBlock.Output<T, C>> storageOutputs = new ArrayList<>();
+	private List<NetworkBlock.Input<C>> inputs = new ArrayList<>();
+	private List<NetworkBlock.Output<C>> outputs = new ArrayList<>();
+	private List<NetworkBlock.Output<C>> storageOutputs = new ArrayList<>();
 
-	public NetworkImpl(Type<T, C> type) {
+	public NetworkImpl(Type<C> type) {
 		this.type = type;
 	}
 
@@ -28,15 +28,15 @@ public class NetworkImpl<T, C> implements Network<T, C> {
 
 		C neededAmount = type.container();
 		C totalNeededAmount = type.container();
-		for (NetworkBlock.Output<T, C> output : outputs) {
-			T amount = output.unit().convertToBaseUnit(output.desiredAmount());
+		for (NetworkBlock.Output<C> output : outputs) {
+			C amount = output.unit().convertToBaseUnit(output.desiredAmount());
 			type.add(totalNeededAmount, amount);
 			if (!(output instanceof NetworkBlock.Input)) {
 				type.add(neededAmount, amount);
 			}
 		}
-		for (NetworkBlock.Output<T, C> output : storageOutputs) {
-			T amount = output.unit().convertToBaseUnit(output.desiredAmount());
+		for (NetworkBlock.Output<C> output : storageOutputs) {
+			C amount = output.unit().convertToBaseUnit(output.desiredAmount());
 			type.add(totalNeededAmount, amount);
 		}
 
@@ -44,8 +44,8 @@ public class NetworkImpl<T, C> implements Network<T, C> {
 
 		C nonStorageProvidedAmount = type.container();
 		C totalProvidedAmount = type.container();
-		for (NetworkBlock.Input<T, C> input : inputs) {
-			T amount = input.unit().convertToBaseUnit(input.extractableAmount());
+		for (NetworkBlock.Input<C> input : inputs) {
+			C amount = input.unit().convertToBaseUnit(input.extractableAmount());
 			type.add(totalProvidedAmount, amount);
 			if (!(input instanceof NetworkBlock.Output)) {
 				type.add(nonStorageProvidedAmount, amount);
@@ -66,11 +66,11 @@ public class NetworkImpl<T, C> implements Network<T, C> {
 		// System.out.println("neededAmount: " + neededAmount + " totalNeededAmount: " + totalNeededAmount + " availableAmount: " + availableAmount + " storage: " + storage + " nonStorageProvidedAmount: " + nonStorageProvidedAmount + " totalProvidedAmount: " + totalProvidedAmount);
 
 		C toRemove = type.copy(availableAmount);
-		for (NetworkBlock.Input<T, C> input : inputs) {
-			T amount = input.extractableAmount();
-			T baseAmount = input.unit().convertToBaseUnit(amount);
+		for (NetworkBlock.Input<C> input : inputs) {
+			C amount = input.extractableAmount();
+			C baseAmount = input.unit().convertToBaseUnit(amount);
 
-			T available = type.available(toRemove, baseAmount);
+			C available = type.available(toRemove, baseAmount);
 			if (available != null) {
 				input.extract(input.unit().convertFromBaseUnit(available));
 				type.subtract(toRemove, baseAmount);
@@ -82,11 +82,11 @@ public class NetworkImpl<T, C> implements Network<T, C> {
 		if (storage && !type.isEmpty(availableAmount)) distribute(availableAmount, storageOutputs);
 	}
 
-	private void distribute(C availableAmount, List<NetworkBlock.Output<T, C>> outputs) {
-		for (NetworkBlock.Output<T, C> output : outputs) {
-			T baseAmount = output.unit().convertToBaseUnit(output.desiredAmount());
+	private void distribute(C availableAmount, List<NetworkBlock.Output<C>> outputs) {
+		for (NetworkBlock.Output<C> output : outputs) {
+			C baseAmount = output.unit().convertToBaseUnit(output.desiredAmount());
 
-			T available = type.available(availableAmount, baseAmount);
+			C available = type.available(availableAmount, baseAmount);
 			if (available != null) {
 				output.provide(output.unit().convertFromBaseUnit(available));
 				type.subtract(availableAmount, baseAmount);
@@ -95,10 +95,10 @@ public class NetworkImpl<T, C> implements Network<T, C> {
 	}
 
 	@Override
-	public boolean add(Networkable<T, C> networkable) {
+	public boolean add(Networkable<C> networkable) {
 		if (networkable.unit().type() != type) return false;
-		if (networkable instanceof NetworkBlock.Output<T, C> output) {
-			if (networkable instanceof NetworkBlock.Input<T, C> input) {
+		if (networkable instanceof NetworkBlock.Output<C> output) {
+			if (networkable instanceof NetworkBlock.Input<C> input) {
 				if (!inputs.contains(input)) {
 					inputs.add(input);
 				}
@@ -110,7 +110,7 @@ public class NetworkImpl<T, C> implements Network<T, C> {
 					outputs.add(output);
 				}
 			}
-		} else if (networkable instanceof NetworkBlock.Input<T, C> input) {
+		} else if (networkable instanceof NetworkBlock.Input<C> input) {
 			if (!inputs.contains(input)) {
 				inputs.add(0, input);
 			}
@@ -121,20 +121,20 @@ public class NetworkImpl<T, C> implements Network<T, C> {
 	}
 
 	@Override
-	public boolean remove(Networkable<T, C> networkable) {
+	public boolean remove(Networkable<C> networkable) {
 		if (networkable.unit().type() != type) return false;
-		if (networkable instanceof NetworkBlock.Output<T, C>) {
+		if (networkable instanceof NetworkBlock.Output<C>) {
 			outputs.remove(networkable);
 			storageOutputs.remove(networkable);
 		}
-		if (networkable instanceof NetworkBlock.Input<T, C>) {
+		if (networkable instanceof NetworkBlock.Input<C>) {
 			inputs.remove(networkable);
 		}
 		return true;
 	}
 
 	@Override
-	public Type<T, C> type() {
+	public Type<C> type() {
 		return type;
 	}
 }

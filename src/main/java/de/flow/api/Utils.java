@@ -6,5 +6,5 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class Utils {
 
-	public static final Type<Double, AtomicDouble> ENERGY_TYPE = new Type.NumberType();
+	public static final Type<AtomicDouble> ENERGY_TYPE = new Type.NumberType();
 }

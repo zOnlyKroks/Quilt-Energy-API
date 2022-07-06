@@ -27,7 +27,7 @@ public class SolarPanelEntity extends BlockEntity implements NetworkBlock {
 	}
 
 	@RegisterToNetwork
-	private Input<Double, AtomicDouble> input = new LimitedDefaultInput<>(() -> storedAmount, aDouble -> storedAmount += aDouble, Unit.energyUnit(1), 600.0);
+	private Input<AtomicDouble> input = new LimitedDefaultInput<>(() -> new AtomicDouble(storedAmount), aDouble -> storedAmount += aDouble.get(), Unit.energyUnit(1), new AtomicDouble(600.0));
 
 	public SolarPanelEntity(BlockPos blockPos, BlockState blockState) {
 		super(BlockEntityInit.SOLAR_PANEL_ENTITY, blockPos, blockState);

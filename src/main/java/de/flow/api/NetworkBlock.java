@@ -5,122 +5,122 @@ import java.util.function.Supplier;
 
 public interface NetworkBlock {
 
-	interface Input<T, C> extends Unitable<T, C>, Networkable<T, C> {
-		T extractableAmount();
+	interface Input<C> extends Unitable<C>, Networkable<C> {
+		C extractableAmount();
 
-		void extract(T amount);
+		void extract(C amount);
 	}
 
-	class DefaultInput<T, C> implements Input<T, C> {
+	class DefaultInput<C> implements Input<C> {
 
-		protected Supplier<T> supply;
-		protected Consumer<T> consume;
-		protected Unit<T, C> unit;
+		protected Supplier<C> supply;
+		protected Consumer<C> consume;
+		protected Unit<C> unit;
 
-		public DefaultInput(Supplier<T> supply, Consumer<T> consume, Unit<T, C> unit) {
+		public DefaultInput(Supplier<C> supply, Consumer<C> consume, Unit<C> unit) {
 			this.supply = supply;
 			this.consume = consume;
 			this.unit = unit;
 		}
 
 		@Override
-		public T extractableAmount() {
+		public C extractableAmount() {
 			return supply.get();
 		}
 
 		@Override
-		public void extract(T amount) {
+		public void extract(C amount) {
 			consume.accept(amount);
 		}
 
 		@Override
-		public Unit<T, C> unit() {
+		public Unit<C> unit() {
 			return unit;
 		}
 	}
 
-	class LimitedDefaultInput<T, C> extends DefaultInput<T, C> {
+	class LimitedDefaultInput<C> extends DefaultInput<C> {
 
-		private T limit;
+		private C limit;
 
-		public LimitedDefaultInput(DefaultInput<T, C> input, T limit) {
+		public LimitedDefaultInput(DefaultInput<C> input, C limit) {
 			super(input.supply, input.consume, input.unit);
 			this.limit = limit;
 		}
 
-		public LimitedDefaultInput(Supplier<T> supply, Consumer<T> consume, Unit<T, C> unit, T limit) {
+		public LimitedDefaultInput(Supplier<C> supply, Consumer<C> consume, Unit<C> unit, C limit) {
 			super(supply, consume, unit);
 			this.limit = limit;
 		}
 
 		@Override
-		public T extractableAmount() {
-			return unit.type().minValue(super.extractableAmount(), limit);
+		public C extractableAmount() {
+			return unit.type().min(super.extractableAmount(), limit);
 		}
 	}
 
-	interface Output<T, C> extends Unitable<T, C>, Networkable<T, C> {
-		T desiredAmount();
-		void provide(T amount);
+	interface Output<C> extends Unitable<C>, Networkable<C> {
+		C desiredAmount();
+		void provide(C amount);
 	}
 
-	class DefaultOutput<T, C> implements Output<T, C> {
-		protected Supplier<T> desired;
-		protected Consumer<T> provided;
-		protected Unit<T, C> unit;
+	class DefaultOutput<C> implements Output<C> {
+		protected Supplier<C> desired;
+		protected Consumer<C> provided;
+		protected Unit<C> unit;
 
-		public DefaultOutput(Supplier<T> desired, Consumer<T> provided, Unit<T, C> unit) {
+		public DefaultOutput(Supplier<C> desired, Consumer<C> provided, Unit<C> unit) {
 			this.desired = desired;
 			this.provided = provided;
 			this.unit = unit;
 		}
 
 		@Override
-		public T desiredAmount() {
+		public C desiredAmount() {
 			return desired.get();
 		}
 
 		@Override
-		public void provide(T amount) {
+		public void provide(C amount) {
 			provided.accept(amount);
 		}
 
 		@Override
-		public Unit<T, C> unit() {
+		public Unit<C> unit() {
 			return unit;
 		}
 	}
 
-	class LimitedDefaultOutput<T, C> extends DefaultOutput<T, C> {
+	class LimitedDefaultOutput<C> extends DefaultOutput<C> {
 
-		private T limit;
+		private C limit;
 
-		public LimitedDefaultOutput(DefaultOutput<T, C> output, T limit) {
+		public LimitedDefaultOutput(DefaultOutput<C> output, C limit) {
 			super(output.desired, output.provided, output.unit);
 			this.limit = limit;
 		}
 
-		public LimitedDefaultOutput(Supplier<T> desired, Consumer<T> provided, Unit<T, C> unit, T limit) {
+		public LimitedDefaultOutput(Supplier<C> desired, Consumer<C> provided, Unit<C> unit, C limit) {
 			super(desired, provided, unit);
 			this.limit = limit;
 		}
 
 		@Override
-		public T desiredAmount() {
-			return unit.type().minValue(super.desiredAmount(), limit);
+		public C desiredAmount() {
+			return unit.type().min(super.desiredAmount(), limit);
 		}
 	}
 
-	interface Store<T, C> extends Input<T, C>, Output<T, C> {
+	interface Store<C> extends Input<C>, Output<C> {
 	}
 
-	class DefaultStore<T, C> implements Store<T, C> {
+	class DefaultStore<C> implements Store<C> {
 
-		protected Input<T, C> input;
-		protected Output<T, C> output;
-		protected Unit<T, C> unit;
+		protected Input<C> input;
+		protected Output<C> output;
+		protected Unit<C> unit;
 
-		public DefaultStore(Input<T, C> input, Output<T, C> output) {
+		public DefaultStore(Input<C> input, Output<C> output) {
 			this.input = input;
 			this.output = output;
 			if (input.unit() != output.unit()) {
@@ -130,27 +130,27 @@ public interface NetworkBlock {
 		}
 
 		@Override
-		public T extractableAmount() {
+		public C extractableAmount() {
 			return input.extractableAmount();
 		}
 
 		@Override
-		public void extract(T amount) {
+		public void extract(C amount) {
 			input.extract(amount);
 		}
 
 		@Override
-		public T desiredAmount() {
+		public C desiredAmount() {
 			return output.desiredAmount();
 		}
 
 		@Override
-		public void provide(T amount) {
+		public void provide(C amount) {
 			output.provide(amount);
 		}
 
 		@Override
-		public Unit<T, C> unit() {
+		public Unit<C> unit() {
 			return unit;
 		}
 	}

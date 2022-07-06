@@ -15,7 +15,7 @@ import net.minecraft.util.registry.Registry;
 import org.quiltmc.qsl.lifecycle.api.event.ServerTickEvents;
 
 public class BlockEntityInit {
-	public static Network<Double, AtomicDouble> network = new NetworkImpl<>(Utils.ENERGY_TYPE);
+	public static Network<AtomicDouble> network = new NetworkImpl<>(Utils.ENERGY_TYPE);
 	public static BlockEntityType<SolarPanelEntity> SOLAR_PANEL_ENTITY;
 
 	public static BlockEntityType<LampEntity> LAMP_ENTITY;

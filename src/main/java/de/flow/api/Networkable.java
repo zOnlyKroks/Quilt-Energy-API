@@ -1,4 +1,4 @@
 package de.flow.api;
 
-public interface Networkable<T, C> extends Unitable<T, C> {
+public interface Networkable<C> extends Unitable<C> {
 }

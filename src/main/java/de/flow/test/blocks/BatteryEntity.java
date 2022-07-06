@@ -19,12 +19,12 @@ public class BatteryEntity extends BlockEntity implements NetworkBlock {
 		lampEntity.setWorld(world);
 	}
 
-	private Unit<Double, AtomicDouble> unit = Unit.energyUnit(1);
+	private Unit<AtomicDouble> unit = Unit.energyUnit(1);
 
 	@RegisterToNetwork
-	private Store<Double, AtomicDouble> store = new DefaultStore<>(
-			new LimitedDefaultInput<>(() -> 500000 - storedAmount, aDouble -> storedAmount -= aDouble, unit, 600.0),
-			new LimitedDefaultOutput<>(() -> storedAmount, aDouble -> storedAmount += aDouble, unit, 600.0)
+	private Store<AtomicDouble> store = new DefaultStore<>(
+			new LimitedDefaultInput<>(() -> new AtomicDouble(500000 - storedAmount), aDouble -> storedAmount -= aDouble.get(), unit, new AtomicDouble(600.0)),
+			new LimitedDefaultOutput<>(() -> new AtomicDouble(storedAmount), aDouble -> storedAmount += aDouble.get(), unit, new AtomicDouble(600.0))
 	);
 
 	public BatteryEntity(BlockPos blockPos, BlockState blockState) {

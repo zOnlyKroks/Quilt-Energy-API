@@ -5,30 +5,30 @@ import de.flow.api.Unit;
 
 import java.util.function.UnaryOperator;
 
-public class UnitImpl<T, C> implements Unit<T, C> {
+public class UnitImpl<C> implements Unit<C> {
 
-	private Type<T, C> type;
-	private UnaryOperator<T> conversionToBaseUnit;
-	private UnaryOperator<T> conversionFromBaseUnit;
+	private Type<C> type;
+	private UnaryOperator<C> conversionToBaseUnit;
+	private UnaryOperator<C> conversionFromBaseUnit;
 
-	public UnitImpl(Type<T, C> type, UnaryOperator<T> conversionToBaseUnit, UnaryOperator<T> conversionFromBaseUnit) {
+	public UnitImpl(Type<C> type, UnaryOperator<C> conversionToBaseUnit, UnaryOperator<C> conversionFromBaseUnit) {
 		this.type = type;
 		this.conversionToBaseUnit = conversionToBaseUnit;
 		this.conversionFromBaseUnit = conversionFromBaseUnit;
 	}
 
 	@Override
-	public Type<T, C> type() {
+	public Type<C> type() {
 		return type;
 	}
 
 	@Override
-	public T convertToBaseUnit(T amount) {
+	public C convertToBaseUnit(C amount) {
 		return conversionToBaseUnit.apply(amount);
 	}
 
 	@Override
-	public T convertFromBaseUnit(T amount) {
+	public C convertFromBaseUnit(C amount) {
 		return conversionFromBaseUnit.apply(amount);
 	}
 }

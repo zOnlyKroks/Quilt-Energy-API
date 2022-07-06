@@ -2,27 +2,25 @@ package de.flow.api;
 
 import com.google.common.util.concurrent.AtomicDouble;
 
-public interface Type<T, C> {
+public interface Type<C> {
 
 	C container();
 
-	void add(C container, T element);
+	void add(C container, C element);
 
-	void subtract(C container, T element);
+	void subtract(C container, C element);
 
 	boolean containsAll(C container, C shouldContain);
 
-	T available(C container, T needed);
+	C available(C container, C needed);
 
 	boolean isEmpty(C container);
 
 	C min(C c1, C c2);
 
-	T minValue(T t1, T t2);
-
 	C copy(C container);
 
-	class NumberType implements Type<Double, AtomicDouble> {
+	class NumberType implements Type<AtomicDouble> {
 
 		@Override
 		public AtomicDouble container() {
@@ -30,13 +28,13 @@ public interface Type<T, C> {
 		}
 
 		@Override
-		public void add(AtomicDouble container, Double element) {
-			container.addAndGet(element);
+		public void add(AtomicDouble container, AtomicDouble element) {
+			container.addAndGet(element.get());
 		}
 
 		@Override
-		public void subtract(AtomicDouble container, Double element) {
-			container.addAndGet(-element);
+		public void subtract(AtomicDouble container, AtomicDouble element) {
+			container.addAndGet(-element.get());
 		}
 
 		@Override
@@ -45,12 +43,12 @@ public interface Type<T, C> {
 		}
 
 		@Override
-		public Double available(AtomicDouble container, Double needed) {
+		public AtomicDouble available(AtomicDouble container, AtomicDouble needed) {
 			if (container.get() == 0) return null;
-			if (container.get() > needed) {
-				return needed;
+			if (container.get() > needed.get()) {
+				return new AtomicDouble(needed.get());
 			} else {
-				return container.get();
+				return new AtomicDouble(container.get());
 			}
 		}
 
@@ -62,11 +60,6 @@ public interface Type<T, C> {
 		@Override
 		public AtomicDouble min(AtomicDouble c1, AtomicDouble c2) {
 			return c1.get() < c2.get() ? c1 : c2;
-		}
-
-		@Override
-		public Double minValue(Double t1, Double t2) {
-			return t1 < t2 ? t1 : t2;
 		}
 
 		@Override
