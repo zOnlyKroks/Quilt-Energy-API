@@ -6,9 +6,12 @@ import net.minecraft.world.World;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 public interface Network<C> extends Typeable<C> {
+
+	UUID getId();
 
 	void tick();
 	boolean add(Networkable<C> networkable);

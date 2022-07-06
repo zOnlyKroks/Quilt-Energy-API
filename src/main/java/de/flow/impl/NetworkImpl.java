@@ -1,24 +1,40 @@
 package de.flow.impl;
 
 import de.flow.api.*;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-public class NetworkImpl<C> implements Network<C> {
+public class NetworkImpl<C> extends PersistentState implements Network<C> {
 
 	private Type<C> type;
+	private UUID uuid;
 
 	private List<NetworkBlock.Input<C>> inputs = new ArrayList<>();
 	private List<NetworkBlock.Output<C>> outputs = new ArrayList<>();
 	private List<NetworkBlock.Output<C>> storageOutputs = new ArrayList<>();
 
 	public NetworkImpl(Type<C> type) {
+		this(type, UUID.randomUUID());
+	}
+
+	NetworkImpl(Type<C> type, UUID uuid) {
 		this.type = type;
+		this.uuid = uuid;
+	}
+
+	NetworkImpl(UUID uuid, NbtCompound nbtCompound, MinecraftServer minecraftServer) {
+		this.uuid = uuid;
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+
+	@Override
+	public UUID getId() {
+		return uuid;
 	}
 
 	@Override
@@ -118,12 +134,14 @@ public class NetworkImpl<C> implements Network<C> {
 		} else {
 			return false;
 		}
+		markDirty();
 		return true;
 	}
 
 	@Override
 	public boolean remove(Networkable<C> networkable) {
 		if (networkable.unit().type() != type) return false;
+		markDirty();
 		if (networkable instanceof NetworkBlock.Output<C>) {
 			outputs.remove(networkable);
 			storageOutputs.remove(networkable);
@@ -141,16 +159,23 @@ public class NetworkImpl<C> implements Network<C> {
 
 	@Override
 	public boolean add(World world, BlockPos pos, NetworkCable<C> networkCable) {
+		markDirty();
 		return false;
 	}
 
 	@Override
 	public boolean remove(World world, BlockPos pos, NetworkCable<C> networkCable) {
+		markDirty();
 		return false;
 	}
 
 	@Override
 	public Type<C> type() {
 		return type;
+	}
+
+	@Override
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		return null;
 	}
 }

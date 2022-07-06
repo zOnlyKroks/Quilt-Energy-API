@@ -1,0 +1,35 @@
+{
+  "network-type": "<BLOCK-ID>",
+  "cable-locations": [
+    {
+      "world": "",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  ],
+  "inputs": [
+    {
+      "world": "",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  ],
+  "outputs": [
+    {
+      "world": "",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  ],
+  "stores": [
+    {
+      "world": "",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  ]
+}
