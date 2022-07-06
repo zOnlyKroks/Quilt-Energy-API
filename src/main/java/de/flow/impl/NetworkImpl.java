@@ -203,33 +203,26 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			BlockPos blockPos = cablePositions.get(world).iterator().next();
 			Block block = world.getBlockState(blockPos).getBlock();
 			if (block instanceof NetworkCable) {
-				nbt.putString("network-type", Registry.BLOCK.getId(block).toUnderscoreSeparatedString());
+				nbt.putString("network-type", Registry.BLOCK.getId(block).toString());
 			}
 		}
+		nbt.put("cable-positions", convertBlocks(cablePositions));
+		nbt.put("io", convertBlocks(io));
+		return nbt;
+	}
+
+	private NbtList convertBlocks(Map<World, Set<BlockPos>> locations) {
 		NbtList blockPositionsList = new NbtList();
-		for (Map.Entry<World, Set<BlockPos>> cablePositionsEntry : cablePositions.entrySet()) {
+		for (Map.Entry<World, Set<BlockPos>> cablePositionsEntry : locations.entrySet()) {
 			for (BlockPos blockPos : cablePositionsEntry.getValue()) {
 				NbtCompound element = new NbtCompound();
-				element.putString("world", cablePositionsEntry.getKey().getRegistryKey().getValue().toUnderscoreSeparatedString());
+				element.putString("world", cablePositionsEntry.getKey().getRegistryKey().getValue().toString());
 				element.putInt("x", blockPos.getX());
 				element.putInt("y", blockPos.getY());
 				element.putInt("z", blockPos.getZ());
 				blockPositionsList.add(element);
 			}
 		}
-		nbt.put("cable-positions", blockPositionsList);
-		NbtList ioList = new NbtList();
-		for (Map.Entry<World, Set<BlockPos>> ioEntry : io.entrySet()) {
-			for (BlockPos blockPos : ioEntry.getValue()) {
-				NbtCompound element = new NbtCompound();
-				element.putString("world", ioEntry.getKey().getRegistryKey().getValue().toUnderscoreSeparatedString());
-				element.putInt("x", blockPos.getX());
-				element.putInt("y", blockPos.getY());
-				element.putInt("z", blockPos.getZ());
-				ioList.add(element);
-			}
-		}
-		nbt.put("io", ioList);
-		return nbt;
+		return blockPositionsList;
 	}
 }
