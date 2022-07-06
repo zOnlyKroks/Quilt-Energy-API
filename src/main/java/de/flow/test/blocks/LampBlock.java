@@ -33,7 +33,6 @@ public class LampBlock extends BlockWithEntity {
 	@Nullable
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-		// System.out.println("createBlockEntity LampEntity " + state + " " + Arrays.toString(new Exception().getStackTrace()));
 		return new LampEntity(pos, state);
 	}
 

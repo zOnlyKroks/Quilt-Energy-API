@@ -30,8 +30,6 @@ public class SolarPanelEntity extends BlockEntity implements NetworkBlock {
 			double solarFactor = (-0.12) * ((sunlight - 6) * (sunlight - 6)) + 5;
 			solarPanelEntity.storedAmount = solarFactor * 10;
 		}
-
-		// System.out.println("ENERGY: " + solarPanelEntity.storedAmount);
 	}
 
 	@RegisterToNetwork
