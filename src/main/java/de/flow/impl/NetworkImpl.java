@@ -5,6 +5,7 @@ import net.minecraft.block.Block;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.PersistentState;
@@ -33,8 +34,13 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 		this.uuid = uuid;
 	}
 
-	NetworkImpl(UUID uuid, NbtCompound nbtCompound, MinecraftServer minecraftServer) {
+	NetworkImpl(UUID uuid, NbtCompound nbtCompound, Map<String, World> worlds) {
 		this.uuid = uuid;
+		Optional<Block> block = Registry.BLOCK.getOrEmpty(new Identifier(nbtCompound.getString("network-type")));
+		if (block.isEmpty() && !(block.get() instanceof NetworkCable<?>)) {
+			throw new IllegalArgumentException("Block not found: " + nbtCompound.getString("network-type"));
+		}
+		this.type = ((NetworkCable<C>) block.get()).type();
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 

@@ -11,6 +11,7 @@ import lombok.experimental.UtilityClass;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.PersistentStateManager;
+import net.minecraft.world.World;
 import org.checkerframework.checker.units.qual.C;
 
 import java.io.File;
@@ -64,10 +65,16 @@ public class NetworkManager {
 		});
 		File[] files = networksDir.listFiles();
 		if (files == null) return;
+
+		Map<String, World> worlds = new HashMap<>();
+		minecraftServer.getWorlds().forEach(serverWorld -> {
+			worlds.put(serverWorld.getRegistryKey().getValue().toString(), serverWorld);
+		});
+
 		for (File networkFile : files) {
 			if (!networkFile.getName().endsWith(".dat")) continue;
 			String name = networkFile.getName().substring(0, networkFile.getName().length() - 4);
-			Network<?> network = persistentStateManager.get(nbtCompound -> new NetworkImpl<>(UUID.fromString(name), nbtCompound, minecraftServer), name);
+			Network<?> network = persistentStateManager.get(nbtCompound -> new NetworkImpl<>(UUID.fromString(name), nbtCompound, worlds), name);
 			networks.computeIfAbsent(network.type(), ignore -> new ArrayList<>()).add(network);
 		}
 	}
