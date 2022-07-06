@@ -140,12 +140,12 @@ public class NetworkImpl<C> implements Network<C> {
 	}
 
 	@Override
-	public boolean add(BlockPos pos, NetworkCable<C> networkCable) {
+	public boolean add(World world, BlockPos pos, NetworkCable<C> networkCable) {
 		return false;
 	}
 
 	@Override
-	public boolean remove(BlockPos pos, NetworkCable<C> networkCable) {
+	public boolean remove(World world, BlockPos pos, NetworkCable<C> networkCable) {
 		return false;
 	}
 

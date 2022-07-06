@@ -38,6 +38,6 @@ public interface Network<C> extends Typeable<C> {
 
 	Map<World, Set<BlockPos>> cablePositions();
 
-	boolean add(BlockPos pos, NetworkCable<C> networkCable);
-	boolean remove(BlockPos pos, NetworkCable<C> networkCable);
+	boolean add(World world, BlockPos pos, NetworkCable<C> networkCable);
+	boolean remove(World world, BlockPos pos, NetworkCable<C> networkCable);
 }

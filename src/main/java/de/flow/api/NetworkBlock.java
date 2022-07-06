@@ -2,8 +2,6 @@ package de.flow.api;
 
 import net.minecraft.util.math.Direction;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
