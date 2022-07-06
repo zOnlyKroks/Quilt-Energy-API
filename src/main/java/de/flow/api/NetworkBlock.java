@@ -1,6 +1,8 @@
 package de.flow.api;
 
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -10,6 +12,8 @@ public interface NetworkBlock {
 	default Direction[] ports() {
 		return Direction.values();
 	}
+	BlockPos getPos();
+	World getWorld();
 
 	interface Input<C> extends Unitable<C>, Networkable<C> {
 		C extractableAmount();

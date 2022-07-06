@@ -7,15 +7,14 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Predicate;
 
 public interface Network<C> extends Typeable<C> {
 
 	UUID getId();
 
 	void tick();
-	boolean add(Networkable<C> networkable);
-	boolean remove(Networkable<C> networkable);
+	boolean add(World world, BlockPos blockPos, Networkable<C> networkable);
+	boolean remove(World world, BlockPos blockPos, Networkable<C> networkable);
 
 	default void add(NetworkBlock networkBlock) {
 		iterate(networkBlock, this::add);
@@ -24,19 +23,24 @@ public interface Network<C> extends Typeable<C> {
 		iterate(networkBlock, this::remove);
 	}
 
-	default void iterate(NetworkBlock networkBlock, Predicate<Networkable<C>> consumer) {
+	default void iterate(NetworkBlock networkBlock, TriPredicate<World, BlockPos, Networkable<C>> consumer) {
 		Field[] fields = networkBlock.getClass().getDeclaredFields();
 		for (Field field : fields) {
 			if (field.isAnnotationPresent(RegisterToNetwork.class)) {
 				try {
 					field.setAccessible(true);
 					Networkable<C> networkable = (Networkable<C>) field.get(networkBlock);
-					consumer.test(networkable);
+					consumer.test(networkBlock.getWorld(), networkBlock.getPos(), networkable);
 				} catch (Exception e) {
 					// Ignore
 				}
 			}
 		}
+	}
+
+	@FunctionalInterface
+	interface TriPredicate<A, B, C> {
+		boolean test(A a, B b, C c);
 	}
 
 	Map<World, Set<BlockPos>> cablePositions();

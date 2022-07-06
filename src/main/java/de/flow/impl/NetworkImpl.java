@@ -1,9 +1,12 @@
 package de.flow.impl;
 
 import de.flow.api.*;
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
@@ -17,6 +20,9 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 	private List<NetworkBlock.Input<C>> inputs = new ArrayList<>();
 	private List<NetworkBlock.Output<C>> outputs = new ArrayList<>();
 	private List<NetworkBlock.Output<C>> storageOutputs = new ArrayList<>();
+
+	private Map<World, Set<BlockPos>> cablePositions = new HashMap<>();
+	private Map<World, Set<BlockPos>> io = new HashMap<>();
 
 	public NetworkImpl(Type<C> type) {
 		this(type, UUID.randomUUID());
@@ -112,8 +118,9 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 	}
 
 	@Override
-	public boolean add(Networkable<C> networkable) {
+	public boolean add(World world, BlockPos pos, Networkable<C> networkable) {
 		if (networkable.unit().type() != type) return false;
+		if (io.containsKey(world) && io.get(world).contains(pos)) return false;
 		if (networkable instanceof NetworkBlock.Output<C> output) {
 			if (networkable instanceof NetworkBlock.Input<C> input) {
 				if (!inputs.contains(input)) {
@@ -135,13 +142,19 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			return false;
 		}
 		markDirty();
+		io.computeIfAbsent(world, k -> new HashSet<>()).add(pos);
 		return true;
 	}
 
 	@Override
-	public boolean remove(Networkable<C> networkable) {
+	public boolean remove(World world, BlockPos pos, Networkable<C> networkable) {
 		if (networkable.unit().type() != type) return false;
 		markDirty();
+		if (io.containsKey(world)) {
+			Set<BlockPos> blockPos = io.get(world);
+			blockPos.remove(pos);
+			if (blockPos.isEmpty()) io.remove(world);
+		}
 		if (networkable instanceof NetworkBlock.Output<C>) {
 			outputs.remove(networkable);
 			storageOutputs.remove(networkable);
@@ -154,19 +167,28 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 
 	@Override
 	public Map<World, Set<BlockPos>> cablePositions() {
-		return null;
+		return cablePositions;
 	}
 
 	@Override
 	public boolean add(World world, BlockPos pos, NetworkCable<C> networkCable) {
+		if (networkCable.type() != type) return false;
+		if (cablePositions.containsKey(world) && cablePositions.get(world).contains(pos)) return false;
 		markDirty();
-		return false;
+		cablePositions.computeIfAbsent(world, k -> new HashSet<>()).add(pos);
+		return true;
 	}
 
 	@Override
 	public boolean remove(World world, BlockPos pos, NetworkCable<C> networkCable) {
+		if (networkCable.type() != type) return false;
 		markDirty();
-		return false;
+		if (cablePositions.containsKey(world)) {
+			Set<BlockPos> blockPos = cablePositions.get(world);
+			blockPos.remove(pos);
+			if (blockPos.isEmpty()) cablePositions.remove(world);
+		}
+		return true;
 	}
 
 	@Override
@@ -176,6 +198,38 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 
 	@Override
 	public NbtCompound writeNbt(NbtCompound nbt) {
-		return null;
+		{
+			World world = cablePositions.keySet().iterator().next();
+			BlockPos blockPos = cablePositions.get(world).iterator().next();
+			Block block = world.getBlockState(blockPos).getBlock();
+			if (block instanceof NetworkCable) {
+				nbt.putString("network-type", Registry.BLOCK.getId(block).toUnderscoreSeparatedString());
+			}
+		}
+		NbtList blockPositionsList = new NbtList();
+		for (Map.Entry<World, Set<BlockPos>> cablePositionsEntry : cablePositions.entrySet()) {
+			for (BlockPos blockPos : cablePositionsEntry.getValue()) {
+				NbtCompound element = new NbtCompound();
+				element.putString("world", cablePositionsEntry.getKey().getRegistryKey().getValue().toUnderscoreSeparatedString());
+				element.putInt("x", blockPos.getX());
+				element.putInt("y", blockPos.getY());
+				element.putInt("z", blockPos.getZ());
+				blockPositionsList.add(element);
+			}
+		}
+		nbt.put("cable-positions", blockPositionsList);
+		NbtList ioList = new NbtList();
+		for (Map.Entry<World, Set<BlockPos>> ioEntry : io.entrySet()) {
+			for (BlockPos blockPos : ioEntry.getValue()) {
+				NbtCompound element = new NbtCompound();
+				element.putString("world", ioEntry.getKey().getRegistryKey().getValue().toUnderscoreSeparatedString());
+				element.putInt("x", blockPos.getX());
+				element.putInt("y", blockPos.getY());
+				element.putInt("z", blockPos.getZ());
+				ioList.add(element);
+			}
+		}
+		nbt.put("io", ioList);
+		return nbt;
 	}
 }

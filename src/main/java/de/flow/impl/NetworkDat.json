@@ -1,6 +1,6 @@
 {
   "network-type": "<BLOCK-ID>",
-  "cable-locations": [
+  "cable-positions": [
     {
       "world": "",
       "x": 0,
@@ -8,25 +8,10 @@
       "z": 0
     }
   ],
-  "inputs": [
+  "io": [
     {
-      "world": "",
-      "x": 0,
-      "y": 0,
-      "z": 0
-    }
-  ],
-  "outputs": [
-    {
-      "world": "",
-      "x": 0,
-      "y": 0,
-      "z": 0
-    }
-  ],
-  "stores": [
-    {
-      "world": "",
+      "name": "",
+      "type": "",
       "x": 0,
       "y": 0,
       "z": 0
