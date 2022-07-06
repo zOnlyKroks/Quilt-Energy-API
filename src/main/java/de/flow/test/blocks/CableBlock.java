@@ -11,31 +11,31 @@ import org.quiltmc.qsl.block.extensions.api.QuiltBlockSettings;
 
 public class CableBlock extends Block {
 
-	public static final BooleanProperty NORTH = BooleanProperty.of("north");
-	public static final BooleanProperty EAST = BooleanProperty.of("east");
-	public static final BooleanProperty SOUTH = BooleanProperty.of("south");
-	public static final BooleanProperty WEST = BooleanProperty.of("west");
-	public static final BooleanProperty UP = BooleanProperty.of("up");
-	public static final BooleanProperty DOWN = BooleanProperty.of("down");
+	public static final BooleanProperty CONNECTION_NORTH = BooleanProperty.of("connection_north");
+	public static final BooleanProperty CONNECTION_EAST = BooleanProperty.of("connection_east");
+	public static final BooleanProperty CONNECTION_SOUTH = BooleanProperty.of("connection_south");
+	public static final BooleanProperty CONNECTION_WEST = BooleanProperty.of("connection_west");
+	public static final BooleanProperty CONNECTION_UP = BooleanProperty.of("connection_up");
+	public static final BooleanProperty CONNECTION_DOWN = BooleanProperty.of("connection_down");
 
 	public CableBlock() {
 		super(QuiltBlockSettings.of(Material.METAL).collidable(true).strength(6).hardness(6).requiresTool());
-		this.setDefaultState(this.getStateManager().getDefaultState().with(NORTH, false).with(EAST, false).with(SOUTH, false).with(WEST, false).with(UP, false).with(DOWN, false));
+		this.setDefaultState(this.getStateManager().getDefaultState().with(CONNECTION_NORTH, false).with(CONNECTION_EAST, false).with(CONNECTION_SOUTH, false).with(CONNECTION_WEST, false).with(CONNECTION_UP, false).with(CONNECTION_DOWN, false));
 	}
 
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-		builder.add(NORTH);
-		builder.add(EAST);
-		builder.add(SOUTH);
-		builder.add(WEST);
-		builder.add(UP);
-		builder.add(DOWN);
+		builder.add(CONNECTION_NORTH);
+		builder.add(CONNECTION_EAST);
+		builder.add(CONNECTION_SOUTH);
+		builder.add(CONNECTION_WEST);
+		builder.add(CONNECTION_UP);
+		builder.add(CONNECTION_DOWN);
 	}
 
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		return this.getDefaultState().with(NORTH, false).with(EAST, false).with(SOUTH, false).with(WEST, false).with(UP, false).with(DOWN, false);
+		return this.getDefaultState().with(CONNECTION_NORTH, false).with(CONNECTION_EAST, false).with(CONNECTION_SOUTH, false).with(CONNECTION_WEST, false).with(CONNECTION_UP, false).with(CONNECTION_DOWN, false);
 	}
 }
