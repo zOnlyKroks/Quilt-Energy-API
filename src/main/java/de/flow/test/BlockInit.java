@@ -1,7 +1,10 @@
 package de.flow.test;
 
 import de.flow.FlowApi;
-import de.flow.test.blocks.*;
+import de.flow.test.blocks.BatteryBlock;
+import de.flow.test.blocks.CableBlock;
+import de.flow.test.blocks.LampBlock;
+import de.flow.test.blocks.SolarPanelBlock;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.util.Identifier;
@@ -18,6 +21,9 @@ public class BlockInit {
 	public static final Block BATTERY_BLOCK;
 	public static final BlockItem BATTERY_ITEM;
 
+	public static final Block CABLE_BLOCK;
+	public static final BlockItem CABLE_ITEM;
+
 	static {
 		SOLAR_PANEL_BLOCK = registerBlock("solar_panel_block", new SolarPanelBlock());
 		SOLAR_PANEL_ITEM = registerBlockItem("solar_panel_block", SOLAR_PANEL_BLOCK);
@@ -27,6 +33,9 @@ public class BlockInit {
 
 		BATTERY_BLOCK = registerBlock("battery_block", new BatteryBlock());
 		BATTERY_ITEM = registerBlockItem("battery_block", BATTERY_BLOCK);
+
+		CABLE_BLOCK = registerBlock("cable_block", new CableBlock());
+		CABLE_ITEM = registerBlockItem("cable_block", CABLE_BLOCK);
 	}
 
 	private static Block registerBlock(String id, Block value) {
