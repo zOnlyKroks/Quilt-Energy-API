@@ -8,11 +8,19 @@ import de.flow.test.BlockEntityInit;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class SolarPanelEntity extends BlockEntity implements NetworkBlock {
 
 	private double storedAmount = 0;
+
+	private static final Direction[] PORTS = new Direction[] { Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.DOWN };
+
+	@Override
+	public Direction[] ports() {
+		return PORTS;
+	}
 
 	public static void tick(World world, BlockPos pos, BlockState state, SolarPanelEntity solarPanelEntity) {
 		solarPanelEntity.setWorld(world);
