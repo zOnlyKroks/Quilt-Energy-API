@@ -6,7 +6,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -28,12 +27,9 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 	private Map<World, Set<BlockPos>> io = new HashMap<>();
 
 	public NetworkImpl(Type<C> type) {
-		this(type, UUID.randomUUID());
-	}
-
-	NetworkImpl(Type<C> type, UUID uuid) {
 		this.type = type;
-		this.uuid = uuid;
+		this.uuid = UUID.randomUUID();
+		markDirty();
 	}
 
 	NetworkImpl(UUID uuid, NbtCompound nbtCompound, Map<String, World> worlds) {
@@ -43,8 +39,8 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			throw new IllegalArgumentException("Block not found: " + nbtCompound.getString("network-type"));
 		}
 		this.type = ((NetworkCable<C>) block.get()).type();
-		this.cablePositions = convertBlocks(nbtCompound.getList("cable-positions", NbtElement.LIST_TYPE), worlds);
-		this.io = convertBlocks(nbtCompound.getList("io", NbtElement.LIST_TYPE), worlds);
+		this.cablePositions = convertBlocks(nbtCompound.getList("cable-positions", NbtElement.COMPOUND_TYPE), worlds);
+		this.io = convertBlocks(nbtCompound.getList("io", NbtElement.COMPOUND_TYPE), worlds);
 		for (Map.Entry<World, Set<BlockPos>> ioEntry : io.entrySet()) {
 			for (BlockPos pos : ioEntry.getValue()) {
 				BlockEntity blockEntity = ioEntry.getKey().getBlockEntity(pos);
@@ -258,5 +254,21 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			blockPositions.computeIfAbsent(world, k -> new HashSet<>()).add(blockPos);
 		}
 		return blockPositions;
+	}
+
+	@Override
+	public void merge(Network<C> network) {
+		if (network.type() != type) return;
+		NetworkImpl<C> networkImpl = (NetworkImpl<C>) network;
+		inputs.addAll(networkImpl.inputs);
+		outputs.addAll(networkImpl.outputs);
+		storageOutputs.addAll(networkImpl.storageOutputs);
+		networkImpl.cablePositions.forEach((world, blockPositions) -> {
+			cablePositions.computeIfAbsent(world, k -> new HashSet<>()).addAll(blockPositions);
+		});
+		networkImpl.io.forEach((world, blockPositions) -> {
+			io.computeIfAbsent(world, k -> new HashSet<>()).addAll(blockPositions);
+		});
+		this.markDirty();
 	}
 }

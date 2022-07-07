@@ -2,7 +2,6 @@ package de.flow.api;
 
 import de.flow.impl.NetworkManager;
 import lombok.experimental.UtilityClass;
-import net.minecraft.world.PersistentState;
 
 import java.util.List;
 import java.util.UUID;
@@ -10,11 +9,11 @@ import java.util.UUID;
 @UtilityClass
 public class Networks {
 
-	public <T extends PersistentState & Network<C>, C> void add(T network) {
+	public <T extends Network<C>, C> void add(T network) {
 		NetworkManager.add(network);
 	}
 
-	public <T extends PersistentState & Network<C>, C> void remove(T network) {
+	public <T extends Network<C>, C> void remove(T network) {
 		NetworkManager.remove(network);
 	}
 

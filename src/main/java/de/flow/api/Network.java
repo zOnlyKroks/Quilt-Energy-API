@@ -4,6 +4,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -47,4 +48,6 @@ public interface Network<C> extends Typeable<C> {
 
 	boolean add(World world, BlockPos pos, NetworkCable<C> networkCable);
 	boolean remove(World world, BlockPos pos, NetworkCable<C> networkCable);
+
+	void merge(Network<C> network);
 }

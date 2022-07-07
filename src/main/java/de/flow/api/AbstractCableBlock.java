@@ -1,5 +1,7 @@
 package de.flow.api;
 
+import de.flow.impl.NetworkImpl;
+import de.flow.impl.NetworkManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -13,6 +15,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractCableBlock<C> extends Block implements NetworkCable<C> {
 
@@ -60,11 +65,32 @@ public abstract class AbstractCableBlock<C> extends Block implements NetworkCabl
 
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+		List<Network<C>> surroundingNetworks = new ArrayList<>();
 		for (Direction direction : Direction.values()) {
 			BlockPos blockPos = pos.offset(direction);
+			if (!world.isClient) {
+				Network<C> network = NetworkManager.get(type(), world, blockPos);
+				if (network != null && !surroundingNetworks.contains(network)) surroundingNetworks.add(network);
+			}
 			if (tryAddingAndCheckingConnection(world, blockPos, direction(direction.getOpposite()), true, direction, type())) {
 				state = state.with(direction(direction), true);
 			}
+		}
+		if (!world.isClient) {
+			Network<C> network;
+			if (surroundingNetworks.isEmpty()) {
+				network = new NetworkImpl<>(type());
+				Networks.add(network);
+			} else {
+				network = surroundingNetworks.get(0);
+				for (int i = 1; i < surroundingNetworks.size(); i++) {
+					Network<C> surroundingNetwork = surroundingNetworks.get(i);
+					network.merge(surroundingNetwork);
+					Networks.remove(surroundingNetwork);
+				}
+			}
+			network.add(world, pos, this);
+			// TODO: Check for AbstractNetworkBlock's
 		}
 		state = state.with(SHOW_BASE, shouldShowBase(state));
 		world.setBlockState(pos, state);
@@ -72,6 +98,7 @@ public abstract class AbstractCableBlock<C> extends Block implements NetworkCabl
 
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+		// Remove and split networks
 		for (Direction direction : Direction.values()) {
 			BlockPos blockPos = pos.offset(direction);
 			if (tryAddingAndCheckingConnection(world, blockPos, direction(direction.getOpposite()), false, direction, type())) {

@@ -16,6 +16,7 @@ import net.minecraft.world.World;
 import org.checkerframework.checker.units.qual.C;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 @UtilityClass
@@ -26,15 +27,23 @@ public class NetworkManager {
 	private File networksDir;
 	private PersistentStateManager persistentStateManager;
 
-	public <T extends PersistentState & Network<C>, C> void add(T network) {
+	public <T extends Network<C>, C> void add(T network) {
+		if (!(network instanceof PersistentState)) return;
 		networks.computeIfAbsent(network.type(), ignore -> new ArrayList<>()).add(network);
-		persistentStateManager.set(network.getId().toString(), network);
+		persistentStateManager.set(network.getId().toString(), (PersistentState) network);
+		try {
+			File file = new File(networksDir, network.getId().toString() + ".dat");
+			if (!file.exists()) file.createNewFile();
+		} catch (IOException e) {
+			// Ignore
+		}
 	}
 
-	public <T extends PersistentState & Network<C>, C> void remove(T network) {
+	public <T extends Network<C>, C> void remove(T network) {
+		if (!(network instanceof PersistentState)) return;
 		networks.computeIfAbsent(network.type(), ignore -> new ArrayList<>()).remove(network);
 		persistentStateManager.set(network.getId().toString(), null);
-		new File(networksDir, network.getId().toString()).delete();
+		new File(networksDir, network.getId().toString() + ".dat").delete();
 	}
 
 	public List<Type<?>> types() {
@@ -73,6 +82,7 @@ public class NetworkManager {
 	public void loadNetworks(File networksDir, MinecraftServer minecraftServer) {
 		if (persistentStateManager != null) return;
 		NetworkManager.networksDir = networksDir;
+		networksDir.mkdirs();
 		FlowApi.LOGGER.info("Loading networks...");
 		persistentStateManager = new PersistentStateManager(networksDir, new DataFixer() {
 			@Override
