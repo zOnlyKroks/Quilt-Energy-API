@@ -1,0 +1,60 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "quilt-flow-api:block/cable_block_base"
+      },
+      "when": {
+        "show_base": true
+      }
+    },
+    {
+      "apply": {
+        "model": "quilt-flow-api:block/cable_block_connection_up"
+      },
+      "when": {
+        "connection_up": true
+      }
+    },
+    {
+      "apply": {
+        "model": "quilt-flow-api:block/cable_block_connection_down"
+      },
+      "when": {
+        "connection_down": true
+      }
+    },
+    {
+      "apply": {
+        "model": "quilt-flow-api:block/cable_block_connection_north"
+      },
+      "when": {
+        "connection_north": true
+      }
+    },
+    {
+      "apply": {
+        "model": "quilt-flow-api:block/cable_block_connection_south"
+      },
+      "when": {
+        "connection_south": true
+      }
+    },
+    {
+      "apply": {
+        "model": "quilt-flow-api:block/cable_block_connection_east"
+      },
+      "when": {
+        "connection_east": true
+      }
+    },
+    {
+      "apply": {
+        "model": "quilt-flow-api:block/cable_block_connection_west"
+      },
+      "when": {
+        "connection_west": true
+      }
+    }
+  ]
+}

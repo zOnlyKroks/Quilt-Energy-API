@@ -1,0 +1,15 @@
+{
+  "parent": "quilt-flow-api:block/cable_block_textures",
+  "elements": [
+    {
+      "from": [8, 7, 7],
+      "to": [16, 9, 9],
+      "faces": {
+        "north": {"uv": [4, 0, 12, 2], "texture": "#connection"},
+        "south": {"uv": [4, 0, 12, 2], "texture": "#connection"},
+        "up": {"uv": [4, 0, 12, 2], "texture": "#connection"},
+        "down": {"uv": [4, 0, 12, 2], "texture": "#connection"}
+      }
+    }
+  ]
+}

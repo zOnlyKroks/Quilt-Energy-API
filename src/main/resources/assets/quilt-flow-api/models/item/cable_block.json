@@ -1,0 +1,28 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "side": "quilt-flow-api:item/cable_block",
+    "particle": "quilt-flow-api:item/cable_block"
+  },
+  "elements": [
+    {
+      "from": [7, 7, 5],
+      "to": [9, 9, 11],
+      "faces": {
+        "north": {"uv": [0, 0, 2, 2], "rotation": 180, "texture": "#side"},
+        "east": {"uv": [2, 0, 8, 2], "rotation": 180, "texture": "#side"},
+        "south": {"uv": [0, 0, 2, 2], "rotation": 180, "texture": "#side"},
+        "west": {"uv": [2, 0, 8, 2], "rotation": 180, "texture": "#side"},
+        "up": {"uv": [0, 2, 2, 8], "rotation": 180, "texture": "#side"},
+        "down": {"uv": [0, 2, 2, 8], "rotation": 180, "texture": "#side"}
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [ 30, 225, 0 ],
+      "translation": [ 0, 0, 0],
+      "scale":[ 1.75, 1.75, 1.75]
+    }
+  }
+}
