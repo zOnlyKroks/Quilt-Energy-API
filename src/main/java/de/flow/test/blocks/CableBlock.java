@@ -67,22 +67,22 @@ public class CableBlock extends Block implements Waterloggable {
 
 		// Up
 		temp_pos.set(x, y + 1, z);
-		updateConnectionState(world, temp_pos, CONNECTION_DOWN, false);
+		tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_DOWN, false);
 		// Down
 		temp_pos.set(x, y - 1, z);
-		updateConnectionState(world, temp_pos, CONNECTION_UP, false);
+		tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_UP, false);
 		// North
 		temp_pos.set(x, y, z + 1);
-		updateConnectionState(world, temp_pos, CONNECTION_NORTH, false);
+		tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_NORTH, false);
 		// South
 		temp_pos.set(x, y, z - 1);
-		updateConnectionState(world, temp_pos, CONNECTION_SOUTH, false);
+		tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_SOUTH, false);
 		// East
 		temp_pos.set(x + 1, y, z);
-		updateConnectionState(world, temp_pos, CONNECTION_WEST, false);
+		tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_WEST, false);
 		// West
 		temp_pos.set(x - 1, y, z);
-		updateConnectionState(world, temp_pos, CONNECTION_EAST, false);
+		tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_EAST, false);
 		super.onBreak(world, pos, state, player);
 	}
 
@@ -95,58 +95,40 @@ public class CableBlock extends Block implements Waterloggable {
 
 		// Up
 		temp_pos.set(x, y + 1, z);
-		if (updateConnectionState(world, temp_pos, CONNECTION_DOWN, true)) {
+		if (tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_DOWN, true)) {
 			state = state.with(CONNECTION_UP, true);
 		}
 		// Down
 		temp_pos.set(x, y - 1, z);
-		if (updateConnectionState(world, temp_pos, CONNECTION_UP, true)) {
+		if (tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_UP, true)) {
 			state = state.with(CONNECTION_DOWN, true);
 		}
 		// North
 		temp_pos.set(x, y, z + 1);
-		if (updateConnectionState(world, temp_pos, CONNECTION_NORTH, true)) {
+		if (tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_NORTH, true)) {
 			state = state.with(CONNECTION_SOUTH, true);
 		}
 		// South
 		temp_pos.set(x, y, z - 1);
-		if (updateConnectionState(world, temp_pos, CONNECTION_SOUTH, true)) {
+		if (tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_SOUTH, true)) {
 			state = state.with(CONNECTION_NORTH, true);
 		}
 		// East
 		temp_pos.set(x + 1, y, z);
-		if (updateConnectionState(world, temp_pos, CONNECTION_WEST, true)) {
+		if (tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_WEST, true)) {
 			state = state.with(CONNECTION_EAST, true);
 		}
 		// West
 		temp_pos.set(x - 1, y, z);
-		if (updateConnectionState(world, temp_pos, CONNECTION_EAST, true)) {
+		if (tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_EAST, true)) {
 			state = state.with(CONNECTION_WEST, true);
 		}
-
-		final boolean east = state.get(CONNECTION_EAST);
-		final boolean west = state.get(CONNECTION_WEST);
-		final boolean north = state.get(CONNECTION_NORTH);
-		final boolean south = state.get(CONNECTION_SOUTH);
-		final boolean up = state.get(CONNECTION_UP);
-		final boolean down = state.get(CONNECTION_DOWN);
-		boolean show_base = true;
-
-		if ((east && west) && !(north || south) && !(up || down)) {
-			show_base = false;
-		}
-		else if (!(east || west) && (north && south) && !(up || down)) {
-			show_base = false;
-		}
-		else if (!(east || west) && !(north || south) && (up && down)) {
-			show_base = false;
-		}
-		state = state.with(SHOW_BASE, show_base);
+		state = state.with(SHOW_BASE, shouldShowBase(state));
 		world.setBlockState(pos, state);
 		super.onPlaced(world, pos, state, placer, itemStack);
 	}
 
-	public static boolean updateConnectionState(World world, BlockPos.Mutable pos, BooleanProperty property, boolean value) {
+	public static boolean tryAddingAndCheckingConnection(World world, BlockPos.Mutable pos, BooleanProperty property, boolean value) {
 		BlockState state = world.getBlockState(pos);
 
 		if (!(state.getBlock() instanceof CableBlock)) {
@@ -155,26 +137,29 @@ public class CableBlock extends Block implements Waterloggable {
 		state = state.with(property, value);
 
 		if (!property.getName().equals(SHOW_BASE.getName())) {
-			final boolean east = state.get(CONNECTION_EAST);
-			final boolean west = state.get(CONNECTION_WEST);
-			final boolean north = state.get(CONNECTION_NORTH);
-			final boolean south = state.get(CONNECTION_SOUTH);
-			final boolean up = state.get(CONNECTION_UP);
-			final boolean down = state.get(CONNECTION_DOWN);
-			boolean show_base = true;
-
-			if ((east && west) && !(north || south) && !(up || down)) {
-				show_base = false;
-			}
-			else if (!(east || west) && (north && south) && !(up || down)) {
-				show_base = false;
-			}
-			else if (!(east || west) && !(north || south) && (up && down)) {
-				show_base = false;
-			}
-			state = state.with(SHOW_BASE, show_base);
+			state = state.with(SHOW_BASE, shouldShowBase(state));
 		}
 		world.setBlockState(pos, state);
+		return true;
+	}
+
+	public static boolean shouldShowBase(BlockState state) {
+		final boolean east = state.get(CONNECTION_EAST);
+		final boolean west = state.get(CONNECTION_WEST);
+		final boolean north = state.get(CONNECTION_NORTH);
+		final boolean south = state.get(CONNECTION_SOUTH);
+		final boolean up = state.get(CONNECTION_UP);
+		final boolean down = state.get(CONNECTION_DOWN);
+
+		if ((east && west) && !(north || south) && !(up || down)) {
+			return false;
+		}
+		else if (!(east || west) && (north && south) && !(up || down)) {
+			return false;
+		}
+		else if (!(east || west) && !(north || south) && (up && down)) {
+			return false;
+		}
 		return true;
 	}
 
