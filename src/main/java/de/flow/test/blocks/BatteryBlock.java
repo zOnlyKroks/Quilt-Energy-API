@@ -1,20 +1,19 @@
 package de.flow.test.blocks;
 
+import de.flow.api.AbstractNetworkBlock;
 import de.flow.test.BlockEntityInit;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.block.extensions.api.QuiltBlockSettings;
 
-public class BatteryBlock extends BlockWithEntity {
+public class BatteryBlock extends AbstractNetworkBlock {
 	public BatteryBlock() {
 		super(QuiltBlockSettings.of(Material.METAL).collidable(true).strength(6).hardness(6).requiresTool());
 	}
@@ -34,11 +33,5 @@ public class BatteryBlock extends BlockWithEntity {
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
 		return checkType(type, BlockEntityInit.BATTERY_ENTITY, BatteryEntity::tick);
-	}
-
-	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		BlockEntityInit.network.remove(((BatteryEntity) world.getBlockEntity(pos)));
-		super.onBreak(world, pos, state, player);
 	}
 }
