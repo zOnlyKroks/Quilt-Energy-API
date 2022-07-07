@@ -15,7 +15,7 @@ public class SolarPanelEntity extends BlockEntity implements NetworkBlock {
 
 	private double storedAmount = 0;
 
-	private static final Direction[] PORTS = new Direction[] { Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.DOWN };
+	private static final Direction[] PORTS = new Direction[] { Direction.DOWN };
 
 	@Override
 	public Direction[] ports() {
