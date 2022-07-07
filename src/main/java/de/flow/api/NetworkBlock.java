@@ -4,6 +4,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
+import java.lang.reflect.Field;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -14,6 +15,20 @@ public interface NetworkBlock {
 	}
 	BlockPos getPos();
 	World getWorld();
+
+	default boolean hasType(Type<?> type) {
+		for (Field field : this.getClass().getDeclaredFields()) {
+			if (!field.isAnnotationPresent(RegisterToNetwork.class)) continue;
+			try {
+				field.setAccessible(true);
+				Unitable<?> unitable = (Unitable<?>) field.get(this);
+				if (unitable.unit().type() == type) return true;
+			} catch (Exception e) {
+				// ignore
+			}
+		}
+		return false;
+	}
 
 	interface Input<C> extends Unitable<C>, Networkable<C> {
 		C extractableAmount();

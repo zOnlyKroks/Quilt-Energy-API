@@ -1,10 +1,12 @@
 package de.flow.test.blocks;
 
 import com.google.common.util.concurrent.AtomicDouble;
+import de.flow.api.NetworkBlock;
 import de.flow.api.NetworkCable;
 import de.flow.api.Type;
 import de.flow.api.Utils;
 import net.minecraft.block.*;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
@@ -85,8 +87,13 @@ public class CableBlock extends Block implements NetworkCable<AtomicDouble>, Wat
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		for (Direction direction : Direction.values()) {
-			tryAddingAndCheckingConnection(world, pos, direction(direction), false, type());
+			BlockPos blockPos = pos.offset(direction);
+			if (tryAddingAndCheckingConnection(world, blockPos, direction(direction.getOpposite()), false, direction, type())) {
+				state = state.with(direction(direction), false);
+			}
 		}
+		state = state.with(SHOW_BASE, shouldShowBase(state));
+		world.setBlockState(pos, state);
 		super.onBreak(world, pos, state, player);
 	}
 
@@ -94,7 +101,7 @@ public class CableBlock extends Block implements NetworkCable<AtomicDouble>, Wat
 	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
 		for (Direction direction : Direction.values()) {
 			BlockPos blockPos = pos.offset(direction);
-			if (tryAddingAndCheckingConnection(world, blockPos, direction(direction), true, type())) {
+			if (tryAddingAndCheckingConnection(world, blockPos, direction(direction.getOpposite()), true, direction, type())) {
 				state = state.with(direction(direction), true);
 			}
 		}
@@ -103,23 +110,40 @@ public class CableBlock extends Block implements NetworkCable<AtomicDouble>, Wat
 		super.onPlaced(world, pos, state, placer, itemStack);
 	}
 
-	public static boolean tryAddingAndCheckingConnection(World world, BlockPos pos, BooleanProperty property, boolean value, Type<?> type) {
+	public static boolean tryAddingAndCheckingConnection(World world, BlockPos pos, BooleanProperty property, boolean value, Direction direction, Type<?> type) {
 		BlockState state = world.getBlockState(pos);
 
 		Block block = state.getBlock();
-		if (!(block instanceof NetworkCable<?> networkCable)) {
-			return false;
-		}
-		if (networkCable.type() != type) {
-			return false;
-		}
-		state = state.with(property, value);
+		if (block instanceof NetworkCable<?> networkCable) {
+			if (networkCable.type() != type) {
+				return false;
+			}
+			state = state.with(property, value);
 
-		if (!property.getName().equals(SHOW_BASE.getName())) {
-			state = state.with(SHOW_BASE, shouldShowBase(state));
+			if (!property.getName().equals(SHOW_BASE.getName())) {
+				state = state.with(SHOW_BASE, shouldShowBase(state));
+			}
+			world.setBlockState(pos, state);
+			return true;
 		}
-		world.setBlockState(pos, state);
-		return true;
+		BlockEntity blockEntity = world.getBlockEntity(pos);
+		if (blockEntity instanceof NetworkBlock networkBlock) {
+			if (!contains(networkBlock.ports(), direction.getOpposite())) {
+				return false;
+			}
+			return networkBlock.hasType(type);
+		} else {
+			return false;
+		}
+	}
+
+	private static boolean contains(Direction[] directions, Direction direction) {
+		for (Direction d : directions) {
+			if (d == direction) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static boolean shouldShowBase(BlockState state) {
