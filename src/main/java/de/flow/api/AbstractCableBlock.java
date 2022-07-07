@@ -83,8 +83,8 @@ public abstract class AbstractCableBlock<C> extends Block implements NetworkCabl
 		super.onBreak(world, pos, state, player);
 	}
 
-	public void recalculateDirection(World world, BlockPos pos, Direction direction, boolean place) {
-		tryAddingAndCheckingConnection(world, pos, direction(direction.getOpposite()), place, direction, type());
+	public boolean recalculateDirection(World world, BlockPos pos, Direction direction, boolean place) {
+		return tryAddingAndCheckingConnection(world, pos, direction(direction.getOpposite()), place, direction, type());
 	}
 
 	public static boolean tryAddingAndCheckingConnection(World world, BlockPos pos, BooleanProperty property, boolean value, Direction direction, Type<?> type) {

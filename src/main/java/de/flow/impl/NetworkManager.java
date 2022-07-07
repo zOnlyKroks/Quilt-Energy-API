@@ -9,6 +9,7 @@ import de.flow.api.Network;
 import de.flow.api.Type;
 import lombok.experimental.UtilityClass;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.World;
@@ -44,8 +45,29 @@ public class NetworkManager {
 		return (List<T>) networks.getOrDefault(type, Collections.emptyList());
 	}
 
+	public <T extends Network<C>, C> T get(World world, BlockPos blockPos) {
+		for (Type<?> type : networks.keySet()) {
+			Network<?> network = get(type, world, blockPos);
+			if (network != null) {
+				return (T) network;
+			}
+		}
+		return null;
+	}
+
+	public <T extends Network<C>, C> T get(Type<C> type, World world, BlockPos blockPos) {
+		return (T) networks.getOrDefault(type, Collections.emptyList()).stream().filter(network -> {
+			if (!network.cablePositions().containsKey(world)) return false;
+			return network.cablePositions().get(world).contains(blockPos);
+		}).findFirst().orElse(null);
+	}
+
 	public <T extends Network<C>, C> T get(UUID uuid) {
 		return (T) networks.values().stream().flatMap(Collection::stream).filter(network -> network.getId().equals(uuid)).findFirst().orElse(null);
+	}
+
+	public void tick() {
+		networks.values().stream().flatMap(Collection::stream).forEach(Network::tick);
 	}
 
 	public void loadNetworks(File networksDir, MinecraftServer minecraftServer) {

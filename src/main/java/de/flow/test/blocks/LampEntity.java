@@ -18,7 +18,6 @@ public class LampEntity extends BlockEntity implements NetworkBlock {
 	private double gotAmount = 0;
 
 	public static void tick(World world, BlockPos pos, BlockState state, LampEntity lampEntity) {
-		lampEntity.setWorld(world);
 		if (!world.isClient) {
 			state = state.with(LIGHT_LEVEL, Math.max(Math.min((int) lampEntity.gotAmount, 15), 0));
 			world.setBlockState(pos, state);
@@ -32,14 +31,5 @@ public class LampEntity extends BlockEntity implements NetworkBlock {
 
 	public LampEntity(BlockPos blockPos, BlockState blockState) {
 		super(BlockEntityInit.LAMP_ENTITY, blockPos, blockState);
-	}
-
-	@Override
-	public void setWorld(World world) {
-		if (getWorld() != null) return;
-		super.setWorld(world);
-		if (!world.isClient()) {
-			BlockEntityInit.network.add(this);
-		}
 	}
 }

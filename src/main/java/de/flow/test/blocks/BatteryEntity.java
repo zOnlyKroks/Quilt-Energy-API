@@ -9,15 +9,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 public class BatteryEntity extends BlockEntity implements NetworkBlock {
 
 	private double storedAmount = 0;
-
-	public static void tick(World world, BlockPos pos, BlockState state, BatteryEntity lampEntity) {
-		lampEntity.setWorld(world);
-	}
 
 	private Unit<AtomicDouble> unit = Unit.energyUnit(1);
 
@@ -41,14 +36,5 @@ public class BatteryEntity extends BlockEntity implements NetworkBlock {
 	@Override
 	protected void writeNbt(NbtCompound nbt) {
 		nbt.putDouble("storedAmount", storedAmount);
-	}
-
-	@Override
-	public void setWorld(World world) {
-		if (getWorld() != null) return;
-		super.setWorld(world);
-		if (!world.isClient()) {
-			BlockEntityInit.network.add(this);
-		}
 	}
 }

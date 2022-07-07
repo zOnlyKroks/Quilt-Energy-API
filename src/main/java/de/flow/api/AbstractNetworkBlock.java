@@ -19,6 +19,7 @@ public abstract class AbstractNetworkBlock extends BlockWithEntity {
 
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+		// System.out.println("PLACE: " + world.getBlockEntity(pos));
 		for (Direction direction : Direction.values()) {
 			BlockPos blockPos = pos.offset(direction);
 			Block block = world.getBlockState(blockPos).getBlock();
@@ -30,6 +31,7 @@ public abstract class AbstractNetworkBlock extends BlockWithEntity {
 
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+		// System.out.println("BREAK: " + world.getBlockEntity(pos));
 		for (Direction direction : Direction.values()) {
 			BlockPos blockPos = pos.offset(direction);
 			Block block = world.getBlockState(blockPos).getBlock();
