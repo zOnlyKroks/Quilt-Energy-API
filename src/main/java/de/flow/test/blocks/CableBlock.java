@@ -1,5 +1,9 @@
 package de.flow.test.blocks;
 
+import com.google.common.util.concurrent.AtomicDouble;
+import de.flow.api.NetworkCable;
+import de.flow.api.Type;
+import de.flow.api.Utils;
 import net.minecraft.block.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,6 +16,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -24,7 +29,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 
-public class CableBlock extends Block implements Waterloggable {
+public class CableBlock extends Block implements NetworkCable<AtomicDouble>, Waterloggable {
 
 	private static final BooleanProperty CONNECTION_NORTH = BooleanProperty.of("connection_north");
 	private static final BooleanProperty CONNECTION_EAST = BooleanProperty.of("connection_east");
@@ -34,6 +39,25 @@ public class CableBlock extends Block implements Waterloggable {
 	private static final BooleanProperty CONNECTION_DOWN = BooleanProperty.of("connection_down");
 	private static final BooleanProperty SHOW_BASE = BooleanProperty.of("show_base");
 	private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+
+	private static BooleanProperty direction(Direction direction) {
+		switch (direction) {
+			case NORTH:
+				return CONNECTION_NORTH;
+			case EAST:
+				return CONNECTION_EAST;
+			case SOUTH:
+				return CONNECTION_SOUTH;
+			case WEST:
+				return CONNECTION_WEST;
+			case UP:
+				return CONNECTION_UP;
+			case DOWN:
+				return CONNECTION_DOWN;
+			default:
+				throw new IllegalArgumentException("Unknown direction: " + direction);
+		}
+	}
 
 	private static final Map<BlockState, VoxelShape> SHAPE_CACHE = new IdentityHashMap<>();
 
@@ -60,78 +84,33 @@ public class CableBlock extends Block implements Waterloggable {
 
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		BlockPos.Mutable temp_pos = new BlockPos.Mutable();
-		int x = pos.getX();
-		int y = pos.getY();
-		int z = pos.getZ();
-
-		// Up
-		temp_pos.set(x, y + 1, z);
-		tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_DOWN, false);
-		// Down
-		temp_pos.set(x, y - 1, z);
-		tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_UP, false);
-		// North
-		temp_pos.set(x, y, z + 1);
-		tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_NORTH, false);
-		// South
-		temp_pos.set(x, y, z - 1);
-		tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_SOUTH, false);
-		// East
-		temp_pos.set(x + 1, y, z);
-		tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_WEST, false);
-		// West
-		temp_pos.set(x - 1, y, z);
-		tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_EAST, false);
+		for (Direction direction : Direction.values()) {
+			tryAddingAndCheckingConnection(world, pos, direction(direction), false, type());
+		}
 		super.onBreak(world, pos, state, player);
 	}
 
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-		BlockPos.Mutable temp_pos = new BlockPos.Mutable();
-		int x = pos.getX();
-		int y = pos.getY();
-		int z = pos.getZ();
-
-		// Up
-		temp_pos.set(x, y + 1, z);
-		if (tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_DOWN, true)) {
-			state = state.with(CONNECTION_UP, true);
-		}
-		// Down
-		temp_pos.set(x, y - 1, z);
-		if (tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_UP, true)) {
-			state = state.with(CONNECTION_DOWN, true);
-		}
-		// North
-		temp_pos.set(x, y, z + 1);
-		if (tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_NORTH, true)) {
-			state = state.with(CONNECTION_SOUTH, true);
-		}
-		// South
-		temp_pos.set(x, y, z - 1);
-		if (tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_SOUTH, true)) {
-			state = state.with(CONNECTION_NORTH, true);
-		}
-		// East
-		temp_pos.set(x + 1, y, z);
-		if (tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_WEST, true)) {
-			state = state.with(CONNECTION_EAST, true);
-		}
-		// West
-		temp_pos.set(x - 1, y, z);
-		if (tryAddingAndCheckingConnection(world, temp_pos, CONNECTION_EAST, true)) {
-			state = state.with(CONNECTION_WEST, true);
+		for (Direction direction : Direction.values()) {
+			BlockPos blockPos = pos.offset(direction);
+			if (tryAddingAndCheckingConnection(world, blockPos, direction(direction), true, type())) {
+				state = state.with(direction(direction), true);
+			}
 		}
 		state = state.with(SHOW_BASE, shouldShowBase(state));
 		world.setBlockState(pos, state);
 		super.onPlaced(world, pos, state, placer, itemStack);
 	}
 
-	public static boolean tryAddingAndCheckingConnection(World world, BlockPos.Mutable pos, BooleanProperty property, boolean value) {
+	public static boolean tryAddingAndCheckingConnection(World world, BlockPos pos, BooleanProperty property, boolean value, Type<?> type) {
 		BlockState state = world.getBlockState(pos);
 
-		if (!(state.getBlock() instanceof CableBlock)) {
+		Block block = state.getBlock();
+		if (!(block instanceof NetworkCable<?> networkCable)) {
+			return false;
+		}
+		if (networkCable.type() != type) {
 			return false;
 		}
 		state = state.with(property, value);
@@ -153,11 +132,9 @@ public class CableBlock extends Block implements Waterloggable {
 
 		if ((east && west) && !(north || south) && !(up || down)) {
 			return false;
-		}
-		else if (!(east || west) && (north && south) && !(up || down)) {
+		} else if (!(east || west) && (north && south) && !(up || down)) {
 			return false;
-		}
-		else if (!(east || west) && !(north || south) && (up && down)) {
+		} else if (!(east || west) && !(north || south) && (up && down)) {
 			return false;
 		}
 		return true;
@@ -207,5 +184,10 @@ public class CableBlock extends Block implements Waterloggable {
 	@Override
 	public FluidState getFluidState(BlockState state) {
 		return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
+	}
+
+	@Override
+	public Type<AtomicDouble> type() {
+		return Utils.ENERGY_TYPE;
 	}
 }
