@@ -7,11 +7,17 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.io.File;
 
 @Mixin(MinecraftServer.class)
 public class MinecraftServerMixin {
+
+	@Inject(method = "saveAllWorlds", at = @At("HEAD"))
+	public void saveAllWorlds(boolean suppressLogs, boolean flush, boolean force, CallbackInfoReturnable<Boolean> cir) {
+		NetworkManager.save();
+	}
 
 	@Inject(method = "shutdown", at = @At("HEAD"))
 	public void shutdown(CallbackInfo ci) {

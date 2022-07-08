@@ -111,10 +111,16 @@ public class NetworkManager {
 		}
 	}
 
+	public void save() {
+		if (persistentStateManager == null) return;
+		FlowApi.LOGGER.info("Saving networks...");
+		persistentStateManager.save();
+	}
+
 	public void unloadNetworks() {
 		if (persistentStateManager == null) return;
+		save();
 		FlowApi.LOGGER.info("Unloading networks...");
-		persistentStateManager.save();
 		persistentStateManager = null;
 		networks.clear();
 	}

@@ -98,14 +98,18 @@ public abstract class AbstractCableBlock<C> extends Block implements NetworkCabl
 
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		List<Network<C>> surroundingNetworks = new ArrayList<>();
+		Network<C> surroundingNetwork = null;
+		List<BlockPos> blockPoss = new ArrayList<>();
 		int cableCount = 0;
 		for (Direction direction : Direction.values()) {
 			BlockPos blockPos = pos.offset(direction);
 			if (!world.isClient) {
 				Network<C> network = NetworkManager.get(type(), world, blockPos);
-				if (network != null && !surroundingNetworks.contains(network)) surroundingNetworks.add(network);
-				cableCount++;
+				if (network != null) {
+					surroundingNetwork = network;
+					cableCount++;
+					blockPoss.add(blockPos);
+				}
 			}
 			if (tryAddingAndCheckingConnection(world, blockPos, direction(direction.getOpposite()), false, direction, type())) {
 				state = state.with(direction(direction), false);
@@ -114,12 +118,13 @@ public abstract class AbstractCableBlock<C> extends Block implements NetworkCabl
 		if (!world.isClient) {
 			if (cableCount == 0) {
 				Networks.remove(NetworkManager.get(type(), world, pos));
-			} else if (cableCount == 1) {
-				Network<C> network = surroundingNetworks.get(0);
-				network.remove(world, pos, this);
 			} else {
-				throw new SecurityException();
+				surroundingNetwork.remove(world, pos, this);
+				if (cableCount > 1) {
+					surroundingNetwork.split(world, blockPoss);
+				}
 			}
+			// TODO: Check for AbstractNetworkBlock's
 		}
 		state = state.with(SHOW_BASE, shouldShowBase(state));
 		world.setBlockState(pos, state);

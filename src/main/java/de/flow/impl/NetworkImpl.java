@@ -8,6 +8,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
@@ -158,6 +159,7 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 	public boolean add(World world, BlockPos pos, Networkable<C> networkable) {
 		if (networkable.unit().type() != type) return false;
 		if (io.containsKey(world) && io.get(world).contains(pos)) return false;
+		if (!cablePositions.isEmpty() && !cablePositions.containsKey(world)) return false;
 		if (!internalAdd(networkable)) return false;
 		markDirty();
 		io.computeIfAbsent(world, k -> new HashSet<>()).add(pos);
@@ -167,10 +169,9 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 	@Override
 	public boolean remove(World world, BlockPos pos, Networkable<C> networkable) {
 		if (networkable.unit().type() != type) return false;
-		markDirty();
 		if (io.containsKey(world)) {
 			Set<BlockPos> blockPos = io.get(world);
-			blockPos.remove(pos);
+			if (blockPos.remove(pos)) markDirty();
 			if (blockPos.isEmpty()) io.remove(world);
 		}
 		if (networkable instanceof NetworkBlock.Output<C>) {
@@ -192,6 +193,7 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 	public boolean add(World world, BlockPos pos, NetworkCable<C> networkCable) {
 		if (networkCable.type() != type) return false;
 		if (cablePositions.containsKey(world) && cablePositions.get(world).contains(pos)) return false;
+		if (!cablePositions.isEmpty() && !cablePositions.containsKey(world)) return false;
 		markDirty();
 		cablePositions.computeIfAbsent(world, k -> new HashSet<>()).add(pos);
 		return true;
@@ -200,10 +202,9 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 	@Override
 	public boolean remove(World world, BlockPos pos, NetworkCable<C> networkCable) {
 		if (networkCable.type() != type) return false;
-		markDirty();
 		if (cablePositions.containsKey(world)) {
 			Set<BlockPos> blockPos = cablePositions.get(world);
-			blockPos.remove(pos);
+			if (blockPos.remove(pos)) markDirty();
 			if (blockPos.isEmpty()) cablePositions.remove(world);
 		}
 		return true;
@@ -270,5 +271,46 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			io.computeIfAbsent(world, k -> new HashSet<>()).addAll(blockPositions);
 		});
 		this.markDirty();
+	}
+
+	@Override
+	public void split(World world, List<BlockPos> blockPosList) {
+		while (!blockPosList.isEmpty()) {
+			BlockPos currentPeer = blockPosList.remove(0);
+
+			List<BlockPos> networkBlocks = new ArrayList<>();
+			List<BlockPos> left = new ArrayList<>();
+			left.add(currentPeer);
+
+			while(!left.isEmpty()) {
+				BlockPos current = left.remove(0);
+				if (!networkBlocks.contains(current)) networkBlocks.add(current);
+				List<BlockPos> adjacent = adjacent(world, current);
+				blockPosList.removeIf(adjacent::contains);
+				if (blockPosList.isEmpty()) return;
+
+				adjacent.forEach(blockPos -> {
+					if (!left.contains(blockPos)) left.add(blockPos);
+				});
+			}
+
+			NetworkImpl<C> network = new NetworkImpl<>(type);
+			for (BlockPos blockPos : networkBlocks) {
+				network.add(world, blockPos, (NetworkCable<C>) world.getBlockState(blockPos).getBlock());
+			}
+			NetworkManager.add(network);
+		}
+		NetworkManager.remove(this);
+	}
+
+	private List<BlockPos> adjacent(World world, BlockPos blockPos) {
+		List<BlockPos> blockPosList = new ArrayList<>();
+		for (Direction direction : Direction.values()) {
+			BlockPos offset = blockPos.offset(direction);
+			if (world.getBlockState(offset).getBlock() instanceof NetworkCable<?> networkCable) {
+				if (type() == networkCable.type()) blockPosList.add(offset);
+			}
+		}
+		return blockPosList;
 	}
 }
