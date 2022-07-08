@@ -10,15 +10,16 @@
     },
     {
       "apply": {
-        "model": "quilt-flow-api:block/cable_block_connection_up"
+        "model": "quilt-flow-api:block/cable_block_connection"
       },
       "when": {
-        "connection_up": true
+        "connection": true
       }
     },
     {
       "apply": {
-        "model": "quilt-flow-api:block/cable_block_connection_down"
+        "model": "quilt-flow-api:block/cable_block_connection",
+        "x": 180
       },
       "when": {
         "connection_down": true
@@ -26,7 +27,8 @@
     },
     {
       "apply": {
-        "model": "quilt-flow-api:block/cable_block_connection_north"
+        "model": "quilt-flow-api:block/cable_block_connection",
+        "x": 90
       },
       "when": {
         "connection_north": true
@@ -34,7 +36,8 @@
     },
     {
       "apply": {
-        "model": "quilt-flow-api:block/cable_block_connection_south"
+        "model": "quilt-flow-api:block/cable_block_connection",
+        "x": 270
       },
       "when": {
         "connection_south": true
@@ -42,7 +45,9 @@
     },
     {
       "apply": {
-        "model": "quilt-flow-api:block/cable_block_connection_east"
+        "model": "quilt-flow-api:block/cable_block_connection",
+        "x": 90,
+        "y": 90
       },
       "when": {
         "connection_east": true
@@ -50,7 +55,9 @@
     },
     {
       "apply": {
-        "model": "quilt-flow-api:block/cable_block_connection_west"
+        "model": "quilt-flow-api:block/cable_block_connection",
+        "x": 270,
+        "y": 90
       },
       "when": {
         "connection_west": true
