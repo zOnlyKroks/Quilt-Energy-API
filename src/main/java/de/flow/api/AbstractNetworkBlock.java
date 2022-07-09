@@ -23,7 +23,8 @@ public abstract class AbstractNetworkBlock extends BlockWithEntity {
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
 		List<Network<?>> networks = new ArrayList<>();
-		for (Direction direction : Direction.values()) {
+		NetworkBlock networkBlock = (NetworkBlock) world.getBlockEntity(pos);
+		for (Direction direction : networkBlock != null ? networkBlock.ports() : Direction.values()) {
 			BlockPos blockPos = pos.offset(direction);
 			Block block = world.getBlockState(blockPos).getBlock();
 			if (block instanceof AbstractCableBlock<?> abstractCableBlock) {
@@ -33,7 +34,6 @@ public abstract class AbstractNetworkBlock extends BlockWithEntity {
 				}
 			}
 		}
-		NetworkBlock networkBlock = (NetworkBlock) world.getBlockEntity(pos);
 		networks.forEach(network -> {
 			if (network == null) return;
 			network.add(networkBlock);
@@ -43,7 +43,8 @@ public abstract class AbstractNetworkBlock extends BlockWithEntity {
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		List<Network<?>> networks = new ArrayList<>();
-		for (Direction direction : Direction.values()) {
+		NetworkBlock networkBlock = (NetworkBlock) world.getBlockEntity(pos);
+		for (Direction direction : networkBlock != null ? networkBlock.ports() : Direction.values()) {
 			BlockPos blockPos = pos.offset(direction);
 			Block block = world.getBlockState(blockPos).getBlock();
 			if (block instanceof AbstractCableBlock<?> abstractCableBlock) {
@@ -53,7 +54,6 @@ public abstract class AbstractNetworkBlock extends BlockWithEntity {
 				}
 			}
 		}
-		NetworkBlock networkBlock = (NetworkBlock) world.getBlockEntity(pos);
 		networks.forEach(network -> {
 			if (network == null) return;
 			network.remove(networkBlock);
