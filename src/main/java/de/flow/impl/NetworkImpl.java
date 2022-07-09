@@ -45,12 +45,14 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 		cablePositions = positions.getOrDefault((byte) 0, new HashMap<>());
 		io = positions.getOrDefault((byte) 1, new HashMap<>());
 
-		for (Map.Entry<World, Set<BlockPos>> ioEntry : io.entrySet()) { // TODO: this does not work currently
+		for (Map.Entry<World, Set<BlockPos>> ioEntry : io.entrySet()) {
 			for (BlockPos pos : ioEntry.getValue()) {
 				BlockEntity blockEntity = ioEntry.getKey().getBlockEntity(pos);
-				if (blockEntity instanceof Networkable networkable) {
-					System.out.println("Adding " + pos);
-					internalAdd(networkable);
+				if (blockEntity instanceof NetworkBlock networkBlock) {
+					iterate(networkBlock, (world, blockPos, cNetworkable) -> {
+						internalAdd(cNetworkable);
+						return true;
+					});
 				}
 			}
 		}
