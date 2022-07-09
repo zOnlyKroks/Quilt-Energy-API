@@ -74,9 +74,7 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 		for (NetworkBlock.Output<C> output : outputs) {
 			C amount = output.unit().convertToBaseUnit(output.desiredAmount());
 			type.add(totalNeededAmount, amount);
-			if (!(output instanceof NetworkBlock.Input)) {
-				type.add(neededAmount, amount);
-			}
+			type.add(neededAmount, amount);
 		}
 		for (NetworkBlock.Output<C> output : storageOutputs) {
 			C amount = output.unit().convertToBaseUnit(output.desiredAmount());
