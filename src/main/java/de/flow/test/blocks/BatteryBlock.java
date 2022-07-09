@@ -5,6 +5,7 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -35,5 +36,10 @@ public class BatteryBlock extends AbstractNetworkBlock {
 	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
 		BatteryEntity batteryEntity = (BatteryEntity) world.getBlockEntity(pos);
 		return (int) (batteryEntity.getStoredAmount() / 500000 * 15);
+	}
+
+	@Override
+	public PistonBehavior getPistonBehavior(BlockState state) {
+		return PistonBehavior.BLOCK;
 	}
 }

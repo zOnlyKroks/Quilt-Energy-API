@@ -5,6 +5,7 @@ import de.flow.api.AbstractCableBlock;
 import de.flow.api.Type;
 import de.flow.api.Utils;
 import net.minecraft.block.*;
+import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -96,5 +97,10 @@ public class CableBlock extends AbstractCableBlock<AtomicDouble> implements Wate
 	@Override
 	public Type<AtomicDouble> type() {
 		return Utils.ENERGY_TYPE;
+	}
+
+	@Override
+	public PistonBehavior getPistonBehavior(BlockState state) {
+		return PistonBehavior.BLOCK;
 	}
 }
