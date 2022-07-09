@@ -3,9 +3,7 @@ package de.flow.impl;
 import de.flow.api.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -40,8 +38,11 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			throw new IllegalArgumentException("Block not found: " + nbtCompound.getString("network-type"));
 		}
 		this.type = ((NetworkCable<C>) block.get()).type();
-		this.cablePositions = convertBlocks(nbtCompound.getList("cable-positions", NbtElement.COMPOUND_TYPE), worlds);
-		this.io = convertBlocks(nbtCompound.getList("io", NbtElement.COMPOUND_TYPE), worlds);
+
+		Map<Byte, Map<World, Set<BlockPos>>> positions = convert(nbtCompound, worlds);
+		cablePositions = positions.getOrDefault((byte) 0, new HashMap<>());
+		io = positions.getOrDefault((byte) 1, new HashMap<>());
+
 		for (Map.Entry<World, Set<BlockPos>> ioEntry : io.entrySet()) {
 			for (BlockPos pos : ioEntry.getValue()) {
 				BlockEntity blockEntity = ioEntry.getKey().getBlockEntity(pos);
@@ -225,24 +226,51 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 				nbt.putString("network-type", Registry.BLOCK.getId(block).toString());
 			}
 		}
-		nbt.put("cable-positions", convertBlocks(cablePositions));
-		nbt.put("io", convertBlocks(io));
+		convert(nbt, cablePositions, (byte) 0);
+		convert(nbt, io, (byte) 1);
 		return nbt;
 	}
 
-	private NbtList convertBlocks(Map<World, Set<BlockPos>> locations) {
-		NbtList blockPositionsList = new NbtList();
-		for (Map.Entry<World, Set<BlockPos>> cablePositionsEntry : locations.entrySet()) {
-			for (BlockPos blockPos : cablePositionsEntry.getValue()) {
-				NbtCompound element = new NbtCompound();
-				element.putString("world", cablePositionsEntry.getKey().getRegistryKey().getValue().toString());
-				element.putInt("x", blockPos.getX());
-				element.putInt("y", blockPos.getY());
-				element.putInt("z", blockPos.getZ());
-				blockPositionsList.add(element);
+	private void convert(NbtCompound nbt, Map<World, Set<BlockPos>> positions, byte identifier) {
+		positions.forEach((world, blockPos) -> {
+			String key = world.getRegistryKey().getValue().toString();
+			NbtCompound worldNbt = nbt.getCompound(key);
+			NbtList x = worldNbt.getList("x", NbtElement.INT_TYPE);
+			worldNbt.put("x", x);
+			NbtList y = worldNbt.getList("y", NbtElement.INT_TYPE);
+			worldNbt.put("y", y);
+			NbtList z = worldNbt.getList("z", NbtElement.INT_TYPE);
+			worldNbt.put("z", z);
+			NbtList type = worldNbt.getList("type", NbtElement.BYTE_TYPE);
+			worldNbt.put("type", type);
+			nbt.put(key, worldNbt);
+			for (BlockPos pos : blockPos) {
+				x.add(NbtInt.of(pos.getX()));
+				y.add(NbtInt.of(pos.getY()));
+				z.add(NbtInt.of(pos.getZ()));
+				type.add(NbtByte.of(identifier));
+			}
+		});
+	}
+
+	private Map<Byte, Map<World, Set<BlockPos>>> convert(NbtCompound nbt, Map<String, World> worlds) {
+		Map<Byte, Map<World, Set<BlockPos>>> positions = new HashMap<>();
+		for (String key : nbt.getKeys()) {
+			if (key.equals("network-type")) continue;
+			World world = worlds.get(key);
+			if (world == null) continue;
+			NbtCompound worldNbt = nbt.getCompound(key);
+			NbtList x = worldNbt.getList("x", NbtElement.INT_TYPE);
+			NbtList y = worldNbt.getList("y", NbtElement.INT_TYPE);
+			NbtList z = worldNbt.getList("z", NbtElement.INT_TYPE);
+			NbtList type = worldNbt.getList("type", NbtElement.BYTE_TYPE);
+			for (int i = 0; i < x.size(); i++) {
+				BlockPos pos = new BlockPos(x.getInt(i), y.getInt(i), z.getInt(i));
+				byte typeByte = ((NbtByte) type.get(i)).byteValue();
+				positions.computeIfAbsent(typeByte, k -> new HashMap<>()).computeIfAbsent(world, k -> new HashSet<>()).add(pos);
 			}
 		}
-		return blockPositionsList;
+		return positions;
 	}
 
 	private Map<World, Set<BlockPos>> convertBlocks(NbtList nbtList, Map<String, World> worlds) {
@@ -274,7 +302,8 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 	}
 
 	@Override
-	public void split(World world, List<BlockPos> blockPosList) {
+	public void split(World world, BlockPos splitPos, List<BlockPos> blockPosList) {
+		boolean first = true;
 		while (!blockPosList.isEmpty()) {
 			BlockPos currentPeer = blockPosList.remove(0);
 
@@ -286,11 +315,12 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 				BlockPos current = left.remove(0);
 				if (!networkBlocks.contains(current)) networkBlocks.add(current);
 				List<BlockPos> adjacent = adjacent(world, current);
+				adjacent.remove(splitPos);
 				blockPosList.removeIf(adjacent::contains);
-				if (blockPosList.isEmpty()) return;
+				if (blockPosList.isEmpty() && first) return;
 
 				adjacent.forEach(blockPos -> {
-					if (!left.contains(blockPos)) left.add(blockPos);
+					if (!left.contains(blockPos) && !networkBlocks.contains(blockPos)) left.add(blockPos);
 				});
 			}
 
@@ -299,6 +329,7 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 				network.add(world, blockPos, (NetworkCable<C>) world.getBlockState(blockPos).getBlock());
 			}
 			NetworkManager.add(network);
+			first = false;
 		}
 		NetworkManager.remove(this);
 	}

@@ -50,5 +50,5 @@ public interface Network<C> extends Typeable<C> {
 	boolean remove(World world, BlockPos pos, NetworkCable<C> networkCable);
 
 	void merge(Network<C> network);
-	void split(World world, List<BlockPos> blockPosList);
+	void split(World world, BlockPos splitPos, List<BlockPos> blockPosList);
 }

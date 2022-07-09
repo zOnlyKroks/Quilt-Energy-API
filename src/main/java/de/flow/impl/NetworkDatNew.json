@@ -1,0 +1,9 @@
+{
+  "network-type": "<BLOCK-ID>",
+  "<world>": {
+    "x": [],
+    "y": [],
+    "z": [],
+    "type": []
+  }
+}

@@ -121,7 +121,7 @@ public abstract class AbstractCableBlock<C> extends Block implements NetworkCabl
 			} else {
 				surroundingNetwork.remove(world, pos, this);
 				if (cableCount > 1) {
-					surroundingNetwork.split(world, blockPoss);
+					surroundingNetwork.split(world, pos, blockPoss);
 				}
 			}
 			// TODO: Check for AbstractNetworkBlock's
