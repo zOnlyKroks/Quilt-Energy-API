@@ -1,20 +1,9 @@
 {
   "network-type": "<BLOCK-ID>",
-  "cable-positions": [
-    {
-      "world": "",
-      "x": 0,
-      "y": 0,
-      "z": 0
-    }
-  ],
-  "io": [
-    {
-      "name": "",
-      "type": "",
-      "x": 0,
-      "y": 0,
-      "z": 0
-    }
-  ]
+  "<world>": {
+    "x": [],
+    "y": [],
+    "z": [],
+    "type": []
+  }
 }

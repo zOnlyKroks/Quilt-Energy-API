@@ -12,6 +12,8 @@ import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
 import java.util.*;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 public class NetworkImpl<C> extends PersistentState implements Network<C> {
 
@@ -43,10 +45,11 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 		cablePositions = positions.getOrDefault((byte) 0, new HashMap<>());
 		io = positions.getOrDefault((byte) 1, new HashMap<>());
 
-		for (Map.Entry<World, Set<BlockPos>> ioEntry : io.entrySet()) {
+		for (Map.Entry<World, Set<BlockPos>> ioEntry : io.entrySet()) { // TODO: this does not work currently
 			for (BlockPos pos : ioEntry.getValue()) {
 				BlockEntity blockEntity = ioEntry.getKey().getBlockEntity(pos);
 				if (blockEntity instanceof Networkable networkable) {
+					System.out.println("Adding " + pos);
 					internalAdd(networkable);
 				}
 			}
@@ -308,13 +311,16 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			BlockPos currentPeer = blockPosList.remove(0);
 
 			List<BlockPos> networkBlocks = new ArrayList<>();
+			List<BlockPos> ioBlocks = new ArrayList<>();
 			List<BlockPos> left = new ArrayList<>();
 			left.add(currentPeer);
 
 			while(!left.isEmpty()) {
 				BlockPos current = left.remove(0);
 				if (!networkBlocks.contains(current)) networkBlocks.add(current);
-				List<BlockPos> adjacent = adjacent(world, current);
+				List<BlockPos> adjacent = adjacent(world, current, (world1, blockPos) -> {
+					return world1.getBlockState(blockPos).getBlock() instanceof NetworkCable<?> networkCable && type() == networkCable.type();
+				});
 				adjacent.remove(splitPos);
 				blockPosList.removeIf(adjacent::contains);
 				if (blockPosList.isEmpty() && first) return;
@@ -322,11 +328,19 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 				adjacent.forEach(blockPos -> {
 					if (!left.contains(blockPos) && !networkBlocks.contains(blockPos)) left.add(blockPos);
 				});
+				adjacent(world, current, (world1, blockPos) -> {
+					return world1.getBlockEntity(blockPos) instanceof NetworkBlock networkBlock && networkBlock.hasType(type());
+				}).forEach(blockPos -> {
+					if (!ioBlocks.contains(blockPos)) ioBlocks.add(blockPos);
+				});
 			}
 
 			NetworkImpl<C> network = new NetworkImpl<>(type);
 			for (BlockPos blockPos : networkBlocks) {
 				network.add(world, blockPos, (NetworkCable<C>) world.getBlockState(blockPos).getBlock());
+			}
+			for (BlockPos blockPos : ioBlocks) {
+				network.add((NetworkBlock) world.getBlockEntity(blockPos));
 			}
 			NetworkManager.add(network);
 			first = false;
@@ -334,13 +348,18 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 		NetworkManager.remove(this);
 	}
 
-	private List<BlockPos> adjacent(World world, BlockPos blockPos) {
+	private List<BlockPos> adjacent(World world, BlockPos blockPos, BiPredicate<World, BlockPos> include) {
 		List<BlockPos> blockPosList = new ArrayList<>();
 		for (Direction direction : Direction.values()) {
 			BlockPos offset = blockPos.offset(direction);
+			if (include.test(world, offset)) {
+				blockPosList.add(offset);
+			}
+			/*
 			if (world.getBlockState(offset).getBlock() instanceof NetworkCable<?> networkCable) {
 				if (type() == networkCable.type()) blockPosList.add(offset);
 			}
+			 */
 		}
 		return blockPosList;
 	}

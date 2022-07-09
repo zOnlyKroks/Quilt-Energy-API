@@ -29,7 +29,7 @@ public abstract class AbstractCableBlock<C> extends Block implements NetworkCabl
 	protected static final BooleanProperty CONNECTION_DOWN = BooleanProperty.of("connection_down");
 	protected static final BooleanProperty SHOW_BASE = BooleanProperty.of("show_base");
 
-	public AbstractCableBlock(Settings settings) {
+	protected AbstractCableBlock(Settings settings) {
 		super(settings);
 		this.setDefaultState(this.getDefaultState().with(CONNECTION_NORTH, false).with(CONNECTION_EAST, false).with(CONNECTION_SOUTH, false).with(CONNECTION_WEST, false).with(CONNECTION_UP, false).with(CONNECTION_DOWN, false).with(SHOW_BASE, false));
 	}
@@ -66,13 +66,14 @@ public abstract class AbstractCableBlock<C> extends Block implements NetworkCabl
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
 		List<Network<C>> surroundingNetworks = new ArrayList<>();
+		List<NetworkBlock> networkBlocks = new ArrayList<>();
 		for (Direction direction : Direction.values()) {
 			BlockPos blockPos = pos.offset(direction);
 			if (!world.isClient) {
 				Network<C> network = NetworkManager.get(type(), world, blockPos);
 				if (network != null && !surroundingNetworks.contains(network)) surroundingNetworks.add(network);
 			}
-			if (tryAddingAndCheckingConnection(world, blockPos, direction(direction.getOpposite()), true, direction, type())) {
+			if (tryAddingAndCheckingConnection(world, blockPos, direction(direction.getOpposite()), true, direction, type(), networkBlocks)) {
 				state = state.with(direction(direction), true);
 			}
 		}
@@ -90,7 +91,7 @@ public abstract class AbstractCableBlock<C> extends Block implements NetworkCabl
 				}
 			}
 			network.add(world, pos, this);
-			// TODO: Check for AbstractNetworkBlock's
+			networkBlocks.forEach(network::add);
 		}
 		state = state.with(SHOW_BASE, shouldShowBase(state));
 		world.setBlockState(pos, state);
@@ -100,6 +101,7 @@ public abstract class AbstractCableBlock<C> extends Block implements NetworkCabl
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		Network<C> surroundingNetwork = null;
 		List<BlockPos> blockPoss = new ArrayList<>();
+		List<NetworkBlock> networkBlocks = new ArrayList<>();
 		int cableCount = 0;
 		for (Direction direction : Direction.values()) {
 			BlockPos blockPos = pos.offset(direction);
@@ -111,20 +113,35 @@ public abstract class AbstractCableBlock<C> extends Block implements NetworkCabl
 					blockPoss.add(blockPos);
 				}
 			}
-			if (tryAddingAndCheckingConnection(world, blockPos, direction(direction.getOpposite()), false, direction, type())) {
+			if (tryAddingAndCheckingConnection(world, blockPos, direction(direction.getOpposite()), false, direction, type(), networkBlocks)) {
 				state = state.with(direction(direction), false);
 			}
 		}
 		if (!world.isClient) {
+			if (surroundingNetwork == null) {
+				surroundingNetwork = NetworkManager.get(type(), world, pos);
+			}
+			if (surroundingNetwork != null) {
+				networkBlocks.forEach(surroundingNetwork::remove);
+			}
 			if (cableCount == 0) {
-				Networks.remove(NetworkManager.get(type(), world, pos));
+				Networks.remove(surroundingNetwork);
 			} else {
 				surroundingNetwork.remove(world, pos, this);
 				if (cableCount > 1) {
 					surroundingNetwork.split(world, pos, blockPoss);
 				}
+				networkBlocks.forEach(networkBlock -> {
+					for (Direction direction : Direction.values()) {
+						BlockPos blockPos = networkBlock.getPos().offset(direction);
+						if (blockPos.equals(pos)) continue;
+						Block block = world.getBlockState(blockPos).getBlock();
+						if (block instanceof AbstractCableBlock<?>) {
+							Networks.get(world, blockPos).add(networkBlock);
+						}
+					}
+				});
 			}
-			// TODO: Check for AbstractNetworkBlock's
 		}
 		state = state.with(SHOW_BASE, shouldShowBase(state));
 		world.setBlockState(pos, state);
@@ -132,10 +149,10 @@ public abstract class AbstractCableBlock<C> extends Block implements NetworkCabl
 	}
 
 	public boolean recalculateDirection(World world, BlockPos pos, Direction direction, boolean place) {
-		return tryAddingAndCheckingConnection(world, pos, direction(direction.getOpposite()), place, direction, type());
+		return tryAddingAndCheckingConnection(world, pos, direction(direction.getOpposite()), place, direction, type(), new ArrayList<>());
 	}
 
-	public static boolean tryAddingAndCheckingConnection(World world, BlockPos pos, BooleanProperty property, boolean value, Direction direction, Type<?> type) {
+	public static boolean tryAddingAndCheckingConnection(World world, BlockPos pos, BooleanProperty property, boolean value, Direction direction, Type<?> type, List<NetworkBlock> networkBlocks) {
 		BlockState state = world.getBlockState(pos);
 
 		Block block = state.getBlock();
@@ -156,10 +173,12 @@ public abstract class AbstractCableBlock<C> extends Block implements NetworkCabl
 			if (!contains(networkBlock.ports(), direction.getOpposite())) {
 				return false;
 			}
-			return networkBlock.hasType(type);
-		} else {
-			return false;
+			if (networkBlock.hasType(type)) {
+				networkBlocks.add(networkBlock);
+				return true;
+			}
 		}
+		return false;
 	}
 
 	private static boolean contains(Direction[] directions, Direction direction) {
