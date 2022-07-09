@@ -5,6 +5,7 @@ import de.flow.api.NetworkBlock;
 import de.flow.api.RegisterToNetwork;
 import de.flow.api.Unit;
 import de.flow.test.BlockEntityInit;
+import lombok.Getter;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -12,6 +13,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class BatteryEntity extends BlockEntity implements NetworkBlock {
 
+	@Getter
 	private double storedAmount = 0;
 
 	private Unit<AtomicDouble> unit = Unit.energyUnit(1);
