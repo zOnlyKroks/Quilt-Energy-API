@@ -47,6 +47,6 @@ public class LampBlock extends AbstractNetworkBlock {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		return checkType(type, BlockEntityInit.LAMP_ENTITY, LampEntity::tick);
+		return world.isClient ? null : checkType(type, BlockEntityInit.LAMP_ENTITY, LampEntity::tick);
 	}
 }

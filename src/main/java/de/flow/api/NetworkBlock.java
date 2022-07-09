@@ -13,7 +13,9 @@ public interface NetworkBlock {
 	default Direction[] ports() {
 		return Direction.values();
 	}
+
 	BlockPos getPos();
+
 	World getWorld();
 
 	default boolean hasType(Type<?> type) {
@@ -64,28 +66,39 @@ public interface NetworkBlock {
 		}
 	}
 
-	class LimitedDefaultInput<C> extends DefaultInput<C> {
+	class LimitedInput<C> implements Input<C> {
 
+		private Input<C> delegate;
 		private C limit;
 
-		public LimitedDefaultInput(DefaultInput<C> input, C limit) {
-			super(input.supply, input.consume, input.unit);
+		public LimitedInput(Input<C> input, C limit) {
+			this.delegate = input;
 			this.limit = limit;
 		}
 
-		public LimitedDefaultInput(Supplier<C> supply, Consumer<C> consume, Unit<C> unit, C limit) {
-			super(supply, consume, unit);
-			this.limit = limit;
+		public LimitedInput(Supplier<C> supply, Consumer<C> consume, Unit<C> unit, C limit) {
+			this(new DefaultInput<>(supply, consume, unit), limit);
 		}
 
 		@Override
 		public C extractableAmount() {
-			return unit.type().min(super.extractableAmount(), limit);
+			return delegate.unit().type().min(delegate.extractableAmount(), limit);
+		}
+
+		@Override
+		public void extract(C amount) {
+			delegate.extract(amount);
+		}
+
+		@Override
+		public Unit<C> unit() {
+			return delegate.unit();
 		}
 	}
 
 	interface Output<C> extends Unitable<C>, Networkable<C> {
 		C desiredAmount();
+
 		void provide(C amount);
 	}
 
@@ -116,23 +129,33 @@ public interface NetworkBlock {
 		}
 	}
 
-	class LimitedDefaultOutput<C> extends DefaultOutput<C> {
+	class LimitedOutput<C> implements Output<C> {
 
+		private Output<C> delegate;
 		private C limit;
 
-		public LimitedDefaultOutput(DefaultOutput<C> output, C limit) {
-			super(output.desired, output.provided, output.unit);
+		public LimitedOutput(Output<C> output, C limit) {
+			this.delegate = output;
 			this.limit = limit;
 		}
 
-		public LimitedDefaultOutput(Supplier<C> desired, Consumer<C> provided, Unit<C> unit, C limit) {
-			super(desired, provided, unit);
-			this.limit = limit;
+		public LimitedOutput(Supplier<C> desired, Consumer<C> provided, Unit<C> unit, C limit) {
+			this(new DefaultOutput<>(desired, provided, unit), limit);
 		}
 
 		@Override
 		public C desiredAmount() {
-			return unit.type().min(super.desiredAmount(), limit);
+			return delegate.unit().type().min(delegate.desiredAmount(), limit);
+		}
+
+		@Override
+		public void provide(C amount) {
+			delegate.provide(amount);
+		}
+
+		@Override
+		public Unit<C> unit() {
+			return delegate.unit();
 		}
 	}
 
