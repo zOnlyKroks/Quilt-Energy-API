@@ -179,4 +179,45 @@ public interface NetworkBlock {
 			return unit;
 		}
 	}
+
+	class ComparatorUpdateStore<C> implements Store<C> {
+		protected NetworkBlock networkBlock;
+		protected Store<C> delegate;
+
+		public ComparatorUpdateStore(NetworkBlock networkBlock, Store<C> store) {
+			this.networkBlock = networkBlock;
+			this.delegate = store;
+		}
+
+		public ComparatorUpdateStore(NetworkBlock networkBlock, Input<C> input, Output<C> output) {
+			this(networkBlock, new DefaultStore<>(input, output));
+		}
+
+		@Override
+		public C extractableAmount() {
+			return delegate.extractableAmount();
+		}
+
+		@Override
+		public void extract(C amount) {
+			delegate.extract(amount);
+			networkBlock.getWorld().updateComparators(networkBlock.getPos(), networkBlock.getWorld().getBlockState(networkBlock.getPos()).getBlock());
+		}
+
+		@Override
+		public C desiredAmount() {
+			return delegate.desiredAmount();
+		}
+
+		@Override
+		public void provide(C amount) {
+			delegate.provide(amount);
+			networkBlock.getWorld().updateComparators(networkBlock.getPos(), networkBlock.getWorld().getBlockState(networkBlock.getPos()).getBlock());
+		}
+
+		@Override
+		public Unit<C> unit() {
+			return delegate.unit();
+		}
+	}
 }

@@ -19,7 +19,8 @@ public class BatteryEntity extends BlockEntity implements NetworkBlock {
 	private Unit<AtomicDouble> unit = Unit.energyUnit(1);
 
 	@RegisterToNetwork
-	private Store<AtomicDouble> store = new DefaultStore<>(
+	private Store<AtomicDouble> store = new ComparatorUpdateStore<>(
+			this,
 			new LimitedDefaultInput<>(() -> new AtomicDouble(500000 - storedAmount), aDouble -> storedAmount -= aDouble.get(), unit, new AtomicDouble(600.0)),
 			new LimitedDefaultOutput<>(() -> new AtomicDouble(storedAmount), aDouble -> storedAmount += aDouble.get(), unit, new AtomicDouble(600.0))
 	);

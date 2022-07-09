@@ -34,6 +34,6 @@ public class BatteryBlock extends AbstractNetworkBlock {
 	@Override
 	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
 		BatteryEntity batteryEntity = (BatteryEntity) world.getBlockEntity(pos);
-		return (int) (batteryEntity.getStoredAmount() / 500000.0 * 15);
+		return (int) (batteryEntity.getStoredAmount() / 500000 * 15);
 	}
 }
