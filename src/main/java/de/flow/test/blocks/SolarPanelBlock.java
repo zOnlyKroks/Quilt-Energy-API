@@ -50,4 +50,14 @@ public class SolarPanelBlock extends AbstractNetworkBlock {
 	public PistonBehavior getPistonBehavior(BlockState state) {
 		return PistonBehavior.BLOCK;
 	}
+
+	@Override
+	public boolean hasComparatorOutput(BlockState state) {
+		return true;
+	}
+
+	@Override
+	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+		return (int) (((SolarPanelEntity) world.getBlockEntity(pos)).getStoredAmount() / 50 * 15);
+	}
 }

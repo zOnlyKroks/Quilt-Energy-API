@@ -5,6 +5,7 @@ import de.flow.api.NetworkBlock;
 import de.flow.api.RegisterToNetwork;
 import de.flow.api.Unit;
 import de.flow.test.BlockEntityInit;
+import lombok.Getter;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
@@ -13,6 +14,7 @@ import net.minecraft.world.World;
 
 public class SolarPanelEntity extends BlockEntity implements NetworkBlock {
 
+	@Getter
 	private double storedAmount = 0;
 
 	private static final Direction[] PORTS = new Direction[] { Direction.DOWN };
@@ -29,6 +31,7 @@ public class SolarPanelEntity extends BlockEntity implements NetworkBlock {
 
 			double solarFactor = (-0.12) * ((sunlight - 6) * (sunlight - 6)) + 5;
 			solarPanelEntity.storedAmount = solarFactor * 10;
+			world.updateComparators(pos, state.getBlock());
 		}
 	}
 
