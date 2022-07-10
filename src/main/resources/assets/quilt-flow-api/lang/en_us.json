@@ -6,5 +6,6 @@
   "block.quilt-flow-api.cable_block": "Cable",
   "block.quilt-flow-api.redstone_cable_block": "Redstone Cable",
   "block.quilt-flow-api.redstone_acceptor_block": "Redstone Acceptor",
-  "block.quilt-flow-api.redstone_emitter_block": "Redstone Emitter"
+  "block.quilt-flow-api.redstone_emitter_block": "Redstone Emitter",
+  "block.quilt-flow-api.energy_transmitter_block": "Energy Transmitter"
 }
