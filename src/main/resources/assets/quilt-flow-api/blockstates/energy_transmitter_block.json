@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "quilt-flow-api:block/energy_transmitter_block"
+    }
+  }
+}
