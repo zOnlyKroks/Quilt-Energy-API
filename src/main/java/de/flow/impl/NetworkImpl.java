@@ -2,6 +2,7 @@ package de.flow.impl;
 
 import de.flow.api.*;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.*;
 import net.minecraft.util.Identifier;
@@ -12,8 +13,6 @@ import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
 import java.util.*;
-import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 
 public class NetworkImpl<C> extends PersistentState implements Network<C> {
 
@@ -93,10 +92,20 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			}
 		}
 
-		if (type.isEmpty(totalProvidedAmount)) return;
-
 		boolean storage = type.containsAll(nonStorageProvidedAmount, neededAmount);
 		C availableAmount = storage ? nonStorageProvidedAmount : totalProvidedAmount;
+
+		C availableAmountCopy = type.copy(availableAmount);
+		cablePositions.forEach((world, blockPos) -> {
+			blockPos.forEach(pos -> {
+				BlockState blockState = world.getBlockState(pos);
+				Block block = blockState.getBlock();
+				if (block instanceof StatefulNetworkCable) {
+					((StatefulNetworkCable<C>) block).changeCableState(world, pos, blockState, availableAmountCopy);
+				}
+			});
+		});
+		if (type.isEmpty(totalProvidedAmount)) return;
 
 		if (storageOutputs.isEmpty() || !storage) {
 			availableAmount = type.min(availableAmount, neededAmount);
