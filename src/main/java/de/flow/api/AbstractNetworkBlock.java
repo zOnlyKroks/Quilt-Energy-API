@@ -27,7 +27,7 @@ public abstract class AbstractNetworkBlock extends BlockWithEntity {
 		for (Direction direction : networkBlock != null ? networkBlock.ports() : Direction.values()) {
 			BlockPos blockPos = pos.offset(direction);
 			Block block = world.getBlockState(blockPos).getBlock();
-			if (block instanceof AbstractCableBlock<?> abstractCableBlock) {
+			if (block instanceof AbstractCableBlock<?> abstractCableBlock && networkBlock.hasType(abstractCableBlock.type())) {
 				abstractCableBlock.recalculateDirection(world, blockPos, direction, true);
 				if (!world.isClient) {
 					networks.add(Networks.get(world, blockPos));
@@ -47,7 +47,7 @@ public abstract class AbstractNetworkBlock extends BlockWithEntity {
 		for (Direction direction : networkBlock != null ? networkBlock.ports() : Direction.values()) {
 			BlockPos blockPos = pos.offset(direction);
 			Block block = world.getBlockState(blockPos).getBlock();
-			if (block instanceof AbstractCableBlock<?> abstractCableBlock) {
+			if (block instanceof AbstractCableBlock<?> abstractCableBlock && networkBlock.hasType(abstractCableBlock.type())) {
 				abstractCableBlock.recalculateDirection(world, blockPos, direction, false);
 				if (!world.isClient) {
 					networks.add(Networks.get(world, blockPos));
