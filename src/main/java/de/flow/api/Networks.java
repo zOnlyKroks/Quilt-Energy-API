@@ -38,4 +38,12 @@ public class Networks {
 	public <T extends Network<C>, C> T get(UUID uuid) {
 		return NetworkManager.get(uuid);
 	}
+
+	public void loadCallback(Runnable runnable) {
+		NetworkManager.loadCallback(runnable);
+	}
+
+	public void unloadCallback(Runnable runnable) {
+		NetworkManager.unloadCallback(runnable);
+	}
 }

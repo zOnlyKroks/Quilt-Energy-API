@@ -22,6 +22,8 @@ import java.util.*;
 public class NetworkManager {
 
 	private Map<Type<?>, List<Network<?>>> networks = new HashMap<>();
+	private Set<Runnable> loadCallbacks = new HashSet<>();
+	private Set<Runnable> unloadCallbacks = new HashSet<>();
 
 	private File networksDir;
 	private PersistentStateManager persistentStateManager;
@@ -74,6 +76,14 @@ public class NetworkManager {
 		return (T) networks.values().stream().flatMap(Collection::stream).filter(network -> network.getId().equals(uuid)).findFirst().orElse(null);
 	}
 
+	public void loadCallback(Runnable runnable) {
+		loadCallbacks.add(runnable);
+	}
+
+	public void unloadCallback(Runnable runnable) {
+		unloadCallbacks.add(runnable);
+	}
+
 	public void tick() {
 		networks.values().stream().flatMap(Collection::stream).forEach(Network::tick);
 	}
@@ -108,6 +118,7 @@ public class NetworkManager {
 			Network<?> network = persistentStateManager.get(nbtCompound -> new NetworkImpl<>(UUID.fromString(name), nbtCompound, worlds), name);
 			networks.computeIfAbsent(network.type(), ignore -> new ArrayList<>()).add(network);
 		}
+		loadCallbacks.forEach(Runnable::run);
 	}
 
 	public void save() {
@@ -120,6 +131,7 @@ public class NetworkManager {
 		if (persistentStateManager == null) return;
 		save();
 		FlowApi.LOGGER.info("Unloading networks...");
+		unloadCallbacks.forEach(Runnable::run);
 		persistentStateManager = null;
 		networks.clear();
 	}
