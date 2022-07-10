@@ -19,9 +19,11 @@ public class BatteryEntity extends BlockEntity implements NetworkBlock {
 
 	@Getter
 	private double storedAmount = 0;
+	private boolean noOutput = false;
 	private boolean redstoneNoOutput = false;
 
 	public static void tick(World world, BlockPos pos, BlockState state, BatteryEntity batteryEntity) {
+		batteryEntity.noOutput = batteryEntity.redstoneNoOutput;
 		batteryEntity.redstoneNoOutput = false;
 	}
 
@@ -30,7 +32,7 @@ public class BatteryEntity extends BlockEntity implements NetworkBlock {
 	@RegisterToNetwork
 	private Store<AtomicDouble> store = new ComparatorUpdateStore<>(
 			this,
-			new LockableInput<>(new LimitedInput<>(() -> new AtomicDouble(storedAmount), aDouble -> storedAmount -= aDouble.get(), unit, new AtomicDouble(600.0)), () -> redstoneNoOutput),
+			new LockableInput<>(new LimitedInput<>(() -> new AtomicDouble(storedAmount), aDouble -> storedAmount -= aDouble.get(), unit, new AtomicDouble(600.0)), () -> noOutput),
 			new LimitedOutput<>(() -> new AtomicDouble(500000 - storedAmount), aDouble -> storedAmount += aDouble.get(), unit, new AtomicDouble(600.0))
 	);
 
