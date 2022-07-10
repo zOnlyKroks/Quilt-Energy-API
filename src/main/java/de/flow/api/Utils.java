@@ -10,7 +10,7 @@ public class Utils {
 
 	public static final Type<AtomicDouble> ENERGY_TYPE = new Type.NumberType();
 
-	public static final Type<AtomicInteger> REDSTONE_TYPE = new Type<AtomicInteger>() {
+	public static final Type<AtomicInteger> REDSTONE_TYPE = new Type<>() {
 		@Override
 		public AtomicInteger container() {
 			return new AtomicInteger();

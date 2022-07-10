@@ -136,6 +136,7 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 	}
 
 	private boolean internalAdd(Networkable<C> networkable) {
+		if (networkable.unit().type() != type) return false;
 		if (networkable instanceof NetworkBlock.Output<C> output) {
 			if (networkable instanceof NetworkBlock.Input<C> input) {
 				if (!inputs.contains(input)) {
