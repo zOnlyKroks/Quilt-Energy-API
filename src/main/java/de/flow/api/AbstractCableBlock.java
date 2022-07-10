@@ -132,7 +132,7 @@ public abstract class AbstractCableBlock<C> extends Block implements NetworkCabl
 					surroundingNetwork.split(world, pos, blockPoss);
 				}
 				networkBlocks.forEach(networkBlock -> {
-					for (Direction direction : Direction.values()) {
+					for (Direction direction : networkBlock.ports()) {
 						BlockPos blockPos = networkBlock.getPos().offset(direction);
 						if (blockPos.equals(pos)) continue;
 						Block block = world.getBlockState(blockPos).getBlock();
@@ -181,7 +181,7 @@ public abstract class AbstractCableBlock<C> extends Block implements NetworkCabl
 		return false;
 	}
 
-	private static boolean contains(Direction[] directions, Direction direction) {
+	public static boolean contains(Direction[] directions, Direction direction) {
 		for (Direction d : directions) {
 			if (d == direction) {
 				return true;

@@ -318,7 +318,7 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			while(!left.isEmpty()) {
 				BlockPos current = left.remove(0);
 				if (!networkBlocks.contains(current)) networkBlocks.add(current);
-				List<BlockPos> adjacent = adjacent(world, current, (world1, blockPos) -> {
+				List<BlockPos> adjacent = adjacent(world, current, (world1, blockPos, direction) -> {
 					return world1.getBlockState(blockPos).getBlock() instanceof NetworkCable<?> networkCable && type() == networkCable.type();
 				});
 				adjacent.remove(splitPos);
@@ -328,8 +328,12 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 				adjacent.forEach(blockPos -> {
 					if (!left.contains(blockPos) && !networkBlocks.contains(blockPos)) left.add(blockPos);
 				});
-				adjacent(world, current, (world1, blockPos) -> {
-					return world1.getBlockEntity(blockPos) instanceof NetworkBlock networkBlock && networkBlock.hasType(type());
+				adjacent(world, current, (world1, blockPos, direction) -> {
+					if (world1.getBlockEntity(blockPos) instanceof NetworkBlock networkBlock && networkBlock.hasType(type)) {
+						return AbstractCableBlock.contains(networkBlock.ports(), direction.getOpposite());
+					} else {
+						return false;
+					}
 				}).forEach(blockPos -> {
 					if (!ioBlocks.contains(blockPos)) ioBlocks.add(blockPos);
 				});
@@ -348,18 +352,13 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 		NetworkManager.remove(this);
 	}
 
-	private List<BlockPos> adjacent(World world, BlockPos blockPos, BiPredicate<World, BlockPos> include) {
+	private List<BlockPos> adjacent(World world, BlockPos blockPos, TriPredicate<World, BlockPos, Direction> include) {
 		List<BlockPos> blockPosList = new ArrayList<>();
 		for (Direction direction : Direction.values()) {
 			BlockPos offset = blockPos.offset(direction);
-			if (include.test(world, offset)) {
+			if (include.test(world, offset, direction)) {
 				blockPosList.add(offset);
 			}
-			/*
-			if (world.getBlockState(offset).getBlock() instanceof NetworkCable<?> networkCable) {
-				if (type() == networkCable.type()) blockPosList.add(offset);
-			}
-			 */
 		}
 		return blockPosList;
 	}
