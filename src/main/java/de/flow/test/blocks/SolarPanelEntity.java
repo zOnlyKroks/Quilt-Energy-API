@@ -32,6 +32,9 @@ public class SolarPanelEntity extends BlockEntity implements NetworkBlock {
 			double solarFactor = (-0.12) * ((sunlight - 6) * (sunlight - 6)) + 5;
 			solarPanelEntity.storedAmount = solarFactor * 10;
 			world.updateComparators(pos, state.getBlock());
+		} else if (solarPanelEntity.storedAmount != 0) {
+			solarPanelEntity.storedAmount = 0;
+			world.updateComparators(pos, state.getBlock());
 		}
 	}
 
