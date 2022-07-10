@@ -112,13 +112,13 @@ public class NetworkManager {
 			worlds.put(serverWorld.getRegistryKey().getValue().toString(), serverWorld);
 		});
 
+		loadCallbacks.forEach(Runnable::run);
 		for (File networkFile : files) {
 			if (!networkFile.getName().endsWith(".dat")) continue;
 			String name = networkFile.getName().substring(0, networkFile.getName().length() - 4);
 			Network<?> network = persistentStateManager.get(nbtCompound -> new NetworkImpl<>(UUID.fromString(name), nbtCompound, worlds), name);
 			networks.computeIfAbsent(network.type(), ignore -> new ArrayList<>()).add(network);
 		}
-		loadCallbacks.forEach(Runnable::run);
 	}
 
 	public void save() {
@@ -131,8 +131,8 @@ public class NetworkManager {
 		if (persistentStateManager == null) return;
 		save();
 		FlowApi.LOGGER.info("Unloading networks...");
-		unloadCallbacks.forEach(Runnable::run);
 		persistentStateManager = null;
 		networks.clear();
+		unloadCallbacks.forEach(Runnable::run);
 	}
 }

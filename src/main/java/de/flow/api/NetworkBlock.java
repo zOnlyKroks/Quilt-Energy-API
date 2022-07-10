@@ -302,4 +302,41 @@ public interface NetworkBlock {
 			return delegate.unit();
 		}
 	}
+
+	class LockableStore<C> implements Store<C> {
+		private Store<C> delegate;
+		private BooleanSupplier lock;
+
+		public LockableStore(Store<C> delegate, BooleanSupplier lock) {
+			this.delegate = delegate;
+			this.lock = lock;
+		}
+
+		@Override
+		public C extractableAmount() {
+			if (lock.getAsBoolean()) return delegate.unit().type().container();
+			return delegate.extractableAmount();
+		}
+
+		@Override
+		public void extract(C amount) {
+			delegate.extract(amount);
+		}
+
+		@Override
+		public C desiredAmount() {
+			if (lock.getAsBoolean()) return delegate.unit().type().container();
+			return delegate.desiredAmount();
+		}
+
+		@Override
+		public void provide(C amount) {
+			delegate.provide(amount);
+		}
+
+		@Override
+		public Unit<C> unit() {
+			return delegate.unit();
+		}
+	}
 }

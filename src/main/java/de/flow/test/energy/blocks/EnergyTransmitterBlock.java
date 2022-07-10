@@ -16,6 +16,10 @@ import org.quiltmc.qsl.block.extensions.api.QuiltBlockSettings;
 
 public class EnergyTransmitterBlock extends AbstractNetworkBlock {
 
+	static {
+		EnergyTransmitterEntity.onInitialize();
+	}
+
 	public EnergyTransmitterBlock() {
 		super(QuiltBlockSettings.of(Material.METAL).collidable(true).strength(6).hardness(6).requiresTool());
 	}
