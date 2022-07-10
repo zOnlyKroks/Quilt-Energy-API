@@ -19,7 +19,7 @@ public class EnergyTransmitterEntity extends BlockEntity implements NetworkBlock
 	static {
 		Unit<AtomicDouble> unit = Unit.energyUnit(1);
 		Networks.loadCallback(() -> {
-			new DefaultStore<>(
+			transmitterStore = new DefaultStore<>(
 					new LimitedInput<>(() -> new AtomicDouble(transmitterAmount), aDouble -> transmitterAmount -= aDouble.get(), unit, new AtomicDouble(20000.0)),
 					new LimitedOutput<>(() -> new AtomicDouble(20000 - transmitterAmount), aDouble -> transmitterAmount += aDouble.get(), unit, new AtomicDouble(600.0))
 			);
