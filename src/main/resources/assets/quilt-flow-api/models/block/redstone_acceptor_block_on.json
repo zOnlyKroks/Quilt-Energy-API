@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "quilt-flow-api:block/redstone_acceptor_block_on"
+  }
+}

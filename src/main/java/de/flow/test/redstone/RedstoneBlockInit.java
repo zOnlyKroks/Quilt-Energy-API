@@ -1,7 +1,9 @@
 package de.flow.test.redstone;
 
 import de.flow.FlowApi;
+import de.flow.test.redstone.blocks.RedstoneAcceptorBlock;
 import de.flow.test.redstone.blocks.RedstoneCableBlock;
+import de.flow.test.redstone.blocks.RedstoneEmitterBlock;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.util.Identifier;
@@ -11,11 +13,19 @@ import org.quiltmc.qsl.item.setting.api.QuiltItemSettings;
 public class RedstoneBlockInit {
 
     public static final Block CABLE_BLOCK;
+	public static final Block ACCEPTOR_BLOCK;
+	public static final Block EMITTER_BLOCK;
     public static final BlockItem CABLE_ITEM;
+	public static final BlockItem ACCEPTOR_ITEM;
+	public static final BlockItem EMITTER_ITEM;
 
     static {
         CABLE_BLOCK = registerBlock("redstone_cable_block", new RedstoneCableBlock());
         CABLE_ITEM = registerBlockItem("redstone_cable_block", CABLE_BLOCK);
+		ACCEPTOR_BLOCK = registerBlock("redstone_acceptor_block", new RedstoneAcceptorBlock());
+		ACCEPTOR_ITEM = registerBlockItem("redstone_acceptor_block", ACCEPTOR_BLOCK);
+		EMITTER_BLOCK = registerBlock("redstone_emitter_block", new RedstoneEmitterBlock());
+		EMITTER_ITEM = registerBlockItem("redstone_emitter_block", EMITTER_BLOCK);
     }
 
     private static Block registerBlock(String id, Block value) {

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "quilt-flow-api:block/redstone_emitter_block"
+    },
+    "powered=true": {
+      "model": "quilt-flow-api:block/redstone_emitter_block_on"
+    }
+  }
+}

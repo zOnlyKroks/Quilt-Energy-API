@@ -1,0 +1,7 @@
+{
+  "textures": {
+    "particle": "quilt-flow-api:block/redstone_cable_block_on_particle",
+    "base": "quilt-flow-api:block/redstone_cable_block_on",
+    "connection": "quilt-flow-api:block/redstone_cable_block_on"
+  }
+}
