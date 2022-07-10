@@ -14,15 +14,15 @@ import net.minecraft.world.World;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class RedstoneAcceptorBlockEntity extends BlockEntity implements NetworkBlock {
+public class RedstoneAcceptorEntity extends BlockEntity implements NetworkBlock {
 	private int redstonePower = 0;
 	@RegisterToNetwork
 	private Input<AtomicInteger> providedPower = new DefaultInput<>(() -> new AtomicInteger(redstonePower), value -> {}, Unit.numberUnit(Utils.REDSTONE_TYPE, 1));
-	public RedstoneAcceptorBlockEntity(BlockPos blockPos, BlockState blockState) {
+	public RedstoneAcceptorEntity(BlockPos blockPos, BlockState blockState) {
 		super(RedstoneBlockEntityInit.ACCEPTOR_ENTITY, blockPos, blockState);
 	}
 
-	public static void tick(World world, BlockPos blockPos, BlockState blockState, RedstoneAcceptorBlockEntity entity) {
+	public static void tick(World world, BlockPos blockPos, BlockState blockState, RedstoneAcceptorEntity entity) {
 		int redstonePower = 0;
 		for (Direction direction : Direction.values()) {
 			redstonePower = Math.max(world.getEmittedRedstonePower(blockPos, direction), redstonePower);

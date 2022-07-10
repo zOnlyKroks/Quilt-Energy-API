@@ -33,7 +33,7 @@ public class RedstoneAcceptorBlock extends AbstractNetworkBlock {
 	@Nullable
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-		return new RedstoneAcceptorBlockEntity(pos, state);
+		return new RedstoneAcceptorEntity(pos, state);
 	}
 
 	@Override
@@ -44,6 +44,6 @@ public class RedstoneAcceptorBlock extends AbstractNetworkBlock {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		return world.isClient ? null : checkType(type, RedstoneBlockEntityInit.ACCEPTOR_ENTITY, RedstoneAcceptorBlockEntity::tick);
+		return world.isClient ? null : checkType(type, RedstoneBlockEntityInit.ACCEPTOR_ENTITY, RedstoneAcceptorEntity::tick);
 	}
 }

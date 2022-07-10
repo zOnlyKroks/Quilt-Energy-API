@@ -35,7 +35,7 @@ public class RedstoneEmitterBlock extends AbstractNetworkBlock {
 	@Nullable
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-		return new RedstoneEmitterBlockEntity(pos, state);
+		return new RedstoneEmitterEntity(pos, state);
 	}
 
 	@Override
@@ -50,12 +50,12 @@ public class RedstoneEmitterBlock extends AbstractNetworkBlock {
 
 	@Override
 	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
-		return ((RedstoneEmitterBlockEntity) world.getBlockEntity(pos)).getRedstonePower();
+		return ((RedstoneEmitterEntity) world.getBlockEntity(pos)).getRedstonePower();
 	}
 
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		return world.isClient ? null : checkType(type, RedstoneBlockEntityInit.EMITTER_ENTITY, RedstoneEmitterBlockEntity::tick);
+		return world.isClient ? null : checkType(type, RedstoneBlockEntityInit.EMITTER_ENTITY, RedstoneEmitterEntity::tick);
 	}
 }

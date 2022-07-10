@@ -14,15 +14,16 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.block.extensions.api.QuiltBlockSettings;
 
-public class BatteryBlock extends AbstractNetworkBlock {
-	public BatteryBlock() {
+public class EnergyTransmitterBlock extends AbstractNetworkBlock {
+
+	public EnergyTransmitterBlock() {
 		super(QuiltBlockSettings.of(Material.METAL).collidable(true).strength(6).hardness(6).requiresTool());
 	}
 
 	@Nullable
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-		return new BatteryEntity(pos, state);
+		return new EnergyTransmitterEntity(pos, state);
 	}
 
 	@Override
@@ -33,18 +34,7 @@ public class BatteryBlock extends AbstractNetworkBlock {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		return world.isClient ? null : checkType(type, EnergyBlockEntityInit.BATTERY_ENTITY, BatteryEntity::tick);
-	}
-
-	@Override
-	public boolean hasComparatorOutput(BlockState state) {
-		return true;
-	}
-
-	@Override
-	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-		BatteryEntity batteryEntity = (BatteryEntity) world.getBlockEntity(pos);
-		return (int) (batteryEntity.getStoredAmount() / 500000 * 15);
+		return world.isClient ? null : checkType(type, EnergyBlockEntityInit.ENERGY_TRANSMITTER_ENTITY, EnergyTransmitterEntity::tick);
 	}
 
 	@Override

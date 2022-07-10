@@ -5,6 +5,7 @@ import de.flow.test.energy.blocks.BatteryBlock;
 import de.flow.test.energy.blocks.CableBlock;
 import de.flow.test.energy.blocks.LampBlock;
 import de.flow.test.energy.blocks.SolarPanelBlock;
+import de.flow.test.energy.blocks.EnergyTransmitterBlock;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.util.Identifier;
@@ -24,6 +25,9 @@ public class EnergyBlockInit {
 	public static final Block CABLE_BLOCK;
 	public static final BlockItem CABLE_ITEM;
 
+	public static final Block ENERGY_TRANSMITTER_BLOCK;
+	public static final BlockItem ENERGY_TRANSMITTER_ITEM;
+
 	static {
 		SOLAR_PANEL_BLOCK = registerBlock("solar_panel_block", new SolarPanelBlock());
 		SOLAR_PANEL_ITEM = registerBlockItem("solar_panel_block", SOLAR_PANEL_BLOCK);
@@ -36,6 +40,9 @@ public class EnergyBlockInit {
 
 		CABLE_BLOCK = registerBlock("cable_block", new CableBlock());
 		CABLE_ITEM = registerBlockItem("cable_block", CABLE_BLOCK);
+
+		ENERGY_TRANSMITTER_BLOCK = registerBlock("energy_transmitter_block", new EnergyTransmitterBlock());
+		ENERGY_TRANSMITTER_ITEM = registerBlockItem("energy_transmitter_block", ENERGY_TRANSMITTER_BLOCK);
 	}
 
 	private static Block registerBlock(String id, Block value) {
