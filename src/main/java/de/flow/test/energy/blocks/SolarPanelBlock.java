@@ -1,7 +1,7 @@
-package de.flow.test.blocks;
+package de.flow.test.energy.blocks;
 
 import de.flow.api.AbstractNetworkBlock;
-import de.flow.test.BlockEntityInit;
+import de.flow.test.energy.EnergyBlockEntityInit;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
@@ -38,7 +38,7 @@ public class SolarPanelBlock extends AbstractNetworkBlock {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		return world.isClient ? null : checkType(type, BlockEntityInit.SOLAR_PANEL_ENTITY, SolarPanelEntity::tick);
+		return world.isClient ? null : checkType(type, EnergyBlockEntityInit.SOLAR_PANEL_ENTITY, SolarPanelEntity::tick);
 	}
 
 	@Override

@@ -1,0 +1,15 @@
+{
+  "parent": "quilt-flow-api:block/redstone_cable_block_textures",
+  "elements": [
+    {
+      "from": [7, 8, 7],
+      "to": [9, 16, 9],
+      "faces": {
+        "north": {"uv": [0, 4, 2, 12], "texture": "#connection"},
+        "east": {"uv": [0, 4, 2, 12], "texture": "#connection"},
+        "south": {"uv": [0, 4, 2, 12], "texture": "#connection"},
+        "west": {"uv": [0, 4, 2, 12], "texture": "#connection"}
+      }
+    }
+  ]
+}

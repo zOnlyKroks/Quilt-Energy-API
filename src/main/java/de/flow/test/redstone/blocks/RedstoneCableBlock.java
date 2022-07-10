@@ -1,6 +1,5 @@
-package de.flow.test.blocks;
+package de.flow.test.redstone.blocks;
 
-import com.google.common.util.concurrent.AtomicDouble;
 import de.flow.api.AbstractCableBlock;
 import de.flow.api.Type;
 import de.flow.api.Utils;
@@ -23,15 +22,16 @@ import org.quiltmc.qsl.block.extensions.api.QuiltBlockSettings;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
-public class CableBlock extends AbstractCableBlock<AtomicDouble> implements Waterloggable {
+public class RedstoneCableBlock extends AbstractCableBlock<AtomicInteger> implements Waterloggable {
 	private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 
 	private static final Map<BlockState, VoxelShape> SHAPE_CACHE = new IdentityHashMap<>();
 
 
-	public CableBlock() {
+	public RedstoneCableBlock() {
 		super(QuiltBlockSettings.of(Material.METAL).strength(6).hardness(6).requiresTool());
 		this.setDefaultState(getDefaultState().with(WATERLOGGED, false));
 	}
@@ -76,7 +76,7 @@ public class CableBlock extends AbstractCableBlock<AtomicDouble> implements Wate
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-		return SHAPE_CACHE.computeIfAbsent(state, CableBlock::getStateShape);
+		return SHAPE_CACHE.computeIfAbsent(state, RedstoneCableBlock::getStateShape);
 	}
 
 	@Override
@@ -95,8 +95,8 @@ public class CableBlock extends AbstractCableBlock<AtomicDouble> implements Wate
 	}
 
 	@Override
-	public Type<AtomicDouble> type() {
-		return Utils.ENERGY_TYPE;
+	public Type<AtomicInteger> type() {
+		return Utils.REDSTONE_TYPE;
 	}
 
 	@Override

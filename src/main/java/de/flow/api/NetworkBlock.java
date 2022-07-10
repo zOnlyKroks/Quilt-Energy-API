@@ -5,6 +5,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 import java.lang.reflect.Field;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -96,6 +97,33 @@ public interface NetworkBlock {
 		}
 	}
 
+	class LockableInput<C> implements Input<C> {
+
+		private Input<C> delegate;
+		private BooleanSupplier lock;
+
+		public LockableInput(Input<C> input, BooleanSupplier lock) {
+			this.delegate = input;
+			this.lock = lock;
+		}
+
+		@Override
+		public C extractableAmount() {
+			if (lock.getAsBoolean()) return delegate.unit().type().container();
+			return delegate.extractableAmount();
+		}
+
+		@Override
+		public void extract(C amount) {
+			delegate.extract(amount);
+		}
+
+		@Override
+		public Unit<C> unit() {
+			return delegate.unit();
+		}
+	}
+
 	interface Output<C> extends Unitable<C>, Networkable<C> {
 		C desiredAmount();
 
@@ -146,6 +174,37 @@ public interface NetworkBlock {
 		@Override
 		public C desiredAmount() {
 			return delegate.unit().type().min(delegate.desiredAmount(), limit);
+		}
+
+		@Override
+		public void provide(C amount) {
+			delegate.provide(amount);
+		}
+
+		@Override
+		public Unit<C> unit() {
+			return delegate.unit();
+		}
+	}
+
+	class LockableOutput<C> implements Output<C> {
+
+		private Output<C> delegate;
+		private BooleanSupplier lock;
+
+		public LockableOutput(Output<C> output, BooleanSupplier lock) {
+			this.delegate = output;
+			this.lock = lock;
+		}
+
+		public LockableOutput(Supplier<C> desired, Consumer<C> provided, Unit<C> unit, BooleanSupplier lock) {
+			this(new DefaultOutput<>(desired, provided, unit), lock);
+		}
+
+		@Override
+		public C desiredAmount() {
+			if (lock.getAsBoolean()) return delegate.unit().type().container();
+			return delegate.desiredAmount();
 		}
 
 		@Override

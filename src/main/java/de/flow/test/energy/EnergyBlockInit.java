@@ -1,17 +1,17 @@
-package de.flow.test;
+package de.flow.test.energy;
 
 import de.flow.FlowApi;
-import de.flow.test.blocks.BatteryBlock;
-import de.flow.test.blocks.CableBlock;
-import de.flow.test.blocks.LampBlock;
-import de.flow.test.blocks.SolarPanelBlock;
+import de.flow.test.energy.blocks.BatteryBlock;
+import de.flow.test.energy.blocks.CableBlock;
+import de.flow.test.energy.blocks.LampBlock;
+import de.flow.test.energy.blocks.SolarPanelBlock;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.quiltmc.qsl.item.setting.api.QuiltItemSettings;
 
-public class BlockInit {
+public class EnergyBlockInit {
 	public static final Block SOLAR_PANEL_BLOCK;
 	public static final BlockItem SOLAR_PANEL_ITEM;
 

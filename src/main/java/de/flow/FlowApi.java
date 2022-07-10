@@ -1,8 +1,10 @@
 package de.flow;
 
 import de.flow.impl.NetworkManager;
-import de.flow.test.BlockEntityInit;
-import de.flow.test.BlockInit;
+import de.flow.test.energy.EnergyBlockEntityInit;
+import de.flow.test.energy.EnergyBlockInit;
+import de.flow.test.redstone.RedstoneBlockEntityInit;
+import de.flow.test.redstone.RedstoneBlockInit;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
@@ -18,12 +20,15 @@ public class FlowApi implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("Quilt Flow API");
 
 	public static ItemGroup ITEM_GROUP = QuiltItemGroup.createWithIcon(new Identifier(MODID, "item_group"),
-			() -> new ItemStack(BlockInit.SOLAR_PANEL_BLOCK));
+			() -> new ItemStack(EnergyBlockInit.SOLAR_PANEL_BLOCK));
 
 	@Override
 	public void onInitialize(ModContainer mod) {
-		BlockEntityInit.onInitialize();
-		BlockInit.onInitialize();
+		EnergyBlockEntityInit.onInitialize();
+		EnergyBlockInit.onInitialize();
+
+		RedstoneBlockEntityInit.onInitialize();
+		RedstoneBlockInit.onInitialize();
 
 		ServerTickEvents.START.register(server -> {
 			NetworkManager.tick();

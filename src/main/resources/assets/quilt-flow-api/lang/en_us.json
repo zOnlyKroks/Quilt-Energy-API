@@ -3,5 +3,6 @@
   "block.quilt-flow-api.battery_block": "Battery",
   "block.quilt-flow-api.solar_panel_block": "Solar Panel",
   "block.quilt-flow-api.lamp_block": "Lamp",
-  "block.quilt-flow-api.cable_block": "Cable"
+  "block.quilt-flow-api.cable_block": "Cable",
+  "block.quilt-flow-api.redstone_cable_block": "Redstone Cable"
 }

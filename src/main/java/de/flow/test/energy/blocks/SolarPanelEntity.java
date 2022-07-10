@@ -1,10 +1,10 @@
-package de.flow.test.blocks;
+package de.flow.test.energy.blocks;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.flow.api.NetworkBlock;
 import de.flow.api.RegisterToNetwork;
 import de.flow.api.Unit;
-import de.flow.test.BlockEntityInit;
+import de.flow.test.energy.EnergyBlockEntityInit;
 import lombok.Getter;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -42,6 +42,6 @@ public class SolarPanelEntity extends BlockEntity implements NetworkBlock {
 	private Input<AtomicDouble> input = new LimitedInput<>(() -> new AtomicDouble(storedAmount), aDouble -> storedAmount -= aDouble.get(), Unit.energyUnit(1), new AtomicDouble(600.0));
 
 	public SolarPanelEntity(BlockPos blockPos, BlockState blockState) {
-		super(BlockEntityInit.SOLAR_PANEL_ENTITY, blockPos, blockState);
+		super(EnergyBlockEntityInit.SOLAR_PANEL_ENTITY, blockPos, blockState);
 	}
 }
