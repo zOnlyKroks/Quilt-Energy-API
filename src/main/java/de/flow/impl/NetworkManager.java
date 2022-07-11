@@ -101,6 +101,7 @@ public class NetworkManager {
 					})
 					.toList();
 			if (toTick.isEmpty()) continue;
+			toTick.forEach(Network::calculateTransmitterLimits);
 			// TODO: Add ticking for with transmitter
 			// toTick.forEach(Network::tick);
 		}

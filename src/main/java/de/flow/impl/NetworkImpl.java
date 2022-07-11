@@ -174,6 +174,26 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 		}
 	}
 
+	private Map<NetworkBlock.TransmitterIdentifier, C> transmitterLimits;
+
+	@Override
+	public void calculateTransmitterLimits() {
+		if (transmitters.size() > 1) transmitters.add(transmitters.remove(0));
+
+		transmitterLimits = new HashMap<>();
+		Set<NetworkBlock.TransmitterIdentifier> toRemove = new HashSet<>();
+		for (NetworkBlock.Transmitter<C> transmitter : transmitters) {
+			if (transmitter.isLocked()) continue;
+			if (transmitter.transferLimit() == null) {
+				toRemove.add(transmitter.identifier());
+				continue;
+			}
+			C limit = transmitterLimits.computeIfAbsent(transmitter.identifier(), id -> type.container());
+			type().add(limit, transmitter.transferLimit());
+		}
+		toRemove.forEach(transmitterLimits::remove);
+	}
+
 	// Only with transmitter:
 
 	// neededOutput -> 0, providedInput

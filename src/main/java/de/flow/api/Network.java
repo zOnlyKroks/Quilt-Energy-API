@@ -17,6 +17,7 @@ public interface Network<C> extends Typeable<C> {
 	void calculateAmounts();
 	boolean hasTransmitter();
 	void calculateWithoutTransmitter();
+	void calculateTransmitterLimits();
 
 	boolean add(World world, BlockPos blockPos, Networkable<C> networkable);
 	boolean remove(World world, BlockPos blockPos, Networkable<C> networkable);
