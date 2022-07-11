@@ -16,8 +16,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class RedstoneAcceptorEntity extends BlockEntity implements NetworkBlock {
 	private int redstonePower = 0;
+
 	@RegisterToNetwork
-	private Input<AtomicInteger> providedPower = new DefaultInput<>(() -> new AtomicInteger(redstonePower), value -> {}, Unit.numberUnit(Utils.REDSTONE_TYPE, 1));
+	private Input<AtomicInteger> providedPower = new DefaultInput<>(() -> new AtomicInteger(redstonePower), value -> {
+	}, Unit.numberUnit(Utils.REDSTONE_TYPE, 1));
+
 	public RedstoneAcceptorEntity(BlockPos blockPos, BlockState blockState) {
 		super(RedstoneBlockEntityInit.ACCEPTOR_ENTITY, blockPos, blockState);
 	}

@@ -339,4 +339,70 @@ public interface NetworkBlock {
 			return delegate.unit();
 		}
 	}
+
+	interface TransmitterIdentifier {}
+
+	interface Transmitter<C> extends Unitable<C>, Networkable<C> {
+
+		TransmitterIdentifier identifier();
+
+		default C transferLimit() {
+			return null;
+		}
+
+		default boolean isLocked() {
+			return false;
+		}
+
+		default boolean isNotLocked() {
+			return !isLocked();
+		}
+	}
+
+	class DefaultTransmitter<C> implements Transmitter<C> {
+
+		private TransmitterIdentifier identifier;
+		private C limit;
+		private BooleanSupplier lock;
+		private Unit<C> unit;
+
+		public DefaultTransmitter(TransmitterIdentifier identifier, Unit<C> unit) {
+			this(identifier, unit, null, () -> false);
+		}
+
+		public DefaultTransmitter(TransmitterIdentifier identifier, Unit<C> unit, C limit) {
+			this(identifier, unit, limit, () -> false);
+		}
+
+		public DefaultTransmitter(TransmitterIdentifier identifier, Unit<C> unit, BooleanSupplier lock) {
+			this(identifier, unit, null, lock);
+		}
+
+		public DefaultTransmitter(TransmitterIdentifier identifier, Unit<C> unit, C limit, BooleanSupplier lock) {
+			this.identifier = identifier;
+			this.limit = limit;
+			this.lock = lock;
+			this.unit = unit;
+		}
+
+		@Override
+		public TransmitterIdentifier identifier() {
+			return identifier;
+		}
+
+		@Override
+		public C transferLimit() {
+			return limit;
+		}
+
+		@Override
+		public boolean isLocked() {
+			return lock.getAsBoolean();
+		}
+
+		@Override
+		public Unit<C> unit() {
+			return unit;
+		}
+	}
 }

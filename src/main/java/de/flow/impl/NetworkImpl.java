@@ -22,6 +22,7 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 	private List<NetworkBlock.Input<C>> inputs = new ArrayList<>();
 	private List<NetworkBlock.Output<C>> outputs = new ArrayList<>();
 	private List<NetworkBlock.Output<C>> storageOutputs = new ArrayList<>();
+	private List<NetworkBlock.Transmitter<C>> transmitters = new ArrayList<>();
 
 	private Map<World, Set<BlockPos>> cablePositions = new HashMap<>();
 	private Map<World, Set<BlockPos>> io = new HashMap<>();
@@ -63,37 +64,65 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 	}
 
 	@Override
-	public void tick() {
-		if (outputs.isEmpty() && storageOutputs.isEmpty()) return;
+	public boolean needsTick() {
+		if (inputs.isEmpty() && transmitters.isEmpty()) {
+			return false;
+		}
+		if (outputs.isEmpty() && storageOutputs.isEmpty() && transmitters.isEmpty()) {
+			return false;
+		}
+		return true;
+	}
+
+	private C neededOutput;
+	private C storageNeededOutput;
+	private C totalNeededOutput;
+	private C providedInput;
+	private C storageProvidedInput;
+	private C totalProvidedInput;
+
+	@Override
+	public void calculateAmounts() {
 		if (outputs.size() > 1) outputs.add(outputs.remove(0));
 		if (storageOutputs.size() > 1) storageOutputs.add(storageOutputs.remove(0));
 
-		C neededAmount = type.container();
-		C totalNeededAmount = type.container();
+		neededOutput = type.container();
+		storageNeededOutput = type.container();
+		totalNeededOutput = type.container();
 		for (NetworkBlock.Output<C> output : outputs) {
-			C amount = output.unit().convertToBaseUnit(output.desiredAmount());
-			type.add(totalNeededAmount, amount);
-			type.add(neededAmount, amount);
+			C baseAmount = output.unit().convertToBaseUnit(output.desiredAmount());
+			type.add(neededOutput, baseAmount);
+			type.add(totalNeededOutput, baseAmount);
 		}
 		for (NetworkBlock.Output<C> output : storageOutputs) {
-			C amount = output.unit().convertToBaseUnit(output.desiredAmount());
-			type.add(totalNeededAmount, amount);
+			C baseAmount = output.unit().convertToBaseUnit(output.desiredAmount());
+			type.add(storageNeededOutput, baseAmount);
+			type.add(totalNeededOutput, baseAmount);
 		}
 
-		if (type.isEmpty(totalNeededAmount)) return;
-
-		C nonStorageProvidedAmount = type.container();
-		C totalProvidedAmount = type.container();
+		providedInput = type.container();
+		storageProvidedInput = type.container();
+		totalProvidedInput = type.container();
 		for (NetworkBlock.Input<C> input : inputs) {
-			C amount = input.unit().convertToBaseUnit(input.extractableAmount());
-			type.add(totalProvidedAmount, amount);
-			if (!(input instanceof NetworkBlock.Output)) {
-				type.add(nonStorageProvidedAmount, amount);
+			C totalAmount = input.unit().convertToBaseUnit(input.extractableAmount());
+			if (!(input instanceof NetworkBlock.Output<?>)) {
+				type.add(providedInput, totalAmount);
+			} else {
+				type.add(storageProvidedInput, totalAmount);
 			}
+			type.add(totalProvidedInput, totalAmount);
 		}
+	}
 
-		boolean storage = type.containsAll(nonStorageProvidedAmount, neededAmount);
-		C availableAmount = storage ? nonStorageProvidedAmount : totalProvidedAmount;
+	@Override
+	public boolean hasTransmitter() {
+		return transmitters.stream().anyMatch(NetworkBlock.Transmitter::isNotLocked);
+	}
+
+	@Override
+	public void calculateWithoutTransmitter() {
+		boolean storage = type.containsAll(providedInput, neededOutput);
+		C availableAmount = storage ? providedInput : totalProvidedInput;
 
 		C availableAmountCopy = type.copy(availableAmount);
 		cablePositions.forEach((world, blockPos) -> {
@@ -105,12 +134,13 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 				}
 			});
 		});
-		if (type.isEmpty(totalProvidedAmount)) return;
+		if (type.isEmpty(totalNeededOutput)) return;
+		if (type.isEmpty(totalProvidedInput)) return;
 
 		if (storageOutputs.isEmpty() || !storage) {
-			availableAmount = type.min(availableAmount, neededAmount);
+			availableAmount = type.min(availableAmount, neededOutput);
 		} else {
-			availableAmount = type.min(availableAmount, totalNeededAmount);
+			availableAmount = type.min(availableAmount, totalNeededOutput);
 		}
 
 		// System.out.println("neededAmount: " + neededAmount + " totalNeededAmount: " + totalNeededAmount + " availableAmount: " + availableAmount + " storage: " + storage + " nonStorageProvidedAmount: " + nonStorageProvidedAmount + " totalProvidedAmount: " + totalProvidedAmount);
@@ -144,6 +174,17 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 		}
 	}
 
+	// Only with transmitter:
+
+	// neededOutput -> 0, providedInput
+	// has transmitter » neededOutput left should be requested from transmitters, only max transmitter limit
+	//                   providedInput left should be provided to transmitters, only max transmitter limit
+
+	// transmitters stuff will be computed
+
+	// if transmitter balance is negative (so even more is needed) -> provide storageProvidedInput until balance is 0
+	// if transmitter balance is positive (so more is provided then needed) -> provided storageNeededOutput until balance is 0
+
 	private boolean internalAdd(Networkable<C> networkable) {
 		if (networkable.unit().type() != type) return false;
 		if (networkable instanceof NetworkBlock.Output<C> output) {
@@ -162,6 +203,10 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 		} else if (networkable instanceof NetworkBlock.Input<C> input) {
 			if (!inputs.contains(input)) {
 				inputs.add(0, input);
+			}
+		} else if (networkable instanceof NetworkBlock.Transmitter<C> transmitter) {
+			if (!transmitters.contains(transmitter)) {
+				transmitters.add(transmitter);
 			}
 		} else {
 			return false;
@@ -194,6 +239,9 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 		}
 		if (networkable instanceof NetworkBlock.Input<C>) {
 			inputs.remove(networkable);
+		}
+		if (networkable instanceof NetworkBlock.Transmitter<C>) {
+			transmitters.remove(networkable);
 		}
 		return true;
 	}
@@ -286,18 +334,6 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 		return positions;
 	}
 
-	private Map<World, Set<BlockPos>> convertBlocks(NbtList nbtList, Map<String, World> worlds) {
-		Map<World, Set<BlockPos>> blockPositions = new HashMap<>();
-		for (NbtElement nbtBase : nbtList) {
-			NbtCompound element = (NbtCompound) nbtBase;
-			World world = worlds.get(element.getString("world"));
-			if (world == null) continue;
-			BlockPos blockPos = new BlockPos(element.getInt("x"), element.getInt("y"), element.getInt("z"));
-			blockPositions.computeIfAbsent(world, k -> new HashSet<>()).add(blockPos);
-		}
-		return blockPositions;
-	}
-
 	@Override
 	public void merge(Network<C> network) {
 		if (network.type() != type) return;
@@ -325,7 +361,7 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			List<BlockPos> left = new ArrayList<>();
 			left.add(currentPeer);
 
-			while(!left.isEmpty()) {
+			while (!left.isEmpty()) {
 				BlockPos current = left.remove(0);
 				if (!networkBlocks.contains(current)) networkBlocks.add(current);
 				List<BlockPos> adjacent = adjacent(world, current, (world1, blockPos, direction) -> {

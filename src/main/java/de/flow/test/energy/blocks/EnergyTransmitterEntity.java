@@ -12,8 +12,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class EnergyTransmitterEntity extends BlockEntity implements NetworkBlock {
 
-	private static Store<AtomicDouble> transmitterStore = null;
-	private static double transmitterAmount = 0;
+	private static TransmitterIdentifier transmitterIdentifier;
+
+	public static void onInitialize() {
+		Networks.loadCallback(() -> {
+			transmitterIdentifier = new TransmitterIdentifier() {
+			};
+		});
+		Networks.unloadCallback(() -> {
+			transmitterIdentifier = null;
+		});
+	}
 
 	private boolean noOutput = false;
 	private boolean redstoneNoOutput = false;
@@ -23,27 +32,12 @@ public class EnergyTransmitterEntity extends BlockEntity implements NetworkBlock
 		energyTransmitterEntity.redstoneNoOutput = false;
 	}
 
-	public static void onInitialize() {
-		Unit<AtomicDouble> unit = Unit.energyUnit(1);
-		Networks.loadCallback(() -> {
-			System.out.println("Loading energy transmitter store");
-			transmitterStore = new DefaultStore<>(
-					new LimitedInput<>(() -> new AtomicDouble(transmitterAmount), aDouble -> transmitterAmount -= aDouble.get(), unit, new AtomicDouble(20000.0)),
-					new LimitedOutput<>(() -> new AtomicDouble(20000 - transmitterAmount), aDouble -> transmitterAmount += aDouble.get(), unit, new AtomicDouble(20000.0))
-			);
-		});
-		Networks.unloadCallback(() -> {
-			System.out.println("Unloading energy transmitter store");
-			transmitterStore = null;
-		});
-	}
-
 	public EnergyTransmitterEntity(BlockPos blockPos, BlockState blockState) {
 		super(EnergyBlockEntityInit.ENERGY_TRANSMITTER_ENTITY, blockPos, blockState);
 	}
 
 	@RegisterToNetwork
-	private Store<AtomicDouble> store = new LockableStore<>(transmitterStore, () -> noOutput);
+	private Transmitter<AtomicDouble> transmitter = new DefaultTransmitter<>(transmitterIdentifier, Unit.energyUnit(1), new AtomicDouble(600), () -> noOutput);
 
 	@RegisterToNetwork
 	private Output<AtomicInteger> redstoneOutput = new DefaultOutput<>(() -> new AtomicInteger(1), value -> redstoneNoOutput = value.get() > 0, Unit.numberUnit(Utils.REDSTONE_TYPE, 1));

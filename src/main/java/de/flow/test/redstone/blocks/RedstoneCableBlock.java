@@ -37,7 +37,7 @@ public class RedstoneCableBlock extends AbstractCableBlock<AtomicInteger> implem
 
 
 	public RedstoneCableBlock() {
-		super(QuiltBlockSettings.of(Material.METAL).strength(6).hardness(6).requiresTool());
+		super(QuiltBlockSettings.of(Material.METAL).strength(6).hardness(6).requiresTool().luminance(value -> value.get(POWERED) ? 2 : 0));
 		//this.setDefaultState(getDefaultState().with(WATERLOGGED, false).with(SIGNAL_STRENGTH, 0));
 		this.setDefaultState(getDefaultState().with(WATERLOGGED, false).with(POWERED, false));
 	}

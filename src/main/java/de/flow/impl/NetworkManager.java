@@ -17,6 +17,7 @@ import net.minecraft.world.World;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @UtilityClass
 public class NetworkManager {
@@ -85,7 +86,24 @@ public class NetworkManager {
 	}
 
 	public void tick() {
-		networks.values().stream().flatMap(Collection::stream).forEach(Network::tick);
+		for (Map.Entry<Type<?>, List<Network<?>>> networkEntry : networks.entrySet()) {
+			List<Network<?>> toTick = networkEntry.getValue()
+					.stream()
+					.filter(Network::needsTick)
+					.peek(Network::calculateAmounts)
+					.filter(network -> {
+						if (!network.hasTransmitter()) {
+							network.calculateWithoutTransmitter();
+							return false;
+						} else {
+							return true;
+						}
+					})
+					.toList();
+			if (toTick.isEmpty()) continue;
+			// TODO: Add ticking for with transmitter
+			// toTick.forEach(Network::tick);
+		}
 	}
 
 	public void loadNetworks(File networksDir, MinecraftServer minecraftServer) {
