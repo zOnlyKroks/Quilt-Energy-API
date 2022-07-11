@@ -1,5 +1,6 @@
 package de.flow.api;
 
+import de.flow.impl.TransmitterData;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -18,6 +19,7 @@ public interface Network<C> extends Typeable<C> {
 	boolean hasTransmitter();
 	void calculateWithoutTransmitter();
 	void calculateTransmitterLimits();
+	void calculateTransmitterNeededOrProvided(Map<NetworkBlock.TransmitterIdentifier, TransmitterData<C>> data);
 
 	boolean add(World world, BlockPos blockPos, Networkable<C> networkable);
 	boolean remove(World world, BlockPos blockPos, Networkable<C> networkable);

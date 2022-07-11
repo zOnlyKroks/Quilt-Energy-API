@@ -6,6 +6,7 @@ import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
 import de.flow.FlowApi;
 import de.flow.api.Network;
+import de.flow.api.NetworkBlock;
 import de.flow.api.Type;
 import lombok.experimental.UtilityClass;
 import net.minecraft.server.MinecraftServer;
@@ -17,7 +18,6 @@ import net.minecraft.world.World;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @UtilityClass
 public class NetworkManager {
@@ -102,6 +102,8 @@ public class NetworkManager {
 					.toList();
 			if (toTick.isEmpty()) continue;
 			toTick.forEach(Network::calculateTransmitterLimits);
+			Map<NetworkBlock.TransmitterIdentifier, TransmitterData<?>> data = new HashMap<>();
+			toTick.forEach(network -> network.calculateTransmitterNeededOrProvided((Map) data));
 			// TODO: Add ticking for with transmitter
 			// toTick.forEach(Network::tick);
 		}

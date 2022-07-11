@@ -64,11 +64,14 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 	}
 
 	@Override
-	public boolean needsTick() {
-		if (inputs.isEmpty() && transmitters.isEmpty()) {
-			return false;
+	public boolean needsTick() { // TODO: Optimize this for networks without any StatefulNetworkCables
+		if (!inputs.isEmpty()) {
+			return true;
 		}
-		if (outputs.isEmpty() && storageOutputs.isEmpty() && transmitters.isEmpty()) {
+		if (!transmitters.isEmpty()) {
+			return true;
+		}
+		if (outputs.isEmpty() && storageOutputs.isEmpty()) {
 			return false;
 		}
 		return true;
@@ -192,6 +195,23 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			type().add(limit, transmitter.transferLimit());
 		}
 		toRemove.forEach(transmitterLimits::remove);
+	}
+
+	@Override
+	public void calculateTransmitterNeededOrProvided(Map<NetworkBlock.TransmitterIdentifier, TransmitterData<C>> data) {
+		C amount;
+		boolean supply;
+		if (type.containsAll(providedInput, neededOutput)) {
+			amount = type.copy(providedInput);
+			type.subtract(amount, neededOutput);
+			supply = true;
+		} else {
+			amount = type.copy(neededOutput);
+			type.subtract(amount, providedInput);
+			supply = false;
+		}
+
+		System.out.println("Network: " + this + " " + amount + " " + supply);
 	}
 
 	// Only with transmitter:
