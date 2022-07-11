@@ -50,7 +50,10 @@ public class RedstoneEmitterBlock extends AbstractNetworkBlock {
 
 	@Override
 	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
-		return ((RedstoneEmitterEntity) world.getBlockEntity(pos)).getRedstonePower();
+		if (world.getBlockEntity(pos) instanceof RedstoneEmitterEntity redstoneEmitterEntity) {
+			return redstoneEmitterEntity.getRedstonePower();
+		}
+		return 0;
 	}
 
 	@Nullable
