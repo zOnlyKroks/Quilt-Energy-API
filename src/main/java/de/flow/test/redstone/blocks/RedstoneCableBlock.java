@@ -112,7 +112,6 @@ public class RedstoneCableBlock extends AbstractCableBlock<AtomicInteger> implem
 
 	@Override
 	public void changeCableState(World world, BlockPos blockPos, BlockState blockState, AtomicInteger availableAmount) {
-		//blockState = blockState.with(SIGNAL_STRENGTH, Math.min(Math.max(availableAmount.get(), 0), 15));
 		blockState = blockState.with(POWERED, availableAmount.get() > 0);
 		world.setBlockState(blockPos, blockState);
 	}

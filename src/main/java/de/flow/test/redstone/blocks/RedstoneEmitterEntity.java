@@ -10,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.TickPriority;
 import net.minecraft.world.World;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,8 +27,8 @@ public class RedstoneEmitterEntity extends BlockEntity implements NetworkBlock {
 	}
 
 	public static void tick(World world, BlockPos blockPos, BlockState blockState, RedstoneEmitterEntity entity) {
-		blockState = blockState.with(Properties.POWERED, entity.redstonePower > 0);
-		world.setBlockState(blockPos, blockState);
+		world.setBlockState(blockPos, blockState.with(Properties.POWERED, entity.redstonePower > 0), 2);
+		world.updateNeighbors(blockPos, blockState.getBlock());
 		entity.redstonePower = 0;
 	}
 }
