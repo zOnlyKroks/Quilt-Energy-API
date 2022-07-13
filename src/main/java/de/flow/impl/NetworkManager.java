@@ -101,9 +101,13 @@ public class NetworkManager {
 					})
 					.toList();
 			if (toTick.isEmpty()) continue;
-			toTick.forEach(Network::calculateTransmitterLimits);
 			Map<NetworkBlock.TransmitterIdentifier, TransmitterData<?>> data = new HashMap<>();
+			toTick.stream().map(Network::calculateTransmitterLimits).flatMap(Collection::stream).forEach(limit -> {
+				data.put(limit, new TransmitterData<>(networkEntry.getKey()));
+			});
 			toTick.forEach(network -> network.calculateTransmitterNeededOrProvided((Map) data));
+			data.forEach((transmitterIdentifier, transmitterData) -> transmitterData.balance());
+			System.out.println(data);
 			// TODO: Add ticking for with transmitter
 			// toTick.forEach(Network::tick);
 		}

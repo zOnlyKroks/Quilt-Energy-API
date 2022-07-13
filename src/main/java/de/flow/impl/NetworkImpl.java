@@ -172,7 +172,7 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			C available = type.available(availableAmount, baseAmount);
 			if (available != null) {
 				output.provide(output.unit().convertFromBaseUnit(available));
-				type.subtract(availableAmount, baseAmount);
+				type.subtract(availableAmount, available);
 			}
 		}
 	}
@@ -180,21 +180,21 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 	private Map<NetworkBlock.TransmitterIdentifier, C> transmitterLimits;
 
 	@Override
-	public void calculateTransmitterLimits() {
+	public Set<NetworkBlock.TransmitterIdentifier> calculateTransmitterLimits() {
 		if (transmitters.size() > 1) transmitters.add(transmitters.remove(0));
 
 		transmitterLimits = new HashMap<>();
-		Set<NetworkBlock.TransmitterIdentifier> toRemove = new HashSet<>();
 		for (NetworkBlock.Transmitter<C> transmitter : transmitters) {
 			if (transmitter.isLocked()) continue;
 			if (transmitter.transferLimit() == null) {
-				toRemove.add(transmitter.identifier());
+				transmitterLimits.put(transmitter.identifier(), null);
 				continue;
 			}
 			C limit = transmitterLimits.computeIfAbsent(transmitter.identifier(), id -> type.container());
+			if (limit == null) continue;
 			type().add(limit, transmitter.transferLimit());
 		}
-		toRemove.forEach(transmitterLimits::remove);
+		return transmitterLimits.keySet();
 	}
 
 	@Override
@@ -211,7 +211,29 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			supply = false;
 		}
 
-		System.out.println("Network: " + this + " " + amount + " " + supply);
+		for (Map.Entry<NetworkBlock.TransmitterIdentifier, C> limit : transmitterLimits.entrySet()) {
+			if (type.isEmpty(amount)) return;
+
+			C available = amount;
+			if (limit.getValue() != null) {
+				available = type.available(amount, limit.getValue());
+			}
+			if (available != null) {
+				available = type.copy(available);
+				type.subtract(limit.getValue(), available);
+				type.subtract(amount, available);
+				if (supply) {
+					data.get(limit.getKey()).getSuppliers().add(new TransmitterData.TransmitterPair<>(c -> {
+						type.subtract(providedInput, c);
+					}, available));
+				} else {
+					data.get(limit.getKey()).getConsumers().add(new TransmitterData.TransmitterPair<>(c -> {
+						type.add(providedInput, c);
+					}, available));
+				}
+			}
+		}
+		System.out.println(transmitterLimits);
 	}
 
 	// Only with transmitter:

@@ -18,7 +18,7 @@ public interface Network<C> extends Typeable<C> {
 	void calculateAmounts();
 	boolean hasTransmitter();
 	void calculateWithoutTransmitter();
-	void calculateTransmitterLimits();
+	Set<NetworkBlock.TransmitterIdentifier> calculateTransmitterLimits();
 	void calculateTransmitterNeededOrProvided(Map<NetworkBlock.TransmitterIdentifier, TransmitterData<C>> data);
 
 	boolean add(World world, BlockPos blockPos, Networkable<C> networkable);
