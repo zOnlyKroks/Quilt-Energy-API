@@ -33,6 +33,34 @@ public class TransmitterData<C> {
 	private boolean storage = true;
 
 	public void balance() {
+		if (suppliers.isEmpty() && consumers.isEmpty()) {
+			return;
+		}
+		if (suppliers.isEmpty()) {
+			storage = false;
+			return;
+		}
+		if (consumers.isEmpty()) return;
+
+		C provided = type.container();
+		for (TransmitterPair<C> supplier : suppliers) {
+			type.add(provided, supplier.getAmount());
+		}
+
+		C needed = type.container();
+		for (TransmitterPair<C> consumer : consumers) {
+			type.subtract(needed, consumer.getAmount());
+		}
+
+		if (type.isEmpty(provided) && type.isEmpty(needed)) return;
+		if (type.isEmpty(provided)) {
+			storage = false;
+			return;
+		}
+		if (type.isEmpty(needed)) return;
+
+		C available = type.available(provided, needed);
+		System.out.println("available: " + available);
 		// TODO: Implement balance method
 	}
 }
