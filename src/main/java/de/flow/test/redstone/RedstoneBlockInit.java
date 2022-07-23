@@ -4,6 +4,7 @@ import de.flow.FlowApi;
 import de.flow.test.redstone.blocks.RedstoneAcceptorBlock;
 import de.flow.test.redstone.blocks.RedstoneCableBlock;
 import de.flow.test.redstone.blocks.RedstoneEmitterBlock;
+import de.flow.test.redstone.blocks.RedstoneTransmitterBlock;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.util.Identifier;
@@ -15,9 +16,11 @@ public class RedstoneBlockInit {
     public static final Block CABLE_BLOCK;
 	public static final Block ACCEPTOR_BLOCK;
 	public static final Block EMITTER_BLOCK;
+	public static final Block TRANSMITTER_BLOCK;
     public static final BlockItem CABLE_ITEM;
 	public static final BlockItem ACCEPTOR_ITEM;
 	public static final BlockItem EMITTER_ITEM;
+	public static final BlockItem TRANSMITTER_ITEM;
 
     static {
         CABLE_BLOCK = registerBlock("redstone_cable_block", new RedstoneCableBlock());
@@ -26,6 +29,8 @@ public class RedstoneBlockInit {
 		ACCEPTOR_ITEM = registerBlockItem("redstone_acceptor_block", ACCEPTOR_BLOCK);
 		EMITTER_BLOCK = registerBlock("redstone_emitter_block", new RedstoneEmitterBlock());
 		EMITTER_ITEM = registerBlockItem("redstone_emitter_block", EMITTER_BLOCK);
+		TRANSMITTER_BLOCK = registerBlock("redstone_transmitter_block", new RedstoneTransmitterBlock());
+		TRANSMITTER_ITEM = registerBlockItem("redstone_transmitter_block", TRANSMITTER_BLOCK);
     }
 
     private static Block registerBlock(String id, Block value) {

@@ -110,6 +110,7 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 				type.add(storageProvidedInput, totalAmount);
 			}
 		}
+		// System.out.println(neededOutput + " " + storageNeededOutput + " " + providedInput + " " + storageProvidedInput);
 	}
 
 	@Override
@@ -213,6 +214,7 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			type.subtract(amount, providedInput);
 			supply = false;
 		}
+		// System.out.println(amount + " " + supply);
 
 		for (Map.Entry<NetworkBlock.TransmitterIdentifier, C> limit : transmitterLimits.entrySet()) {
 			if (type.isEmpty(amount)) return;
@@ -256,17 +258,6 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			}
 		}
 	}
-
-	// Only with transmitter:
-
-	// neededOutput -> 0, providedInput
-	// has transmitter » neededOutput left should be requested from transmitters, only max transmitter limit
-	//                   providedInput left should be provided to transmitters, only max transmitter limit
-
-	// transmitters stuff will be computed
-
-	// if transmitter balance is negative (so even more is needed) -> provide storageProvidedInput until balance is 0
-	// if transmitter balance is positive (so more is provided then needed) -> provided storageNeededOutput until balance is 0
 
 	private boolean internalAdd(Networkable<C> networkable) {
 		if (networkable.unit().type() != type) return false;

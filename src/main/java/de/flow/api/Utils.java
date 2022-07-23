@@ -28,6 +28,7 @@ public class Utils {
 
 		@Override
 		public boolean containsAll(AtomicInteger container, AtomicInteger shouldContain) {
+			if (container.get() == 0) return false;
 			return true;
 		}
 

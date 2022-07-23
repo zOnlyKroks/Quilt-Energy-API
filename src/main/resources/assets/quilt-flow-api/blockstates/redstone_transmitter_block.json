@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "quilt-flow-api:block/energy_transmitter_block"
+      "model": "quilt-flow-api:block/redstone_transmitter_block"
     }
   }
 }
