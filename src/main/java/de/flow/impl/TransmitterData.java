@@ -63,26 +63,20 @@ public class TransmitterData<C> {
 		C available = type.available(provided, needed);
 
 		C toRemove = type.copy(available);
-		for (TransmitterPair<C> supplier : suppliers) {
-			C current = type.available(toRemove, supplier.getAmount());
-			if (current != null) {
-				type.subtract(toRemove, current);
-				type.subtract(supplier.getAmount(), current);
-				supplier.consumer.accept(current);
-			}
-			if (type.isEmpty(toRemove)) break;
-		}
-		suppliers.removeIf(k -> type.isEmpty(k.getAmount()));
+		distribute(toRemove, suppliers);
+		distribute(available, consumers);
+	}
 
-		for (TransmitterPair<C> consumer : consumers) {
-			C current = type.available(available, consumer.getAmount());
+	private void distribute(C available, List<TransmitterPair<C>> pairs) {
+		for (TransmitterPair<C> pair : pairs) {
+			C current = type.available(available, pair.getAmount());
 			if (current != null) {
 				type.subtract(available, current);
-				type.subtract(consumer.getAmount(), current);
-				consumer.consumer.accept(current);
+				type.subtract(pair.getAmount(), current);
+				pair.consumer.accept(current);
 			}
 			if (type.isEmpty(available)) break;
 		}
-		consumers.removeIf(k -> type.isEmpty(k.getAmount()));
+		pairs.removeIf(k -> type.isEmpty(k.getAmount()));
 	}
 }
