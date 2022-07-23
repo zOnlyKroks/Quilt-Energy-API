@@ -16,6 +16,7 @@ public class TransmitterData<C> {
 
 	@AllArgsConstructor
 	@Getter
+	@ToString
 	public static class TransmitterPair<C> {
 		private Consumer<C> consumer;
 		private C amount;
@@ -49,7 +50,7 @@ public class TransmitterData<C> {
 
 		C needed = type.container();
 		for (TransmitterPair<C> consumer : consumers) {
-			type.subtract(needed, consumer.getAmount());
+			type.add(needed, consumer.getAmount());
 		}
 
 		if (type.isEmpty(provided) && type.isEmpty(needed)) return;
@@ -60,7 +61,28 @@ public class TransmitterData<C> {
 		if (type.isEmpty(needed)) return;
 
 		C available = type.available(provided, needed);
-		System.out.println("available: " + available);
-		// TODO: Implement balance method
+
+		C toRemove = type.copy(available);
+		for (TransmitterPair<C> supplier : suppliers) {
+			C current = type.available(toRemove, supplier.getAmount());
+			if (current != null) {
+				type.subtract(toRemove, current);
+				type.subtract(supplier.getAmount(), current);
+				supplier.consumer.accept(current);
+			}
+			if (type.isEmpty(toRemove)) break;
+		}
+		suppliers.removeIf(k -> type.isEmpty(k.getAmount()));
+
+		for (TransmitterPair<C> consumer : consumers) {
+			C current = type.available(available, consumer.getAmount());
+			if (current != null) {
+				type.subtract(available, current);
+				type.subtract(consumer.getAmount(), current);
+				consumer.consumer.accept(current);
+			}
+			if (type.isEmpty(available)) break;
+		}
+		consumers.removeIf(k -> type.isEmpty(k.getAmount()));
 	}
 }

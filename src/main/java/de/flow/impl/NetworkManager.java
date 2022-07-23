@@ -107,9 +107,9 @@ public class NetworkManager {
 			});
 			toTick.forEach(network -> network.calculateTransmitterNeededOrProvided((Map) data));
 			data.forEach((transmitterIdentifier, transmitterData) -> transmitterData.balance());
-			System.out.println(data);
-			// TODO: Add ticking for with transmitter
-			// toTick.forEach(Network::tick);
+			toTick.forEach(network -> network.calculateTransmitterNeededOrProvidedStorage((Map) data));
+			data.forEach((transmitterIdentifier, transmitterData) -> transmitterData.balance());
+			toTick.forEach(Network::calculateWithoutTransmitter);
 		}
 	}
 

@@ -91,21 +91,17 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 
 		neededOutput = type.container();
 		storageNeededOutput = type.container();
-		totalNeededOutput = type.container();
 		for (NetworkBlock.Output<C> output : outputs) {
 			C baseAmount = output.unit().convertToBaseUnit(output.desiredAmount());
 			type.add(neededOutput, baseAmount);
-			type.add(totalNeededOutput, baseAmount);
 		}
 		for (NetworkBlock.Output<C> output : storageOutputs) {
 			C baseAmount = output.unit().convertToBaseUnit(output.desiredAmount());
 			type.add(storageNeededOutput, baseAmount);
-			type.add(totalNeededOutput, baseAmount);
 		}
 
 		providedInput = type.container();
 		storageProvidedInput = type.container();
-		totalProvidedInput = type.container();
 		for (NetworkBlock.Input<C> input : inputs) {
 			C totalAmount = input.unit().convertToBaseUnit(input.extractableAmount());
 			if (!(input instanceof NetworkBlock.Output<?>)) {
@@ -113,7 +109,6 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			} else {
 				type.add(storageProvidedInput, totalAmount);
 			}
-			type.add(totalProvidedInput, totalAmount);
 		}
 	}
 
@@ -124,6 +119,14 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 
 	@Override
 	public void calculateWithoutTransmitter() {
+		totalNeededOutput = type.container();
+		type.add(totalNeededOutput, neededOutput);
+		type.add(totalNeededOutput, storageNeededOutput);
+
+		totalProvidedInput = type.container();
+		type.add(totalProvidedInput, providedInput);
+		type.add(totalProvidedInput, storageProvidedInput);
+
 		boolean storage = type.containsAll(providedInput, neededOutput);
 		C availableAmount = storage ? providedInput : totalProvidedInput;
 
@@ -233,7 +236,22 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 				}
 			}
 		}
-		System.out.println(transmitterLimits);
+	}
+
+	@Override
+	public void calculateTransmitterNeededOrProvidedStorage(Map<NetworkBlock.TransmitterIdentifier, TransmitterData<C>> data) {
+		for (Map.Entry<NetworkBlock.TransmitterIdentifier, C> limit : transmitterLimits.entrySet()) {
+			if (data.get(limit.getKey()).isStorage() || limit.getValue() == null) continue;
+
+			C available = type.available(storageProvidedInput, limit.getValue());
+			if (available != null) {
+				available = type.copy(available);
+				type.subtract(limit.getValue(), available);
+				data.get(limit.getKey()).getSuppliers().add(new TransmitterData.TransmitterPair<>(c -> {
+					type.subtract(storageProvidedInput, c);
+				}, available));
+			}
+		}
 	}
 
 	// Only with transmitter:
