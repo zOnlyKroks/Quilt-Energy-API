@@ -241,9 +241,12 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 	@Override
 	public void calculateTransmitterNeededOrProvidedStorage(Map<NetworkBlock.TransmitterIdentifier, TransmitterData<C>> data) {
 		for (Map.Entry<NetworkBlock.TransmitterIdentifier, C> limit : transmitterLimits.entrySet()) {
-			if (data.get(limit.getKey()).isStorage() || limit.getValue() == null) continue;
+			if (data.get(limit.getKey()).isStorage()) continue;
 
-			C available = type.available(storageProvidedInput, limit.getValue());
+			C available = storageProvidedInput;
+			if (limit.getValue() != null) {
+				available = type.available(storageProvidedInput, limit.getValue());
+			}
 			if (available != null) {
 				available = type.copy(available);
 				type.subtract(limit.getValue(), available);
