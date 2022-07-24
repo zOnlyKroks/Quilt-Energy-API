@@ -22,7 +22,7 @@ import org.quiltmc.qsl.block.extensions.api.QuiltBlockSettings;
 public class RedstoneEmitterBlock extends AbstractNetworkBlock {
 	private static final BooleanProperty POWERED = Properties.POWERED;
 	public RedstoneEmitterBlock() {
-		super(QuiltBlockSettings.of(Material.METAL).strength(6).hardness(6).requiresTool());
+		super(QuiltBlockSettings.of(Material.METAL).strength(6).hardness(6).requiresTool().luminance(value -> value.get(POWERED) ? 2 : 0));
 		this.setDefaultState(getDefaultState().with(POWERED, false));
 	}
 
