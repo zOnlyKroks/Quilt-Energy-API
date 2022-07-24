@@ -1,0 +1,7 @@
+{
+  "textures": {
+    "particle": "quilt-flow-api:block/item_cable_block_particle",
+    "base": "quilt-flow-api:block/item_cable_block",
+    "connection": "quilt-flow-api:block/item_cable_block"
+  }
+}
