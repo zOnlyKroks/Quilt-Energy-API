@@ -25,13 +25,13 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 
-public class CableBlock extends AbstractCableBlock<AtomicDouble> implements Waterloggable {
+public class EnergyCableBlock extends AbstractCableBlock<AtomicDouble> implements Waterloggable {
 	private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 
 	private static final Map<BlockState, VoxelShape> SHAPE_CACHE = new IdentityHashMap<>();
 
 
-	public CableBlock() {
+	public EnergyCableBlock() {
 		super(QuiltBlockSettings.of(Material.METAL).strength(6).hardness(6).requiresTool());
 		this.setDefaultState(getDefaultState().with(WATERLOGGED, false));
 	}
@@ -76,7 +76,7 @@ public class CableBlock extends AbstractCableBlock<AtomicDouble> implements Wate
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-		return SHAPE_CACHE.computeIfAbsent(state, CableBlock::getStateShape);
+		return SHAPE_CACHE.computeIfAbsent(state, EnergyCableBlock::getStateShape);
 	}
 
 	@Override

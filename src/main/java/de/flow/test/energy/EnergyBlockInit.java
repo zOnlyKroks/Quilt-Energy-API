@@ -1,11 +1,8 @@
 package de.flow.test.energy;
 
 import de.flow.FlowApi;
-import de.flow.test.energy.blocks.BatteryBlock;
-import de.flow.test.energy.blocks.CableBlock;
-import de.flow.test.energy.blocks.LampBlock;
-import de.flow.test.energy.blocks.SolarPanelBlock;
-import de.flow.test.energy.blocks.EnergyTransmitterBlock;
+import de.flow.test.energy.blocks.*;
+import de.flow.test.energy.blocks.EnergyCableBlock;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.util.Identifier;
@@ -38,8 +35,8 @@ public class EnergyBlockInit {
 		BATTERY_BLOCK = registerBlock("battery_block", new BatteryBlock());
 		BATTERY_ITEM = registerBlockItem("battery_block", BATTERY_BLOCK);
 
-		CABLE_BLOCK = registerBlock("cable_block", new CableBlock());
-		CABLE_ITEM = registerBlockItem("cable_block", CABLE_BLOCK);
+		CABLE_BLOCK = registerBlock("energy_cable_block", new EnergyCableBlock());
+		CABLE_ITEM = registerBlockItem("energy_cable_block", CABLE_BLOCK);
 
 		ENERGY_TRANSMITTER_BLOCK = registerBlock("energy_transmitter_block", new EnergyTransmitterBlock());
 		ENERGY_TRANSMITTER_ITEM = registerBlockItem("energy_transmitter_block", ENERGY_TRANSMITTER_BLOCK);
@@ -54,6 +51,5 @@ public class EnergyBlockInit {
 	}
 
 	public static void onInitialize() {
-
 	}
 }

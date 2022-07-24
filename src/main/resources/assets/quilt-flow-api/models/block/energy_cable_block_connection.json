@@ -1,5 +1,5 @@
 {
-  "parent": "quilt-flow-api:block/cable_block_textures",
+  "parent": "quilt-flow-api:block/energy_cable_block_textures",
   "elements": [
     {
       "from": [7, 8, 7],

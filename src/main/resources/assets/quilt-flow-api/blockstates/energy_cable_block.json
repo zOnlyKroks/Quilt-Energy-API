@@ -2,7 +2,7 @@
   "multipart": [
     {
       "apply": {
-        "model": "quilt-flow-api:block/cable_block_base"
+        "model": "quilt-flow-api:block/energy_cable_block_base"
       },
       "when": {
         "show_base": true
@@ -10,7 +10,7 @@
     },
     {
       "apply": {
-        "model": "quilt-flow-api:block/cable_block_connection"
+        "model": "quilt-flow-api:block/energy_cable_block_connection"
       },
       "when": {
         "connection_up": true
@@ -18,7 +18,7 @@
     },
     {
       "apply": {
-        "model": "quilt-flow-api:block/cable_block_connection",
+        "model": "quilt-flow-api:block/energy_cable_block_connection",
         "x": 180
       },
       "when": {
@@ -27,7 +27,7 @@
     },
     {
       "apply": {
-        "model": "quilt-flow-api:block/cable_block_connection",
+        "model": "quilt-flow-api:block/energy_cable_block_connection",
         "x": 90
       },
       "when": {
@@ -36,7 +36,7 @@
     },
     {
       "apply": {
-        "model": "quilt-flow-api:block/cable_block_connection",
+        "model": "quilt-flow-api:block/energy_cable_block_connection",
         "x": 270
       },
       "when": {
@@ -45,7 +45,7 @@
     },
     {
       "apply": {
-        "model": "quilt-flow-api:block/cable_block_connection",
+        "model": "quilt-flow-api:block/energy_cable_block_connection",
         "x": 90,
         "y": 90
       },
@@ -55,7 +55,7 @@
     },
     {
       "apply": {
-        "model": "quilt-flow-api:block/cable_block_connection",
+        "model": "quilt-flow-api:block/energy_cable_block_connection",
         "x": 270,
         "y": 90
       },
