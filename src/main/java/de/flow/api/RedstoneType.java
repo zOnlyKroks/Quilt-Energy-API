@@ -2,6 +2,9 @@ package de.flow.api;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Internal API used in {@link Utils}
+ */
 class RedstoneType implements Type<AtomicInteger> {
 
 	@Override

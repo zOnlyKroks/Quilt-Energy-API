@@ -2,6 +2,7 @@ package de.flow.test.item.blocks;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.flow.api.*;
+import de.flow.impl.ItemStackContainer;
 import de.flow.test.item.ItemBlockEntityInit;
 import lombok.Getter;
 import net.minecraft.block.BlockState;
