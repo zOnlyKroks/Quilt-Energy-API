@@ -49,7 +49,6 @@ public class ItemOutputEntity extends BlockEntity implements NetworkBlock {
 			return new HashMap<>();
 		}
 	}, consume -> {
-		if (consume.isEmpty()) return;
 		storedAmount -= 20;
 		insert(new HashMap<>(consume));
 	}, Unit.unit(Utils.ITEM_TYPE)), () -> noInput || storedAmount < 20);

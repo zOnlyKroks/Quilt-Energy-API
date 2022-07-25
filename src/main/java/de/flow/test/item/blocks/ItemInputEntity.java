@@ -41,7 +41,6 @@ public class ItemInputEntity extends BlockEntity implements NetworkBlock {
 
 	@RegisterToNetwork
 	public Input<Map<ItemStackContainer, BigInteger>> input = new LockableInput<>(new DefaultInput<>(this::content, consume -> {
-		if (consume.isEmpty()) return;
 		storedAmount -= 20;
 		extract(new HashMap<>(consume));
 	}, Unit.unit(Utils.ITEM_TYPE)), () -> noInput || storedAmount < 20);

@@ -158,8 +158,10 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			C baseAmount = input.unit().convertToBaseUnit(amount);
 
 			C available = type.available(toRemove, baseAmount);
-			input.extract(input.unit().convertFromBaseUnit(available));
-			type.subtract(toRemove, baseAmount);
+			if (!type.isEmpty(available)) {
+				input.extract(input.unit().convertFromBaseUnit(available));
+				type.subtract(toRemove, baseAmount);
+			}
 			if (type.isEmpty(toRemove)) break;
 		}
 
@@ -172,8 +174,10 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			C baseAmount = output.unit().convertToBaseUnit(output.desiredAmount());
 
 			C available = type.available(availableAmount, baseAmount);
-			output.provide(output.unit().convertFromBaseUnit(available));
-			type.subtract(availableAmount, available);
+			if (!type.isEmpty(available)) {
+				output.provide(output.unit().convertFromBaseUnit(available));
+				type.subtract(availableAmount, available);
+			}
 		}
 	}
 
@@ -219,17 +223,19 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			if (limit.getValue() != null) {
 				available = type.available(amount, limit.getValue());
 			}
-			available = type.copy(available);
-			type.subtract(limit.getValue(), available);
-			type.subtract(amount, available);
-			if (supply) {
-				data.get(limit.getKey()).getSuppliers().add(new TransmitterData.TransmitterPair<>(c -> {
-					type.subtract(providedInput, c);
-				}, available));
-			} else {
-				data.get(limit.getKey()).getConsumers().add(new TransmitterData.TransmitterPair<>(c -> {
-					type.add(providedInput, c);
-				}, available));
+			if (!type.isEmpty(available)) {
+				available = type.copy(available);
+				type.subtract(limit.getValue(), available);
+				type.subtract(amount, available);
+				if (supply) {
+					data.get(limit.getKey()).getSuppliers().add(new TransmitterData.TransmitterPair<>(c -> {
+						type.subtract(providedInput, c);
+					}, available));
+				} else {
+					data.get(limit.getKey()).getConsumers().add(new TransmitterData.TransmitterPair<>(c -> {
+						type.add(providedInput, c);
+					}, available));
+				}
 			}
 		}
 	}
@@ -243,11 +249,13 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			if (limit.getValue() != null) {
 				available = type.available(storageProvidedInput, limit.getValue());
 			}
-			available = type.copy(available);
-			type.subtract(limit.getValue(), available);
-			data.get(limit.getKey()).getSuppliers().add(new TransmitterData.TransmitterPair<>(c -> {
-				type.subtract(storageProvidedInput, c);
-			}, available));
+			if (!type.isEmpty(available)) {
+				available = type.copy(available);
+				type.subtract(limit.getValue(), available);
+				data.get(limit.getKey()).getSuppliers().add(new TransmitterData.TransmitterPair<>(c -> {
+					type.subtract(storageProvidedInput, c);
+				}, available));
+			}
 		}
 	}
 
