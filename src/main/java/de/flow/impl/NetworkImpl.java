@@ -145,9 +145,9 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 		if (type.isEmpty(totalProvidedInput)) return;
 
 		if (storageOutputs.isEmpty() || !storage) {
-			availableAmount = type.min(availableAmount, neededOutput);
+			availableAmount = type.available(availableAmount, neededOutput);
 		} else {
-			availableAmount = type.min(availableAmount, totalNeededOutput);
+			availableAmount = type.available(availableAmount, totalNeededOutput);
 		}
 
 		// System.out.println("neededAmount: " + neededAmount + " totalNeededAmount: " + totalNeededAmount + " availableAmount: " + availableAmount + " storage: " + storage + " nonStorageProvidedAmount: " + nonStorageProvidedAmount + " totalProvidedAmount: " + totalProvidedAmount);
@@ -158,10 +158,8 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			C baseAmount = input.unit().convertToBaseUnit(amount);
 
 			C available = type.available(toRemove, baseAmount);
-			if (available != null) {
-				input.extract(input.unit().convertFromBaseUnit(available));
-				type.subtract(toRemove, baseAmount);
-			}
+			input.extract(input.unit().convertFromBaseUnit(available));
+			type.subtract(toRemove, baseAmount);
 			if (type.isEmpty(toRemove)) break;
 		}
 
@@ -174,10 +172,8 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			C baseAmount = output.unit().convertToBaseUnit(output.desiredAmount());
 
 			C available = type.available(availableAmount, baseAmount);
-			if (available != null) {
-				output.provide(output.unit().convertFromBaseUnit(available));
-				type.subtract(availableAmount, available);
-			}
+			output.provide(output.unit().convertFromBaseUnit(available));
+			type.subtract(availableAmount, available);
 		}
 	}
 
@@ -223,19 +219,17 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			if (limit.getValue() != null) {
 				available = type.available(amount, limit.getValue());
 			}
-			if (available != null) {
-				available = type.copy(available);
-				type.subtract(limit.getValue(), available);
-				type.subtract(amount, available);
-				if (supply) {
-					data.get(limit.getKey()).getSuppliers().add(new TransmitterData.TransmitterPair<>(c -> {
-						type.subtract(providedInput, c);
-					}, available));
-				} else {
-					data.get(limit.getKey()).getConsumers().add(new TransmitterData.TransmitterPair<>(c -> {
-						type.add(providedInput, c);
-					}, available));
-				}
+			available = type.copy(available);
+			type.subtract(limit.getValue(), available);
+			type.subtract(amount, available);
+			if (supply) {
+				data.get(limit.getKey()).getSuppliers().add(new TransmitterData.TransmitterPair<>(c -> {
+					type.subtract(providedInput, c);
+				}, available));
+			} else {
+				data.get(limit.getKey()).getConsumers().add(new TransmitterData.TransmitterPair<>(c -> {
+					type.add(providedInput, c);
+				}, available));
 			}
 		}
 	}
@@ -249,13 +243,11 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 			if (limit.getValue() != null) {
 				available = type.available(storageProvidedInput, limit.getValue());
 			}
-			if (available != null) {
-				available = type.copy(available);
-				type.subtract(limit.getValue(), available);
-				data.get(limit.getKey()).getSuppliers().add(new TransmitterData.TransmitterPair<>(c -> {
-					type.subtract(storageProvidedInput, c);
-				}, available));
-			}
+			available = type.copy(available);
+			type.subtract(limit.getValue(), available);
+			data.get(limit.getKey()).getSuppliers().add(new TransmitterData.TransmitterPair<>(c -> {
+				type.subtract(storageProvidedInput, c);
+			}, available));
 		}
 	}
 

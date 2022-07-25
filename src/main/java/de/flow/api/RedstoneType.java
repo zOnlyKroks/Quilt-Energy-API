@@ -16,13 +16,11 @@ class RedstoneType implements Type<AtomicInteger> {
 
 	@Override
 	public void subtract(AtomicInteger container, AtomicInteger element) {
-
 	}
 
 	@Override
 	public boolean containsAll(AtomicInteger container, AtomicInteger shouldContain) {
-		if (container.get() == 0) return false;
-		return true;
+		return container.get() != 0;
 	}
 
 	@Override
@@ -33,11 +31,6 @@ class RedstoneType implements Type<AtomicInteger> {
 	@Override
 	public boolean isEmpty(AtomicInteger container) {
 		return container.get() == 0;
-	}
-
-	@Override
-	public AtomicInteger min(AtomicInteger c1, AtomicInteger c2) {
-		return c1;
 	}
 
 	@Override

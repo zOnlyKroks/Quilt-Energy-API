@@ -44,7 +44,7 @@ public class ItemInputEntity extends BlockEntity implements NetworkBlock {
 	@RegisterToNetwork
 	public Input<Map<ItemStackContainer, BigInteger>> input = new LockableInput<>(new DefaultInput<>(this::content, consume -> {
 		storedAmount -= 20;
-		// TODO: consume items from surrounding inventories
+		System.out.println("INPUT: " + consume);
 	}, Unit.unit(Utils.ITEM_TYPE)), () -> noInput || storedAmount < 20);
 
 	@RegisterToNetwork
@@ -74,7 +74,6 @@ public class ItemInputEntity extends BlockEntity implements NetworkBlock {
 				}
 			});
 		});
-		System.out.println(content);
 		return content;
 	}
 }

@@ -61,15 +61,6 @@ class ItemType implements Type<Map<ItemStackContainer, BigInteger>> {
 	}
 
 	@Override
-	public Map<ItemStackContainer, BigInteger> min(Map<ItemStackContainer, BigInteger> c1, Map<ItemStackContainer, BigInteger> c2) {
-		Map<ItemStackContainer, BigInteger> min = new HashMap<>(c1);
-		for (Map.Entry<ItemStackContainer, BigInteger> entry : c2.entrySet()) {
-			min.merge(entry.getKey(), entry.getValue(), BigInteger::min);
-		}
-		return min;
-	}
-
-	@Override
 	public Map<ItemStackContainer, BigInteger> copy(Map<ItemStackContainer, BigInteger> container) {
 		return new HashMap<>(container);
 	}

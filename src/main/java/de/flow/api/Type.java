@@ -16,8 +16,6 @@ public interface Type<C> {
 
 	boolean isEmpty(C container);
 
-	C min(C c1, C c2);
-
 	C copy(C container);
 
 	class NumberType implements Type<AtomicDouble> {
@@ -44,7 +42,6 @@ public interface Type<C> {
 
 		@Override
 		public AtomicDouble available(AtomicDouble container, AtomicDouble needed) {
-			if (container.get() <= 0) return null;
 			if (container.get() > needed.get()) {
 				return new AtomicDouble(needed.get());
 			} else {
@@ -55,11 +52,6 @@ public interface Type<C> {
 		@Override
 		public boolean isEmpty(AtomicDouble container) {
 			return container.get() <= 0;
-		}
-
-		@Override
-		public AtomicDouble min(AtomicDouble c1, AtomicDouble c2) {
-			return new AtomicDouble(Math.min(c1.get(), c2.get()));
 		}
 
 		@Override

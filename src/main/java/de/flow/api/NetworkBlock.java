@@ -83,7 +83,7 @@ public interface NetworkBlock {
 
 		@Override
 		public C extractableAmount() {
-			return delegate.unit().type().min(delegate.extractableAmount(), limit);
+			return delegate.unit().type().available(delegate.extractableAmount(), limit);
 		}
 
 		@Override
@@ -173,7 +173,7 @@ public interface NetworkBlock {
 
 		@Override
 		public C desiredAmount() {
-			return delegate.unit().type().min(delegate.desiredAmount(), limit);
+			return delegate.unit().type().available(delegate.desiredAmount(), limit);
 		}
 
 		@Override
