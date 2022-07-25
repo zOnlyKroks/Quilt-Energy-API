@@ -1,7 +1,5 @@
 package de.flow.api;
 
-import de.flow.impl.ItemStackContainer;
-
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;

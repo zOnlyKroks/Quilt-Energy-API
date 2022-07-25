@@ -1,7 +1,7 @@
 package de.flow.test.item.blocks;
 
 import de.flow.api.AbstractCableBlock;
-import de.flow.impl.ItemStackContainer;
+import de.flow.api.ItemStackContainer;
 import de.flow.api.Type;
 import de.flow.api.Utils;
 import net.minecraft.block.*;

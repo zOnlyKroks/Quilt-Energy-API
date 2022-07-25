@@ -1,4 +1,4 @@
-package de.flow.impl;
+package de.flow.api;
 
 import de.flow.impl.Container;
 import net.minecraft.item.ItemStack;
