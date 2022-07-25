@@ -74,6 +74,21 @@ public class ItemOutputScreenHandler extends ScreenHandler {
 						player.dropItem(this.getCursorStack().split(1), true);
 					}
 				}
+			} else if (actionType == SlotActionType.QUICK_MOVE) {
+				if (slotIndex < 0) {
+					return;
+				}
+				Slot slot = this.slots.get(slotIndex);
+				if (slotIndex == 0) {
+					inventory.setStack(0, ItemStack.EMPTY);
+					slot.setStack(ItemStack.EMPTY);
+					slot.markDirty();
+				} else if (slotIndex > 1) {
+					ItemStack itemStack = slot.getStack().copy();
+					inventory.setStack(0, itemStack);
+					slot.setStack(itemStack);
+					slot.markDirty();
+				}
 			} else {
 				if (slotIndex < 0) {
 					return;
