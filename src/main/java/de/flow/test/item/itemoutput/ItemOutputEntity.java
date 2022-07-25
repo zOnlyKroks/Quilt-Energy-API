@@ -53,7 +53,7 @@ public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inven
 			return new HashMap<>();
 		} else if (hasSpace()) {
 			Map<ItemStackContainer, BigInteger> toGet = new HashMap<>();
-			toGet.put(new ItemStackContainer(toRequest), BigInteger.valueOf(1));
+			toGet.put(new ItemStackContainer(toRequest), BigInteger.valueOf(toRequest.getCount()));
 			return toGet;
 		} else {
 			return new HashMap<>();
