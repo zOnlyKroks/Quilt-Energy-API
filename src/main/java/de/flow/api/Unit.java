@@ -9,6 +9,10 @@ public interface Unit<C> extends Typeable<C> {
 	C convertToBaseUnit(C amount);
 	C convertFromBaseUnit(C amount);
 
+	static <C> Unit<C> unit(Type<C> type) {
+		return new UnitImpl<>(type);
+	}
+
 	static Unit<AtomicDouble> energyUnit(double factor) {
 		return numberUnit(Utils.ENERGY_TYPE, factor);
 	}

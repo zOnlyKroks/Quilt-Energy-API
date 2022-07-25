@@ -1,6 +1,7 @@
 package de.flow.test.item.blocks;
 
 import de.flow.api.AbstractCableBlock;
+import de.flow.api.ItemStackContainer;
 import de.flow.api.Type;
 import de.flow.api.Utils;
 import net.minecraft.block.*;
@@ -9,7 +10,6 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -26,7 +26,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 
-public class ItemCableBlock extends AbstractCableBlock<Map<ItemStack, BigInteger>> implements Waterloggable {
+public class ItemCableBlock extends AbstractCableBlock<Map<ItemStackContainer, BigInteger>> implements Waterloggable {
 	private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 
 	private static final Map<BlockState, VoxelShape> SHAPE_CACHE = new IdentityHashMap<>();
@@ -96,7 +96,7 @@ public class ItemCableBlock extends AbstractCableBlock<Map<ItemStack, BigInteger
 	}
 
 	@Override
-	public Type<Map<ItemStack, BigInteger>> type() {
+	public Type<Map<ItemStackContainer, BigInteger>> type() {
 		return Utils.ITEM_TYPE;
 	}
 

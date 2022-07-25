@@ -11,6 +11,10 @@ public class UnitImpl<C> implements Unit<C> {
 	private UnaryOperator<C> conversionToBaseUnit;
 	private UnaryOperator<C> conversionFromBaseUnit;
 
+	public UnitImpl(Type<C> type) {
+		this(type, UnaryOperator.identity(), UnaryOperator.identity());
+	}
+
 	public UnitImpl(Type<C> type, UnaryOperator<C> conversionToBaseUnit, UnaryOperator<C> conversionFromBaseUnit) {
 		this.type = type;
 		this.conversionToBaseUnit = conversionToBaseUnit;

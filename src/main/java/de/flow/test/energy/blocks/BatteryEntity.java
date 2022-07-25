@@ -37,7 +37,7 @@ public class BatteryEntity extends BlockEntity implements NetworkBlock {
 	);
 
 	@RegisterToNetwork
-	private Output<AtomicInteger> redstoneOutput = new DefaultOutput<>(() -> new AtomicInteger(1), value -> redstoneNoOutput = value.get() > 0, Unit.numberUnit(Utils.REDSTONE_TYPE, 1));
+	private Output<AtomicInteger> redstoneOutput = new DefaultOutput<>(() -> new AtomicInteger(1), value -> redstoneNoOutput = true, Unit.numberUnit(Utils.REDSTONE_TYPE, 1));
 
 	public BatteryEntity(BlockPos blockPos, BlockState blockState) {
 		super(EnergyBlockEntityInit.BATTERY_ENTITY, blockPos, blockState);
