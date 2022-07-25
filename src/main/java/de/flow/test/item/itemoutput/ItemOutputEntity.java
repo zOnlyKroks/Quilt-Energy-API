@@ -213,7 +213,7 @@ public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inven
 
 	@Override
 	public Text getDisplayName() {
-		return Text.translatable("container.item_output");
+		return Text.translatable("container.quilt-flow-api.item_output");
 	}
 
 	@Nullable

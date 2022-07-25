@@ -10,5 +10,5 @@
   "block.quilt-flow-api.redstone_emitter_block": "Redstone Emitter",
   "block.quilt-flow-api.redstone_transmitter_block": "Redstone Transmitter",
   "block.quilt-flow-api.item_cable_block": "Item Cable",
-  "container.item_output": "Item Output"
+  "container.quilt-flow-api.item_output": "Item Output"
 }
