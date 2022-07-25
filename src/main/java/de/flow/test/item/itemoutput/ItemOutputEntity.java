@@ -102,13 +102,20 @@ public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inven
 	}
 
 	private void insert(Map<ItemStackContainer, BigInteger> toInsert) {
+		insert(toInsert, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
+		if (toInsert.isEmpty()) return;
+		insert(toInsert, Direction.UP);
+	}
+
+	private void insert(Map<ItemStackContainer, BigInteger> toInsert, Direction... directions) {
 		for (Inventory inventory : inventoryList) {
-			PrimitiveIterator.OfInt iterator = getAvailableSlots(inventory, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST).iterator();
+			PrimitiveIterator.OfInt iterator = getAvailableSlots(inventory, directions).iterator();
 			while (iterator.hasNext()) {
 				int slot = iterator.nextInt();
 				ItemStack itemStack = inventory.getStack(slot);
 				if (itemStack.isEmpty()) {
 					ItemStackContainer itemStackContainer = toInsert.keySet().iterator().next();
+					if (!canInsert(inventory, slot, itemStackContainer.getValue(), directions)) continue;
 					ItemStack value = itemStackContainer.getValue().copy();
 					BigInteger amount = toInsert.get(itemStackContainer);
 					amount = amount.min(BigInteger.valueOf(value.getMaxCount()));
@@ -122,8 +129,10 @@ public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inven
 					}
 				} else {
 					ItemStackContainer current = new ItemStackContainer(itemStack);
+					if (!canInsert(inventory, slot, current.getValue(), directions)) continue;
 					BigInteger amount = toInsert.get(current);
 					if (amount == null) continue;
+					System.out.println("Slot can insert: " + slot + " " + current.getValue() + " " + inventory);
 					int insertAmount = amount.min(BigInteger.valueOf(itemStack.getMaxCount() - itemStack.getCount())).intValue();
 					itemStack.increment(insertAmount);
 					amount = amount.subtract(BigInteger.valueOf(insertAmount));
@@ -136,6 +145,19 @@ public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inven
 				if (toInsert.isEmpty()) break;
 			}
 			if (toInsert.isEmpty()) break;
+		}
+	}
+
+	private boolean canInsert(Inventory inventory, int slot, ItemStack itemStack, Direction... directions) {
+		if (inventory instanceof SidedInventory sidedInventory) {
+			for (Direction direction : directions) {
+				if (sidedInventory.canInsert(slot, itemStack, direction)) {
+					return true;
+				}
+			}
+			return false;
+		} else {
+			return true;
 		}
 	}
 

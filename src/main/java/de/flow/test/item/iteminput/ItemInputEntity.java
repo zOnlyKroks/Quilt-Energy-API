@@ -6,6 +6,7 @@ import de.flow.api.ItemStackContainer;
 import de.flow.test.item.ItemBlockEntityInit;
 import lombok.Getter;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SidedInventory;
@@ -56,7 +57,10 @@ public class ItemInputEntity extends BlockEntity implements NetworkBlock {
 	}
 
 	private static IntStream getAvailableSlots(Inventory inventory) {
-		return inventory instanceof SidedInventory ? IntStream.of(((SidedInventory) inventory).getAvailableSlots(Direction.DOWN)) : IntStream.range(0, inventory.size());
+		if (inventory instanceof AbstractFurnaceBlockEntity sidedInventory) {
+			return IntStream.of(sidedInventory.getAvailableSlots(Direction.DOWN)).filter(value -> Arrays.binarySearch(sidedInventory.getAvailableSlots(Direction.NORTH), value) == -1);
+		}
+		return inventory instanceof SidedInventory sidedInventory ? IntStream.of(sidedInventory.getAvailableSlots(Direction.DOWN)) : IntStream.range(0, inventory.size());
 	}
 
 	private Map<ItemStackContainer, BigInteger> content() {
