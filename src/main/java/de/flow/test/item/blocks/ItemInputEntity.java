@@ -15,10 +15,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
@@ -44,8 +41,9 @@ public class ItemInputEntity extends BlockEntity implements NetworkBlock {
 
 	@RegisterToNetwork
 	public Input<Map<ItemStackContainer, BigInteger>> input = new LockableInput<>(new DefaultInput<>(this::content, consume -> {
+		if (consume.isEmpty()) return;
 		storedAmount -= 20;
-		System.out.println("INPUT: " + consume);
+		extract(new HashMap<>(consume));
 	}, Unit.unit(Utils.ITEM_TYPE)), () -> noInput || storedAmount < 20);
 
 	@RegisterToNetwork
@@ -76,5 +74,33 @@ public class ItemInputEntity extends BlockEntity implements NetworkBlock {
 			});
 		});
 		return content;
+	}
+
+	private void extract(Map<ItemStackContainer, BigInteger> toExtract) {
+		for (Inventory inventory : inventoryList) {
+			PrimitiveIterator.OfInt iterator = getAvailableSlots(inventory).iterator();
+			while (iterator.hasNext()) {
+				int slot = iterator.nextInt();
+				ItemStack itemStack = inventory.getStack(slot);
+				if (itemStack.isEmpty()) continue;
+				ItemStackContainer current = new ItemStackContainer(itemStack);
+				if (!toExtract.containsKey(current)) continue;
+				BigInteger amount = toExtract.get(current);
+				BigInteger itemAmount = BigInteger.valueOf(itemStack.getCount());
+				BigInteger extractAmount = amount.min(itemAmount);
+				itemStack.decrement(extractAmount.intValue());
+				amount = amount.subtract(extractAmount);
+				if (amount.equals(BigInteger.ZERO)) {
+					toExtract.remove(current);
+				} else {
+					toExtract.put(current, amount);
+				}
+				if (itemStack.getCount() == 0) {
+					inventory.setStack(slot, ItemStack.EMPTY);
+				}
+				if (toExtract.isEmpty()) break;
+			}
+			if (toExtract.isEmpty()) break;
+		}
 	}
 }
