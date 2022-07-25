@@ -1,8 +1,7 @@
-package de.flow.test.redstone.blocks;
+package de.flow.test.item.iteminput;
 
 import de.flow.api.AbstractNetworkBlock;
-import de.flow.test.energy.EnergyBlockEntityInit;
-import de.flow.test.redstone.RedstoneBlockEntityInit;
+import de.flow.test.item.ItemBlockEntityInit;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
@@ -15,25 +14,27 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.block.extensions.api.QuiltBlockSettings;
 
-public class RedstoneTransmitterBlock extends AbstractNetworkBlock {
+public class ItemInputBlock extends AbstractNetworkBlock {
 
-	static {
-		RedstoneTransmitterEntity.onInitialize();
-	}
-
-	public RedstoneTransmitterBlock() {
-		super(QuiltBlockSettings.of(Material.METAL).collidable(true).strength(6).hardness(6).requiresTool());
+	public ItemInputBlock() {
+		super(QuiltBlockSettings.of(Material.GLASS).collidable(true).strength(2).hardness(2));
 	}
 
 	@Nullable
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-		return new RedstoneTransmitterEntity(pos, state);
+		return new ItemInputEntity(pos, state);
 	}
 
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
 		return BlockRenderType.MODEL;
+	}
+
+	@Nullable
+	@Override
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+		return world.isClient ? null : checkType(type, ItemBlockEntityInit.ITEM_INPUT_ENTITY, ItemInputEntity::tick);
 	}
 
 	@Override

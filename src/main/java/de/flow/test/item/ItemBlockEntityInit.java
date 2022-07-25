@@ -1,8 +1,8 @@
 package de.flow.test.item;
 
 import de.flow.FlowApi;
-import de.flow.test.item.blocks.ItemInputEntity;
-import de.flow.test.item.blocks.ItemOutputEntity;
+import de.flow.test.item.iteminput.ItemInputEntity;
+import de.flow.test.item.itemoutput.ItemOutputEntity;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.util.Identifier;

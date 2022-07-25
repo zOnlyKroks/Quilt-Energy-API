@@ -1,4 +1,4 @@
-package de.flow.test.redstone.blocks;
+package de.flow.test.redstone.redstoneemitter;
 
 import de.flow.api.NetworkBlock;
 import de.flow.api.RegisterToNetwork;
@@ -10,7 +10,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.TickPriority;
 import net.minecraft.world.World;
 
 import java.util.concurrent.atomic.AtomicInteger;

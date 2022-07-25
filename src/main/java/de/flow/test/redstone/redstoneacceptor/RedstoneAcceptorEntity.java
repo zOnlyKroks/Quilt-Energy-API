@@ -1,4 +1,4 @@
-package de.flow.test.redstone.blocks;
+package de.flow.test.redstone.redstoneacceptor;
 
 import de.flow.api.NetworkBlock;
 import de.flow.api.RegisterToNetwork;

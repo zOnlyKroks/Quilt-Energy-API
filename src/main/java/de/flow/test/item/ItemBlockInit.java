@@ -1,9 +1,9 @@
 package de.flow.test.item;
 
 import de.flow.FlowApi;
-import de.flow.test.item.blocks.ItemCableBlock;
-import de.flow.test.item.blocks.ItemInputBlock;
-import de.flow.test.item.blocks.ItemOutputBlock;
+import de.flow.test.item.itemcable.ItemCableBlock;
+import de.flow.test.item.iteminput.ItemInputBlock;
+import de.flow.test.item.itemoutput.ItemOutputBlock;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.util.Identifier;

@@ -1,4 +1,4 @@
-package de.flow.test.energy.blocks;
+package de.flow.test.energy.lamp;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.flow.api.NetworkBlock;

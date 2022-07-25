@@ -1,4 +1,4 @@
-package de.flow.test.redstone.blocks;
+package de.flow.test.redstone.redstonetransmitter;
 
 import de.flow.api.*;
 import de.flow.test.redstone.RedstoneBlockEntityInit;

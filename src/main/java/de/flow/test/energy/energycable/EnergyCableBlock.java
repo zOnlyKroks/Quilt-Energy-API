@@ -1,7 +1,7 @@
-package de.flow.test.item.blocks;
+package de.flow.test.energy.energycable;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import de.flow.api.AbstractCableBlock;
-import de.flow.api.ItemStackContainer;
 import de.flow.api.Type;
 import de.flow.api.Utils;
 import net.minecraft.block.*;
@@ -21,18 +21,17 @@ import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.block.extensions.api.QuiltBlockSettings;
 
-import java.math.BigInteger;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
 
-public class ItemCableBlock extends AbstractCableBlock<Map<ItemStackContainer, BigInteger>> implements Waterloggable {
+public class EnergyCableBlock extends AbstractCableBlock<AtomicDouble> implements Waterloggable {
 	private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 
 	private static final Map<BlockState, VoxelShape> SHAPE_CACHE = new IdentityHashMap<>();
 
 
-	public ItemCableBlock() {
+	public EnergyCableBlock() {
 		super(QuiltBlockSettings.of(Material.METAL).strength(6).hardness(6).requiresTool());
 		this.setDefaultState(getDefaultState().with(WATERLOGGED, false));
 	}
@@ -77,7 +76,7 @@ public class ItemCableBlock extends AbstractCableBlock<Map<ItemStackContainer, B
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-		return SHAPE_CACHE.computeIfAbsent(state, ItemCableBlock::getStateShape);
+		return SHAPE_CACHE.computeIfAbsent(state, EnergyCableBlock::getStateShape);
 	}
 
 	@Override
@@ -96,8 +95,8 @@ public class ItemCableBlock extends AbstractCableBlock<Map<ItemStackContainer, B
 	}
 
 	@Override
-	public Type<Map<ItemStackContainer, BigInteger>> type() {
-		return Utils.ITEM_TYPE;
+	public Type<AtomicDouble> type() {
+		return Utils.ENERGY_TYPE;
 	}
 
 	@Override

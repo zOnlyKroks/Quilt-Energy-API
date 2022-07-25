@@ -1,10 +1,10 @@
 package de.flow.test.redstone;
 
 import de.flow.FlowApi;
-import de.flow.test.redstone.blocks.RedstoneAcceptorBlock;
-import de.flow.test.redstone.blocks.RedstoneCableBlock;
-import de.flow.test.redstone.blocks.RedstoneEmitterBlock;
-import de.flow.test.redstone.blocks.RedstoneTransmitterBlock;
+import de.flow.test.redstone.redstoneacceptor.RedstoneAcceptorBlock;
+import de.flow.test.redstone.redstonecable.RedstoneCableBlock;
+import de.flow.test.redstone.redstoneemitter.RedstoneEmitterBlock;
+import de.flow.test.redstone.redstonetransmitter.RedstoneTransmitterBlock;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.util.Identifier;

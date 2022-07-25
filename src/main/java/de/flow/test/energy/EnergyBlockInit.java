@@ -1,8 +1,11 @@
 package de.flow.test.energy;
 
 import de.flow.FlowApi;
-import de.flow.test.energy.blocks.*;
-import de.flow.test.energy.blocks.EnergyCableBlock;
+import de.flow.test.energy.battery.BatteryBlock;
+import de.flow.test.energy.energycable.EnergyCableBlock;
+import de.flow.test.energy.energytransmitter.EnergyTransmitterBlock;
+import de.flow.test.energy.lamp.LampBlock;
+import de.flow.test.energy.solarpanel.SolarPanelBlock;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.util.Identifier;

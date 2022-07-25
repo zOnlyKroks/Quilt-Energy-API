@@ -1,4 +1,4 @@
-package de.flow.test.energy.blocks;
+package de.flow.test.energy.solarpanel;
 
 import de.flow.api.AbstractNetworkBlock;
 import de.flow.test.energy.EnergyBlockEntityInit;

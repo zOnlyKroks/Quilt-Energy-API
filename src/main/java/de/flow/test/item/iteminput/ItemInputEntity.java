@@ -1,4 +1,4 @@
-package de.flow.test.item.blocks;
+package de.flow.test.item.iteminput;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.flow.api.*;

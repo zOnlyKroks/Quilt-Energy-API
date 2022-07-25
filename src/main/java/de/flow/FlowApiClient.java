@@ -3,6 +3,7 @@ package de.flow;
 import de.flow.test.energy.EnergyBlockInit;
 import de.flow.test.item.ItemBlockEntityInit;
 import de.flow.test.item.ItemBlockInit;
+import de.flow.test.item.ItemScreenHandled;
 import de.flow.test.redstone.RedstoneBlockInit;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -19,5 +20,6 @@ public class FlowApiClient implements ClientModInitializer {
 		RedstoneBlockInit.onInitialize();
 
 		ItemBlockInit.onInitialize();
+		ItemScreenHandled.onInitialize();
 	}
 }

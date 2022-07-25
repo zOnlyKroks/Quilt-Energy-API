@@ -1,8 +1,7 @@
-package de.flow.test.item.blocks;
+package de.flow.test.energy.energytransmitter;
 
 import de.flow.api.AbstractNetworkBlock;
-import de.flow.test.energy.blocks.LampEntity;
-import de.flow.test.item.ItemBlockEntityInit;
+import de.flow.test.energy.EnergyBlockEntityInit;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
@@ -15,16 +14,20 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.block.extensions.api.QuiltBlockSettings;
 
-public class ItemInputBlock extends AbstractNetworkBlock {
+public class EnergyTransmitterBlock extends AbstractNetworkBlock {
 
-	public ItemInputBlock() {
-		super(QuiltBlockSettings.of(Material.GLASS).collidable(true).strength(2).hardness(2));
+	static {
+		EnergyTransmitterEntity.onInitialize();
+	}
+
+	public EnergyTransmitterBlock() {
+		super(QuiltBlockSettings.of(Material.METAL).collidable(true).strength(6).hardness(6).requiresTool());
 	}
 
 	@Nullable
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-		return new ItemInputEntity(pos, state);
+		return new EnergyTransmitterEntity(pos, state);
 	}
 
 	@Override
@@ -35,7 +38,7 @@ public class ItemInputBlock extends AbstractNetworkBlock {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		return world.isClient ? null : checkType(type, ItemBlockEntityInit.ITEM_INPUT_ENTITY, ItemInputEntity::tick);
+		return world.isClient ? null : checkType(type, EnergyBlockEntityInit.ENERGY_TRANSMITTER_ENTITY, EnergyTransmitterEntity::tick);
 	}
 
 	@Override

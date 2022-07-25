@@ -1,8 +1,7 @@
-package de.flow.test.energy.blocks;
+package de.flow.test.item.itemoutput;
 
 import de.flow.api.AbstractNetworkBlock;
-import de.flow.test.energy.EnergyBlockEntityInit;
-import net.minecraft.block.Block;
+import de.flow.test.item.ItemBlockEntityInit;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
@@ -10,34 +9,25 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateManager;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.block.extensions.api.QuiltBlockSettings;
 
-public class LampBlock extends AbstractNetworkBlock {
-	public LampBlock() {
-		super(QuiltBlockSettings.of(Material.GLASS).collidable(true).strength(2).hardness(2).luminance(value -> value.get(LampEntity.LIGHT_LEVEL)));
-		this.setDefaultState(this.getStateManager().getDefaultState().with(LampEntity.LIGHT_LEVEL, 0));
-	}
+public class ItemOutputBlock extends AbstractNetworkBlock {
 
-	@Override
-	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-		builder.add(LampEntity.LIGHT_LEVEL);
-	}
-
-	@Nullable
-	@Override
-	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		return this.getDefaultState().with(LampEntity.LIGHT_LEVEL, 0);
+	public ItemOutputBlock() {
+		super(QuiltBlockSettings.of(Material.GLASS).collidable(true).strength(2).hardness(2));
 	}
 
 	@Nullable
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-		return new LampEntity(pos, state);
+		return new ItemOutputEntity(pos, state);
 	}
 
 	@Override
@@ -48,7 +38,19 @@ public class LampBlock extends AbstractNetworkBlock {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		return world.isClient ? null : checkType(type, EnergyBlockEntityInit.LAMP_ENTITY, LampEntity::tick);
+		return world.isClient ? null : checkType(type, ItemBlockEntityInit.ITEM_OUTPUT_ENTITY, ItemOutputEntity::tick);
+	}
+
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		if (world.isClient) {
+			return ActionResult.SUCCESS;
+		} else {
+			BlockEntity blockEntity = world.getBlockEntity(pos);
+			if (blockEntity instanceof ItemOutputEntity) {
+				player.openHandledScreen((ItemOutputEntity)blockEntity);
+			}
+			return ActionResult.CONSUME;
+		}
 	}
 
 	@Override

@@ -1,10 +1,10 @@
 package de.flow.test.energy;
 
 import de.flow.FlowApi;
-import de.flow.test.energy.blocks.BatteryEntity;
-import de.flow.test.energy.blocks.LampEntity;
-import de.flow.test.energy.blocks.SolarPanelEntity;
-import de.flow.test.energy.blocks.EnergyTransmitterEntity;
+import de.flow.test.energy.battery.BatteryEntity;
+import de.flow.test.energy.lamp.LampEntity;
+import de.flow.test.energy.solarpanel.SolarPanelEntity;
+import de.flow.test.energy.energytransmitter.EnergyTransmitterEntity;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.util.Identifier;

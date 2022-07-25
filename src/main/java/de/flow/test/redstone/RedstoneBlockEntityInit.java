@@ -1,9 +1,9 @@
 package de.flow.test.redstone;
 
 import de.flow.FlowApi;
-import de.flow.test.redstone.blocks.RedstoneAcceptorEntity;
-import de.flow.test.redstone.blocks.RedstoneEmitterEntity;
-import de.flow.test.redstone.blocks.RedstoneTransmitterEntity;
+import de.flow.test.redstone.redstoneacceptor.RedstoneAcceptorEntity;
+import de.flow.test.redstone.redstoneemitter.RedstoneEmitterEntity;
+import de.flow.test.redstone.redstonetransmitter.RedstoneTransmitterEntity;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.util.Identifier;

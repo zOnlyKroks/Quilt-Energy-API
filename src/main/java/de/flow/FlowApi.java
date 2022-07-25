@@ -5,6 +5,7 @@ import de.flow.test.energy.EnergyBlockEntityInit;
 import de.flow.test.energy.EnergyBlockInit;
 import de.flow.test.item.ItemBlockEntityInit;
 import de.flow.test.item.ItemBlockInit;
+import de.flow.test.item.ItemScreenHandler;
 import de.flow.test.redstone.RedstoneBlockEntityInit;
 import de.flow.test.redstone.RedstoneBlockInit;
 import net.minecraft.item.ItemGroup;
@@ -34,6 +35,7 @@ public class FlowApi implements ModInitializer {
 
 		ItemBlockEntityInit.onInitialize();
 		ItemBlockInit.onInitialize();
+		ItemScreenHandler.onInitialize();
 
 		ServerTickEvents.START.register(server -> {
 			NetworkManager.tick();
