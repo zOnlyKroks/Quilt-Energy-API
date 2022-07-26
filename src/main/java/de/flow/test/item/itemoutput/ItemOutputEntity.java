@@ -133,7 +133,6 @@ public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inven
 					if (!canInsert(inventory, slot, current.getValue(), directions)) continue;
 					BigInteger amount = toInsert.get(current);
 					if (amount == null) continue;
-					System.out.println("Slot can insert: " + slot + " " + current.getValue() + " " + inventory);
 					int insertAmount = amount.min(BigInteger.valueOf(itemStack.getMaxCount() - itemStack.getCount())).intValue();
 					itemStack.increment(insertAmount);
 					amount = amount.subtract(BigInteger.valueOf(insertAmount));
