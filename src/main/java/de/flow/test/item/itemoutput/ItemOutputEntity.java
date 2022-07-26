@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.AtomicDouble;
 import de.flow.api.*;
 import de.flow.test.item.ItemBlockEntityInit;
 import lombok.Getter;
+import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,6 +13,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
@@ -33,7 +35,7 @@ public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inven
 	private boolean redstoneNoInput = false;
 
 	@Getter
-	private ItemStack toRequest = ItemStack.EMPTY;
+	private ItemStack[] toRequest = new ItemStack[]{ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY};
 
 	private List<Inventory> inventoryList = new ArrayList<>();
 
@@ -51,11 +53,12 @@ public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inven
 
 	@RegisterToNetwork
 	public Output<Map<ItemStackContainer, BigInteger>> input = new LockableOutput<>(new DefaultOutput<>(() -> {
-		if (toRequest.isEmpty()) {
-			return new HashMap<>();
-		} else if (hasSpace()) {
+		if (hasSpace()) {
 			Map<ItemStackContainer, BigInteger> toGet = new HashMap<>();
-			toGet.put(new ItemStackContainer(toRequest), BigInteger.valueOf(toRequest.getCount()));
+			for (ItemStack request : toRequest) {
+				if (request.isEmpty()) continue;
+				toGet.put(new ItemStackContainer(request), BigInteger.valueOf(request.getCount()));
+			}
 			return toGet;
 		} else {
 			return new HashMap<>();
@@ -164,34 +167,38 @@ public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inven
 
 	@Override
 	public void readNbt(NbtCompound nbt) {
-		if (nbt.contains("toRequest")) {
-			toRequest = ItemStack.fromNbt(nbt.getCompound("toRequest"));
-		} else {
-			toRequest = ItemStack.EMPTY;
+		NbtList toRequest = nbt.getList("toRequest", NbtType.COMPOUND);
+		for (int i = 0; i < toRequest.size(); i++) {
+			NbtCompound nbtCompound = (NbtCompound) toRequest.get(i);
+			this.toRequest[i] = ItemStack.fromNbt(nbtCompound);
 		}
 	}
 
 	@Override
 	protected void writeNbt(NbtCompound nbt) {
-		NbtCompound toRequestNbt = new NbtCompound();
-		toRequest.writeNbt(toRequestNbt);
-		nbt.put("toRequest", toRequestNbt);
+		NbtList nbtList = new NbtList();
+		for (ItemStack itemStack : toRequest) {
+			NbtCompound nbtCompound = new NbtCompound();
+			itemStack.writeNbt(nbtCompound);
+			nbtList.add(nbtCompound);
+		}
+		nbt.put("toRequest", nbtList);
 	}
 
 	@Override
 	public int size() {
-		return 1;
+		return toRequest.length;
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return toRequest.isEmpty();
+		return Arrays.stream(toRequest).allMatch(ItemStack::isEmpty);
 	}
 
 	@Override
 	public ItemStack getStack(int slot) {
-		if (slot == 0) {
-			return toRequest;
+		if (slot >= 0 && slot < toRequest.length) {
+			return toRequest[slot];
 		} else {
 			return ItemStack.EMPTY;
 		}
@@ -204,10 +211,10 @@ public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inven
 
 	@Override
 	public ItemStack removeStack(int slot) {
-		if (slot == 0) {
-			ItemStack toRequest = this.toRequest;
-			this.toRequest = ItemStack.EMPTY;
-			return toRequest;
+		if (slot >= 0 && slot < toRequest.length) {
+			ItemStack itemStack = toRequest[slot];
+			toRequest[slot] = ItemStack.EMPTY;
+			return itemStack;
 		} else {
 			return ItemStack.EMPTY;
 		}
@@ -215,8 +222,8 @@ public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inven
 
 	@Override
 	public void setStack(int slot, ItemStack stack) {
-		if (slot == 0) {
-			toRequest = stack;
+		if (slot >= 0 && slot < toRequest.length) {
+			toRequest[slot] = stack;
 		}
 	}
 
@@ -231,7 +238,7 @@ public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inven
 
 	@Override
 	public void clear() {
-		toRequest = ItemStack.EMPTY;
+		Arrays.fill(toRequest, ItemStack.EMPTY);
 	}
 
 	@Override

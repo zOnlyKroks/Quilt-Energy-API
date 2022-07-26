@@ -2,7 +2,6 @@ package de.flow.test.item.iteminput;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.flow.api.*;
-import de.flow.api.ItemStackContainer;
 import de.flow.test.item.ItemBlockEntityInit;
 import de.flow.test.item.itemoutput.ItemOutputEntity;
 import lombok.Getter;
@@ -95,7 +94,9 @@ public class ItemInputEntity extends BlockEntity implements NetworkBlock {
 				if (blockEntity instanceof ItemOutputEntity itemOutputEntity) {
 					Network<Map<ItemStackContainer, BigInteger>> network = Networks.get(Utils.ITEM_TYPE, world, blockPos);
 					if (itemNetwork == network) {
-						content.remove(new ItemStackContainer(itemOutputEntity.getToRequest()));
+						for (ItemStack itemStack : itemOutputEntity.getToRequest()) {
+							content.remove(new ItemStackContainer(itemStack));
+						}
 					}
 				}
 			}
