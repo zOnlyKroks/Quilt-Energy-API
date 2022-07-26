@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "quilt-flow-api:block/item_input_block"
+    }
+  }
+}
