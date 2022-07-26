@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.AtomicDouble;
 import de.flow.api.*;
 import de.flow.api.ItemStackContainer;
 import de.flow.test.item.ItemBlockEntityInit;
+import de.flow.test.item.itemoutput.ItemOutputEntity;
 import lombok.Getter;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
@@ -27,15 +28,18 @@ public class ItemInputEntity extends BlockEntity implements NetworkBlock {
 	private boolean noInput = false;
 	private boolean redstoneNoInput = false;
 
+	private List<Direction> directionList = new ArrayList<>();
 	private List<Inventory> inventoryList = new ArrayList<>();
 
 	public static void tick(World world, BlockPos pos, BlockState state, ItemInputEntity itemInputEntity) {
 		itemInputEntity.noInput = itemInputEntity.redstoneNoInput;
 		itemInputEntity.redstoneNoInput = false;
 		itemInputEntity.inventoryList.clear();
+		itemInputEntity.directionList.clear();
 		for (Direction direction : Direction.values()) {
 			if (world.getBlockEntity(pos.offset(direction)) instanceof Inventory inventory) {
 				itemInputEntity.inventoryList.add(inventory);
+				itemInputEntity.directionList.add(direction);
 			}
 		}
 	}
@@ -58,7 +62,12 @@ public class ItemInputEntity extends BlockEntity implements NetworkBlock {
 
 	private static IntStream getAvailableSlots(Inventory inventory) {
 		if (inventory instanceof AbstractFurnaceBlockEntity sidedInventory) {
-			return IntStream.of(sidedInventory.getAvailableSlots(Direction.DOWN)).filter(value -> Arrays.binarySearch(sidedInventory.getAvailableSlots(Direction.NORTH), value) == -1);
+			int[] down = sidedInventory.getAvailableSlots(Direction.DOWN);
+			int[] side = sidedInventory.getAvailableSlots(Direction.NORTH);
+			List<Integer> result = new ArrayList<>();
+			for (int i : down) result.add(i);
+			for (int i : side) result.remove((Integer) i);
+			return result.stream().mapToInt(i -> i);
 		}
 		return inventory instanceof SidedInventory sidedInventory ? IntStream.of(sidedInventory.getAvailableSlots(Direction.DOWN)) : IntStream.range(0, inventory.size());
 	}
@@ -75,6 +84,20 @@ public class ItemInputEntity extends BlockEntity implements NetworkBlock {
 					content.put(itemStackContainer, bigInteger);
 				}
 			});
+		});
+		Network<Map<ItemStackContainer, BigInteger>> itemNetwork = Networks.get(Utils.ITEM_TYPE, world, pos);
+		directionList.forEach(direction -> {
+			for (Direction dir : Direction.values()) {
+				BlockPos blockPos = getPos().offset(direction).offset(dir);
+				if (blockPos.equals(getPos())) continue;
+				BlockEntity blockEntity = getWorld().getBlockEntity(blockPos);
+				if (blockEntity instanceof ItemOutputEntity itemOutputEntity) {
+					Network<Map<ItemStackContainer, BigInteger>> network = Networks.get(Utils.ITEM_TYPE, world, blockPos);
+					if (itemNetwork == network) {
+						content.remove(new ItemStackContainer(itemOutputEntity.getToRequest()));
+					}
+				}
+			}
 		});
 		return content;
 	}

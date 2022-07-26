@@ -5,6 +5,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -31,6 +32,10 @@ public interface NetworkBlock {
 			}
 		}
 		return false;
+	}
+
+	default List<Network<?>> networks() {
+		return Networks.getList(getWorld(), getPos());
 	}
 
 	interface Input<C> extends Unitable<C>, Networkable<C> {

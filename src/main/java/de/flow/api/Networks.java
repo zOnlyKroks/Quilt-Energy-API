@@ -31,6 +31,10 @@ public class Networks {
 		return NetworkManager.get(world, blockPos);
 	}
 
+	public List<Network<?>> getList(World world, BlockPos blockPos) {
+		return NetworkManager.getList(world, blockPos);
+	}
+
 	public <T extends Network<C>, C> T get(Type<C> type, World world, BlockPos blockPos) {
 		return NetworkManager.get(type, world, blockPos);
 	}

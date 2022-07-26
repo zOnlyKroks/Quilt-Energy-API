@@ -66,6 +66,15 @@ public class NetworkManager {
 		return null;
 	}
 
+	public List<Network<?>> getList(World world, BlockPos blockPos) {
+		List<Network<?>> networkList = new ArrayList<>();
+		for (Type<?> type : networks.keySet()) {
+			Network<?> network = get(type, world, blockPos);
+			if (network != null) networkList.add(network);
+		}
+		return networkList;
+	}
+
 	public <T extends Network<C>, C> T get(Type<C> type, World world, BlockPos blockPos) {
 		return (T) networks.getOrDefault(type, Collections.emptyList()).stream().filter(network -> {
 			if (!network.cablePositions().containsKey(world)) return false;

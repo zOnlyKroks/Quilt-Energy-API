@@ -166,7 +166,7 @@ public class NetworkImpl<C> extends PersistentState implements Network<C> {
 		}
 
 		distribute(availableAmount, outputs);
-		if (storage && !type.isEmpty(availableAmount)) distribute(availableAmount, storageOutputs);
+		if (!type.isEmpty(availableAmount)) distribute(availableAmount, storageOutputs);
 	}
 
 	private void distribute(C availableAmount, List<NetworkBlock.Output<C>> outputs) {

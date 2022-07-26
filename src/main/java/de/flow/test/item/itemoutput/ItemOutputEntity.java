@@ -32,6 +32,7 @@ public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inven
 	private boolean noInput = false;
 	private boolean redstoneNoInput = false;
 
+	@Getter
 	private ItemStack toRequest = ItemStack.EMPTY;
 
 	private List<Inventory> inventoryList = new ArrayList<>();
