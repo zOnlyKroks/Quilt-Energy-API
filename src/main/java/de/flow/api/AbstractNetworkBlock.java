@@ -7,6 +7,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractNetworkBlock extends BlockWithEntity implements INetworkBlock {
@@ -24,5 +25,11 @@ public abstract class AbstractNetworkBlock extends BlockWithEntity implements IN
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		INetworkBlock.super.onBreak(world, pos, state, player);
 		super.onBreak(world, pos, state, player);
+	}
+
+	@Override
+	public void onDestroyedByExplosion(World world, BlockPos pos, Explosion explosion) {
+		INetworkBlock.super.onDestroyedByExplosion(world, pos, explosion);
+		super.onDestroyedByExplosion(world, pos, explosion);
 	}
 }

@@ -14,6 +14,8 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
+import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -97,8 +99,7 @@ public abstract class AbstractCableBlock<C> extends Block implements NetworkCabl
 		world.setBlockState(pos, state);
 	}
 
-	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+	private void breakBlock(World world, BlockPos pos, BlockState state) {
 		Network<C> surroundingNetwork = null;
 		List<BlockPos> blockPoss = new ArrayList<>();
 		List<NetworkBlock> networkBlocks = new ArrayList<>();
@@ -114,7 +115,10 @@ public abstract class AbstractCableBlock<C> extends Block implements NetworkCabl
 				}
 			}
 			if (tryAddingAndCheckingConnection(world, blockPos, direction(direction.getOpposite()), false, direction, type(), networkBlocks)) {
-				state = state.with(direction(direction), false);
+				try {
+					state = state.with(direction(direction), false);
+				} catch (IllegalArgumentException e) {
+				}
 			}
 		}
 		if (!world.isClient) {
@@ -143,9 +147,23 @@ public abstract class AbstractCableBlock<C> extends Block implements NetworkCabl
 				});
 			}
 		}
-		state = state.with(SHOW_BASE, shouldShowBase(state));
-		world.setBlockState(pos, state);
+		try {
+			state = state.with(SHOW_BASE, shouldShowBase(state));
+			world.setBlockState(pos, state);
+		} catch (IllegalArgumentException e) {
+		}
+	}
+
+	@Override
+	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+		breakBlock(world, pos, state);
 		super.onBreak(world, pos, state, player);
+	}
+
+	@Override
+	public void onDestroyedByExplosion(World world, BlockPos pos, Explosion explosion) {
+		breakBlock(world, pos, world.getBlockState(pos));
+		super.onDestroyedByExplosion(world, pos, explosion);
 	}
 
 	public boolean recalculateDirection(World world, BlockPos pos, Direction direction, boolean place) {
