@@ -20,17 +20,17 @@ public abstract class MinecraftServerMixin {
 	public abstract Path getSavePath(WorldSavePath worldSavePath);
 
 	@Inject(method = "saveAllWorlds", at = @At("HEAD"))
-	private void quilt_flow_api$saveAllWorlds(boolean suppressLogs, boolean flush, boolean force, CallbackInfoReturnable<Boolean> cir) {
+	private void quilt_flow_api$saveNetworkOnWorldSave(boolean suppressLogs, boolean flush, boolean force, CallbackInfoReturnable<Boolean> cir) {
 		NetworkManager.save();
 	}
 
 	@Inject(method = "shutdown", at = @At("HEAD"))
-	private void quilt_flow_api$shutdown(CallbackInfo ci) {
+	private void quilt_flow_api$unloadingNetworksOnWorldShutdown(CallbackInfo ci) {
 		NetworkManager.unloadNetworks();
 	}
 
 	@Inject(method = "createWorlds", at = @At("TAIL"))
-	private void quilt_flow_api$createWorlds(CallbackInfo ci) {
+	private void quilt_flow_api$loadingNetworksOnWorldCreation(CallbackInfo ci) {
 		NetworkManager.loadNetworks(new File(this.getSavePath(WorldSavePath.ROOT).toFile(), "networks"), ((MinecraftServer)(Object)this));
 	}
 }
