@@ -42,6 +42,9 @@ public class ItemInputEntity extends BlockEntity implements NetworkBlock {
 				itemInputEntity.directionList.add(direction);
 			}
 		}
+		if (itemInputEntity.storedAmount > 0) {
+			itemInputEntity.storedAmount -= 5;
+		}
 	}
 
 	@RegisterToNetwork

@@ -46,6 +46,9 @@ public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inven
 				itemOutputEntity.inventoryList.add(inventory);
 			}
 		}
+		if (itemOutputEntity.storedAmount > 0) {
+			itemOutputEntity.storedAmount -= 5;
+		}
 	}
 
 	@RegisterToNetwork
