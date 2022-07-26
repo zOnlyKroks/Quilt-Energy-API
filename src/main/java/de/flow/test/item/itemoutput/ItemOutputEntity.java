@@ -27,14 +27,13 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
-public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inventory, NamedScreenHandlerFactory {
+public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inventory, NamedScreenHandlerFactory, ItemTypeRequests {
 
 	@Getter
 	private double storedAmount = 0;
 	private boolean noInput = false;
 	private boolean redstoneNoInput = false;
 
-	@Getter
 	private ItemStack[] toRequest = new ItemStack[]{ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY};
 
 	private List<Inventory> inventoryList = new ArrayList<>();
@@ -49,6 +48,11 @@ public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inven
 			}
 		}
 		itemOutputEntity.storedAmount -= Math.min(itemOutputEntity.storedAmount, 5);
+	}
+
+	@Override
+	public ItemStack[] requesting() {
+		return toRequest;
 	}
 
 	@RegisterToNetwork

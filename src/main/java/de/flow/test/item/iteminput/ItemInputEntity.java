@@ -91,10 +91,10 @@ public class ItemInputEntity extends BlockEntity implements NetworkBlock {
 				BlockPos blockPos = getPos().offset(direction).offset(dir);
 				if (blockPos.equals(getPos())) continue;
 				BlockEntity blockEntity = getWorld().getBlockEntity(blockPos);
-				if (blockEntity instanceof ItemOutputEntity itemOutputEntity) {
+				if (blockEntity instanceof ItemTypeRequests itemTypeRequests) {
 					Network<Map<ItemStackContainer, BigInteger>> network = Networks.get(Utils.ITEM_TYPE, world, blockPos);
 					if (itemNetwork == network) {
-						for (ItemStack itemStack : itemOutputEntity.getToRequest()) {
+						for (ItemStack itemStack : itemTypeRequests.requesting()) {
 							content.remove(new ItemStackContainer(itemStack));
 						}
 					}
