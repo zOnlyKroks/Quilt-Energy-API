@@ -27,7 +27,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
-public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inventory, NamedScreenHandlerFactory, ItemTypeRequests {
+public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inventory, NamedScreenHandlerFactory, ItemTypeRequests, NoInsert {
 
 	@Getter
 	private double storedAmount = 0;
@@ -44,6 +44,7 @@ public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inven
 		itemOutputEntity.inventoryList.clear();
 		for (Direction direction : Direction.values()) {
 			if (world.getBlockEntity(pos.offset(direction)) instanceof Inventory inventory) {
+				if (inventory instanceof NoInsert noInsert && noInsert.hasNoInsertType(Utils.ITEM_TYPE)) continue;
 				itemOutputEntity.inventoryList.add(inventory);
 			}
 		}
@@ -57,7 +58,7 @@ public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inven
 
 	@RegisterToNetwork
 	public Output<Map<ItemStackContainer, BigInteger>> input = new LockableOutput<>(new DefaultOutput<>(() -> {
-		if (hasSpace()) {
+		if (hasSpace()) { // TODO: Fix calculation to only reqeust what is possible to insert
 			Map<ItemStackContainer, BigInteger> toGet = new HashMap<>();
 			for (ItemStack request : toRequest) {
 				if (request.isEmpty()) continue;
@@ -116,7 +117,7 @@ public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inven
 		insert(toInsert, Direction.UP);
 	}
 
-	private void insert(Map<ItemStackContainer, BigInteger> toInsert, Direction... directions) {
+	private void insert(Map<ItemStackContainer, BigInteger> toInsert, Direction... directions) { // TODO: Fix insert code for slot with same element
 		for (Inventory inventory : inventoryList) {
 			PrimitiveIterator.OfInt iterator = getAvailableSlots(inventory, directions).iterator();
 			while (iterator.hasNext()) {
@@ -236,7 +237,7 @@ public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inven
 		if (this.world.getBlockEntity(this.pos) != this) {
 			return false;
 		} else {
-			return !(player.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0);
+			return !(player.squaredDistanceTo((double) this.pos.getX() + 0.5, (double) this.pos.getY() + 0.5, (double) this.pos.getZ() + 0.5) > 64.0);
 		}
 	}
 
@@ -254,5 +255,10 @@ public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inven
 	@Override
 	public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
 		return new ItemOutputScreenHandler(i, playerInventory, this);
+	}
+
+	@Override
+	public Type<?>[] types() {
+		return new Type<?>[]{Utils.ITEM_TYPE};
 	}
 }

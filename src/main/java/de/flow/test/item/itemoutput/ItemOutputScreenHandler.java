@@ -92,6 +92,9 @@ public class ItemOutputScreenHandler extends ScreenHandler {
 				for (int i = 0; i < inventory.size(); i++) {
 					if (inventory.getStack(i).isEmpty()) {
 						ItemStack itemStack = slot.getStack().copy();
+						if (clickType == ClickType.RIGHT) {
+							itemStack.setCount(1);
+						}
 						inventory.setStack(i, itemStack);
 						getSlot(i).setStack(itemStack);
 						getSlot(i).markDirty();
@@ -102,6 +105,9 @@ public class ItemOutputScreenHandler extends ScreenHandler {
 			}
 			if (actionType == SlotActionType.PICKUP && slotIndex < inventory.size()) {
 				ItemStack itemStack = getCursorStack().copy();
+				if (clickType == ClickType.RIGHT) {
+					itemStack.setCount(1);
+				}
 				inventory.setStack(slotIndex, itemStack);
 				slot.setStack(itemStack);
 				slot.markDirty();
