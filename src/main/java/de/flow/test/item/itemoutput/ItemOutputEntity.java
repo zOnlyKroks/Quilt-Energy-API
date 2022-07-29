@@ -117,39 +117,51 @@ public class ItemOutputEntity extends BlockEntity implements NetworkBlock, Inven
 		insert(toInsert, Direction.UP);
 	}
 
-	private void insert(Map<ItemStackContainer, BigInteger> toInsert, Direction... directions) { // TODO: Fix insert code for slot with same element
+	private void insert(Map<ItemStackContainer, BigInteger> toInsert, Direction... directions) {
 		for (Inventory inventory : inventoryList) {
 			PrimitiveIterator.OfInt iterator = getAvailableSlots(inventory, directions).iterator();
 			while (iterator.hasNext()) {
 				int slot = iterator.nextInt();
 				ItemStack itemStack = inventory.getStack(slot);
-				if (itemStack.isEmpty()) {
-					ItemStackContainer itemStackContainer = toInsert.keySet().iterator().next();
-					if (!canInsert(inventory, slot, itemStackContainer.getValue(), directions)) continue;
-					ItemStack value = itemStackContainer.getValue().copy();
-					BigInteger amount = toInsert.get(itemStackContainer);
-					amount = amount.min(BigInteger.valueOf(value.getMaxCount()));
-					value.setCount(amount.intValue());
-					inventory.setStack(slot, value);
-					amount = toInsert.get(itemStackContainer).subtract(BigInteger.valueOf(value.getCount()));
-					if (amount.equals(BigInteger.ZERO)) {
-						toInsert.remove(itemStackContainer);
-					} else {
-						toInsert.put(itemStackContainer, amount);
-					}
+				if (itemStack.isEmpty()) continue;
+
+				ItemStackContainer current = new ItemStackContainer(itemStack);
+				if (!canInsert(inventory, slot, current.getValue(), directions)) continue;
+				BigInteger amount = toInsert.get(current);
+				if (amount == null) continue;
+				int insertAmount = amount.min(BigInteger.valueOf(itemStack.getMaxCount() - itemStack.getCount())).intValue();
+				itemStack.increment(insertAmount);
+				amount = amount.subtract(BigInteger.valueOf(insertAmount));
+				if (amount.equals(BigInteger.ZERO)) {
+					toInsert.remove(current);
 				} else {
-					ItemStackContainer current = new ItemStackContainer(itemStack);
-					if (!canInsert(inventory, slot, current.getValue(), directions)) continue;
-					BigInteger amount = toInsert.get(current);
-					if (amount == null) continue;
-					int insertAmount = amount.min(BigInteger.valueOf(itemStack.getMaxCount() - itemStack.getCount())).intValue();
-					itemStack.increment(insertAmount);
-					amount = amount.subtract(BigInteger.valueOf(insertAmount));
-					if (amount.equals(BigInteger.ZERO)) {
-						toInsert.remove(current);
-					} else {
-						toInsert.put(current, amount);
-					}
+					toInsert.put(current, amount);
+				}
+				if (toInsert.isEmpty()) break;
+			}
+			if (toInsert.isEmpty()) break;
+		}
+		if (toInsert.isEmpty()) return;
+
+		for (Inventory inventory : inventoryList) {
+			PrimitiveIterator.OfInt iterator = getAvailableSlots(inventory, directions).iterator();
+			while (iterator.hasNext()) {
+				int slot = iterator.nextInt();
+				ItemStack itemStack = inventory.getStack(slot);
+				if (!itemStack.isEmpty()) continue;
+
+				ItemStackContainer itemStackContainer = toInsert.keySet().iterator().next();
+				if (!canInsert(inventory, slot, itemStackContainer.getValue(), directions)) continue;
+				ItemStack value = itemStackContainer.getValue().copy();
+				BigInteger amount = toInsert.get(itemStackContainer);
+				amount = amount.min(BigInteger.valueOf(value.getMaxCount()));
+				value.setCount(amount.intValue());
+				inventory.setStack(slot, value);
+				amount = toInsert.get(itemStackContainer).subtract(BigInteger.valueOf(value.getCount()));
+				if (amount.equals(BigInteger.ZERO)) {
+					toInsert.remove(itemStackContainer);
+				} else {
+					toInsert.put(itemStackContainer, amount);
 				}
 				if (toInsert.isEmpty()) break;
 			}
