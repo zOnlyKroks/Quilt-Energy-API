@@ -12,7 +12,8 @@ public class ItemStackContainer extends Container<ItemStack> {
 	private static final BiPredicate<ItemStack, ItemStack> EQUALS = (first, second) -> {
 		if (first.isEmpty() && second.isEmpty()) return true;
 		if (first.isEmpty() || second.isEmpty()) return false;
-		return first.isOf(second.getItem());
+		if (!first.isOf(second.getItem())) return false;
+		return ItemStack.areNbtEqual(first, second);
 	};
 
 	private static final ToIntFunction<ItemStack> HASH_CODE = (itemStack) -> {
