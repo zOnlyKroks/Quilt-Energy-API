@@ -1,13 +1,13 @@
-package de.flow2.api.machines.input;
+package de.flow2.api.machines.output;
 
 import de.flow2.api.Type;
 
 // TODO: Add JavaDoc
-public abstract class AbstractInput<T> implements Input<T> {
+public abstract class AbstractOutput<T> implements Output<T> {
 
 	private Type<T> type;
 
-	protected AbstractInput(Type<T> type) {
+	protected AbstractOutput(Type<T> type) {
 		this.type = type;
 	}
 
