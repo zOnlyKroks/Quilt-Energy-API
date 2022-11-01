@@ -2,6 +2,8 @@ package de.flow2.api;
 
 import lombok.NonNull;
 
+import java.io.Serializable;
+
 /**
  * <h1>Type</h1>
  * Type is used to define what kind of elements can be transferred
@@ -19,7 +21,7 @@ import lombok.NonNull;
  *
  * @param <T> The type of the elements that can be transferred by the network.
  */
-public interface Type<T> {
+public interface Type<T extends Serializable> {
 
 	/**
 	 * Returns a new instance of the container that is used to store the elements.

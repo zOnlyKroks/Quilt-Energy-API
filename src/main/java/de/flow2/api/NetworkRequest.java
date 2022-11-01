@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.List;
 
 // TODO: Add JavaDoc
@@ -20,7 +21,7 @@ public interface NetworkRequest {
 	}
 
 	@Getter
-	class NetworkRequestComponent<T> {
+	class NetworkRequestComponent<T extends Serializable> {
 		private @NonNull Type<T> type; // TODO: Add multiple types
 
 		@Setter

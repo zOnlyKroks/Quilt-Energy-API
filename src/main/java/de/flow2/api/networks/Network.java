@@ -1,19 +1,20 @@
 package de.flow2.api.networks;
 
-import de.flow.api.NetworkCable;
-import de.flow.api.Networkable;
 import de.flow2.api.Type;
+import de.flow2.api.cables.CableBlock;
+import de.flow2.api.machines.MachineEntity;
+import de.flow2.api.machines.Typed;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.checkerframework.checker.units.qual.C;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 // TODO: Add JavaDoc
-public interface Network<T> {
+public interface Network<T extends Serializable> {
 
 	/**
 	 * Internal API
@@ -33,30 +34,28 @@ public interface Network<T> {
 	/**
 	 * Internal API
 	 */
-	boolean add(World world, BlockPos blockPos, Networkable<C> networkable);
+	boolean add(World world, BlockPos blockPos, Typed<T> machineIOPort);
 
 	/**
 	 * Internal API
 	 */
-	boolean remove(World world, BlockPos blockPos, Networkable<C> networkable);
+	boolean remove(World world, BlockPos blockPos, Typed<T> machineIOPort);
 
-	/*
-	default void add(NetworkBlock networkBlock) {
-		iterate(networkBlock, this::add);
+	default void add(MachineEntity machineEntity) {
+		machineEntity.addIOToNetwork(this);
 	}
-	default void remove(NetworkBlock networkBlock) {
-		iterate(networkBlock, this::remove);
+	default void remove(MachineEntity machineEntity) {
+		machineEntity.removeIOFromNetwork(this);
 	}
-	 */
 
 	/**
 	 * Internal API
 	 */
 	Map<World, Set<BlockPos>> cablePositions();
 
-	boolean add(World world, BlockPos pos, NetworkCable<C> networkCable);
-	boolean remove(World world, BlockPos pos, NetworkCable<C> networkCable);
+	boolean add(World world, BlockPos pos, CableBlock cableBlock);
+	boolean remove(World world, BlockPos pos, CableBlock cableBlock);
 
-	void merge(de.flow.api.Network<C> network);
+	void merge(Network<T> network);
 	void split(World world, BlockPos splitPos, List<BlockPos> blockPosList);
 }

@@ -10,7 +10,7 @@ import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
 // TODO: Add JavaDoc
-public interface  NetworkBlock {
+public interface MachineBlock {
 
 	default void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
 		// TODO: Implement

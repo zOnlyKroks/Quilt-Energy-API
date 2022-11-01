@@ -1,11 +1,8 @@
 package de.flow2.api.machines.input;
 
-import de.flow2.api.Networkable;
-import de.flow2.api.Type;
+import de.flow2.api.machines.Typed;
 
 // TODO: Add JavaDoc
-public interface Input<T> extends Networkable {
-	Type<T> type();
-
+public interface Input<T> extends Typed<T> {
 	void insert(T amount);
 }

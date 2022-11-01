@@ -2,10 +2,11 @@ package de.flow2.api.cables;
 
 import com.google.common.collect.ImmutableList;
 import de.flow2.api.Type;
+import de.flow2.api.TypeCheck;
 import lombok.NonNull;
 
 // TODO: Add JavaDoc
-public interface NetworkCableBlock {
+public interface CableBlock extends TypeCheck {
 
 	/**
 	 * <b>Contract:</b>
@@ -17,4 +18,10 @@ public interface NetworkCableBlock {
 	 * @return the types the cable should be able to transfer
 	 */
 	@NonNull ImmutableList<Type<?>> types();
+
+	@Override
+	default boolean hasType(Type<?> type) {
+		return types().stream()
+				.anyMatch(t -> t == type);
+	}
 }
