@@ -13,11 +13,11 @@ import org.jetbrains.annotations.Nullable;
 public interface  NetworkBlock {
 
 	default void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-
+		// TODO: Implement
 	}
 
 	default void breakBlock(World world, BlockPos pos, BlockState state) {
-
+		// TODO: Implement
 	}
 
 	default void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {

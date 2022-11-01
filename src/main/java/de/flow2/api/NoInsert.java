@@ -6,6 +6,7 @@ import lombok.NonNull;
 /**
  * <h1>NoInsert</h1>
  * NoInsert defined types that cannot be inserted into this block.
+ * This should be implemented by the Entity.
  *
  * <br><br><b>Contract:</b>
  * <ul>
