@@ -1,11 +1,11 @@
-package de.flow2.api.machines.input;
+package de.flow2.api.machines.output;
 
 // TODO: Add JavaDoc
-public class DelegatingInput<T> extends AbstractInput<T> {
+public class DelegatingOutput<T> extends AbstractOutput<T> {
 
-	protected Input<T> delegate;
+	protected Output<T> delegate;
 
-	public DelegatingInput(Input<T> delegate) {
+	public DelegatingOutput(Output<T> delegate) {
 		super(delegate.type());
 		this.delegate = delegate;
 	}

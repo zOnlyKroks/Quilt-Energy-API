@@ -3,19 +3,27 @@ package de.flow2.api.machines.output;
 import de.flow2.api.Type;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 // TODO: Add JavaDoc
 public class DefaultOutput<T> extends AbstractOutput<T> {
 
-	private Consumer<T> consumer;
+	private Supplier<T> desired;
+	private Consumer<T> provided;
 
-	public DefaultOutput(Type<T> type, Consumer<T> consumer) {
+	public DefaultOutput(Type<T> type, Supplier<T> desired, Consumer<T> provided) {
 		super(type);
-		this.consumer = consumer;
+		this.desired = desired;
+		this.provided = provided;
 	}
 
 	@Override
-	public void insert(T amount) {
-		consumer.accept(amount);
+	public T extractableAmount() {
+		return desired.get();
+	}
+
+	@Override
+	public void extract(T amount) {
+		provided.accept(amount);
 	}
 }

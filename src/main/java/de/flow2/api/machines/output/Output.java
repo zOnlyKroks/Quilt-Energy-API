@@ -7,5 +7,7 @@ import de.flow2.api.Type;
 public interface Output<T> extends Networkable {
 	Type<T> type();
 
-	void insert(T amount);
+	T extractableAmount();
+
+	void extract(T amount);
 }

@@ -1,11 +1,11 @@
-package de.flow2.api.machines.input;
+package de.flow2.api.machines.output;
 
 // TODO: Add JavaDoc
-public class LimitingInput<T> extends DelegatingInput<T> {
+public class LimitingOutput<T> extends DelegatingOutput<T> {
 
 	private T limit;
 
-	public LimitingInput(Input<T> delegate, T limit) {
+	public LimitingOutput(Output<T> delegate, T limit) {
 		super(delegate);
 		this.limit = limit;
 	}
