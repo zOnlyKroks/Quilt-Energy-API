@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "de.flow.mixin",
+  "package": "de.flow2.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "MinecraftServerMixin"
