@@ -67,9 +67,7 @@ class ItemType implements Type<Map<ItemStackContainer, Long>> {
 		for (Map.Entry<ItemStackContainer, Long> entry : value.entrySet()) {
 			NbtList elementList = nbt.getList("elements", NbtCompound.COMPOUND_TYPE);
 			NbtCompound savedEntry = new NbtCompound();
-			NbtCompound itemStack = new NbtCompound();
-			entry.getKey().getValue().writeNbt(itemStack);
-			savedEntry.put("item", itemStack);
+			savedEntry.put("item", entry.getKey().getValue().writeNbt(new NbtCompound()));
 			savedEntry.putLong("amount", entry.getValue());
 			elementList.add(savedEntry);
 		}
