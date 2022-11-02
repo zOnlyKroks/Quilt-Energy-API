@@ -2,6 +2,9 @@ package de.flow2.api.cables;
 
 import de.flow2.api.Type;
 import de.flow2.api.machines.MachineEntity;
+import de.flow2.api.networks.Network;
+import de.flow2.impl.NetworkImpl;
+import de.flow2.impl.NetworkManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -18,7 +21,9 @@ import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class AbstractCableBlock extends Block implements CableBlock {
@@ -67,11 +72,114 @@ public abstract class AbstractCableBlock extends Block implements CableBlock {
 
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-		// TODO: Implement
+		Map<Type<?>, List<Network<?>>> surroundingNetworks = new HashMap<>();
+		List<MachineEntity> machineEntities = new ArrayList<>();
+
+		for (Direction direction : Direction.values()) {
+			BlockPos blockPos = pos.offset(direction);
+			if (!world.isClient) {
+				types().forEach(type -> {
+					Network<?> network = NetworkManager.INSTANCE.get(type, world, blockPos);
+					if (network == null) return;
+					List<Network<?>> networks = surroundingNetworks.computeIfAbsent(type, t -> new ArrayList<>());
+					if (networks.contains(network)) return;
+					networks.add(network);
+				});
+			}
+			for (Type<?> type : types()) {
+				if (tryAddingAndCheckingConnection(world, blockPos, direction(direction.getOpposite()), true, direction, type, machineEntities)) {
+					state = state.with(direction(direction), true);
+				}
+			}
+		}
+
+		if (!world.isClient) {
+			surroundingNetworks.forEach((type, networks) -> {
+				Network network;
+				if (networks.isEmpty()) {
+					network = new NetworkImpl<>(type);
+					NetworkManager.INSTANCE.add(network);
+				} else {
+					network = networks.get(0);
+					for (int i = 1; i < networks.size(); i++) {
+						Network<?> surroundingNetwork = networks.get(i);
+						network.merge(surroundingNetwork);
+						NetworkManager.INSTANCE.remove(surroundingNetwork);
+					}
+				}
+				network.add(world, pos, this);
+				machineEntities.forEach(network::add);
+			});
+		}
+
+		state = state.with(SHOW_BASE, shouldShowBase(state));
+		world.setBlockState(pos, state);
 	}
 
 	private void breakBlock(World world, BlockPos pos, BlockState state) {
-		// TODO: Implement
+		Map<Type<?>, Network<?>> surroundingNetworks = new HashMap<>();
+		Map<Type<?>, List<BlockPos>> blockPoss = new HashMap<>();
+		List<MachineEntity> machineEntities = new ArrayList<>();
+		int cableCount = 0;
+		for (Direction direction: Direction.values()) {
+			BlockPos blockPos = pos.offset(direction);
+			if (!world.isClient) {
+				for (Type<?> type : types()) {
+					Network<?> network = NetworkManager.INSTANCE.get(type, world, blockPos);
+					if (network == null) continue;
+					surroundingNetworks.put(type, network);
+					cableCount++;
+					blockPoss.computeIfAbsent(type, __ -> new ArrayList<>()).add(blockPos);
+				}
+			}
+			for (Type<?> type : types()) {
+				if (tryAddingAndCheckingConnection(world, blockPos, direction(direction.getOpposite()), false, direction, type, machineEntities)) {
+					try {
+						state = state.with(direction(direction), false);
+					} catch (IllegalArgumentException e) {
+						// ignore
+					}
+				}
+			}
+		}
+
+		if (!world.isClient) {
+			for (Type<?> type : types()) {
+				Network<?> surroundingNetwork = surroundingNetworks.get(type);
+				if (surroundingNetwork == null) {
+					surroundingNetwork = NetworkManager.INSTANCE.get(type, world, pos);
+				}
+				if (surroundingNetwork != null) {
+					machineEntities.forEach(surroundingNetwork::remove);
+				}
+				if (cableCount == 0) {
+					NetworkManager.INSTANCE.remove(surroundingNetwork);
+				} else {
+					surroundingNetwork.remove(world, pos, this);
+					List<BlockPos> elements = blockPoss.get(type);
+					if (cableCount > 1) {
+						surroundingNetwork.split(world, pos, elements);
+					}
+					machineEntities.forEach(machineEntity -> {
+						for (Direction direction : machineEntity.ports()) {
+							BlockPos blockPos = machineEntity.getPos().offset(direction);
+							if (blockPos.equals(pos)) continue;
+							Block block = world.getBlockState(blockPos).getBlock();
+							if (block instanceof CableBlock) {
+								NetworkManager.INSTANCE.get(type, world, blockPos).add(machineEntity);
+							}
+						}
+					});
+				}
+			}
+		}
+
+		try {
+			state = state.with(SHOW_BASE, shouldShowBase(state));
+			world.setBlockState(pos, state);
+		} catch (IllegalArgumentException e) {
+			// ignore
+		}
 	}
 
 	@Override

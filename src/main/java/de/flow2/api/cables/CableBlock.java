@@ -4,6 +4,9 @@ import com.google.common.collect.ImmutableList;
 import de.flow2.api.Type;
 import de.flow2.api.TypeCheck;
 import lombok.NonNull;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
 
 // TODO: Add JavaDoc
 public interface CableBlock extends TypeCheck {
@@ -24,4 +27,6 @@ public interface CableBlock extends TypeCheck {
 		return types().stream()
 				.anyMatch(t -> t == type);
 	}
+
+	boolean recalculateDirection(World world, BlockPos pos, Direction direction, boolean place);
 }

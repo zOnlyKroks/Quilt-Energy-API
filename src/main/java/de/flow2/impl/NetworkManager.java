@@ -64,6 +64,10 @@ public class NetworkManager {
 				.orElse(null);
 	}
 
+	public <T extends Serializable> @Nullable Network<T> get(Type<T> type, World world, BlockPos blockPos) {
+		return (Network<T>) get(world, blockPos).get(type);
+	}
+
 	public Map<Type<?>, Network<?>> get(World world, BlockPos blockPos) {
 		return networks.values().stream()
 				.flatMap(Collection::stream)
