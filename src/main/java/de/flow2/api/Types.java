@@ -2,13 +2,13 @@ package de.flow2.api;
 
 import de.flow.FlowApi;
 import de.flow2.api.utils.ItemStackContainer;
-import de.flow2.api.utils.SerializableMap;
 import de.flow2.impl.TypeManager;
 import lombok.experimental.UtilityClass;
 import net.minecraft.util.Identifier;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
 
 @UtilityClass
 public class Types {
@@ -21,7 +21,7 @@ public class Types {
 
 	public static final Type<Double> ENERGY_TYPE = new EnergyType();
 	public static final Type<Integer> REDSTONE_TYPE = new RedstoneType();
-	public static final Type<SerializableMap<ItemStackContainer, Long>> ITEM_TYPE = new ItemType();
+	public static final Type<Map<ItemStackContainer, Long>> ITEM_TYPE = new ItemType();
 
 	public List<Type<?>> types() {
 		return TypeManager.INSTANCE.types();
