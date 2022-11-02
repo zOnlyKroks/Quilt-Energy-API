@@ -2,11 +2,12 @@ package de.flow2.api.machines.output;
 
 import de.flow2.api.Type;
 
+import java.io.Serializable;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 // TODO: Add JavaDoc
-public class DefaultOutput<T> extends AbstractOutput<T> {
+public class DefaultOutput<T extends Serializable> extends AbstractOutput<T> {
 
 	private Supplier<T> desired;
 	private Consumer<T> provided;

@@ -1,7 +1,9 @@
 package de.flow2.api.machines.output;
 
+import java.io.Serializable;
+
 // TODO: Add JavaDoc
-public class DelegatingOutput<T> extends AbstractOutput<T> {
+public class DelegatingOutput<T extends Serializable> extends AbstractOutput<T> {
 
 	protected Output<T> delegate;
 

@@ -1,9 +1,10 @@
 package de.flow2.api.machines.output;
 
+import java.io.Serializable;
 import java.util.function.BooleanSupplier;
 
 // TODO: Add JavaDoc
-public class LockableOutput<T> extends DelegatingOutput<T> {
+public class LockableOutput<T extends Serializable> extends DelegatingOutput<T> {
 
 	private BooleanSupplier lock;
 

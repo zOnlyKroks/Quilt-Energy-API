@@ -7,6 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 
 // TODO: Add JavaDoc
@@ -34,33 +35,36 @@ public interface MachineEntity extends TypeCheck {
 		return false;
 	}
 
-	default <T> void addIOToNetwork(Network<T> network) {
+	default void iterate(TriConsumer<World, BlockPos, Typed<?>> consumer) {
 		for (Field field : this.getClass().getDeclaredFields()) {
 			if (!field.isAnnotationPresent(IO.class)) continue;
 			try {
 				field.setAccessible(true);
 				Typed<?> typed = (Typed<?>) field.get(this);
-				if (typed.type() == network.type()) {
-					network.add(getWorld(), getPos(), (Typed<T>) typed);
-				}
+				consumer.accept(getWorld(), getPos(), typed);
 			} catch (Exception e) {
 				// ignore
 			}
 		}
 	}
 
-	default <T> void removeIOFromNetwork(Network<T> network) {
-		for (Field field : this.getClass().getDeclaredFields()) {
-			if (!field.isAnnotationPresent(IO.class)) continue;
-			try {
-				field.setAccessible(true);
-				Typed<?> typed = (Typed<?>) field.get(this);
-				if (typed.type() == network.type()) {
-					network.remove(getWorld(), getPos(), (Typed<T>) typed);
-				}
-			} catch (Exception e) {
-				// ignore
+	interface TriConsumer<T, U, V> {
+		void accept(T t, U u, V v);
+	}
+
+	default <T extends Serializable> void addIOToNetwork(Network<T> network) {
+		iterate((world, blockPos, typed) -> {
+			if (typed.type() == network.type()) {
+				network.add(world, blockPos, (Typed<T>) typed);
 			}
-		}
+		});
+	}
+
+	default <T extends Serializable> void removeIOFromNetwork(Network<T> network) {
+		iterate((world, blockPos, typed) -> {
+			if (typed.type() == network.type()) {
+				network.remove(world, blockPos, (Typed<T>) typed);
+			}
+		});
 	}
 }

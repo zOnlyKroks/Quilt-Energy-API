@@ -1,6 +1,7 @@
 package de.flow2.api;
 
 import de.flow2.api.networks.Network;
+import de.flow2.impl.NetworkManager;
 import lombok.experimental.UtilityClass;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -15,15 +16,15 @@ import java.util.UUID;
 public class Networks {
 
 	public <T extends Serializable> void add(Network<T> network) {
-		// TODO: Implement
+		NetworkManager.INSTANCE.add(network);
 	}
 
 	public <T extends Serializable> void remove(Network<T> network) {
-		// TODO: Implement
+		NetworkManager.INSTANCE.remove(network);
 	}
 
 	public <T extends Serializable> @Nullable Network<T> get(UUID uuid) {
-		return null; // TODO: Implement
+		return NetworkManager.INSTANCE.get(uuid);
 	}
 
 	public <T extends Serializable> @Nullable Network<T> get(Type<T> type, World world, BlockPos blockPos) {
@@ -31,10 +32,18 @@ public class Networks {
 	}
 
 	public Map<Type<?>, Network<?>> get(World world, BlockPos blockPos) {
-		return null; // TODO: Implement
+		return NetworkManager.INSTANCE.get(world, blockPos);
 	}
 
 	public <T extends Serializable> List<Network<T>> get(Type<T> type) {
-		return null; // TODO: Implement
+		return NetworkManager.INSTANCE.get(type);
+	}
+
+	public void loadCallback(Runnable runnable) {
+		NetworkManager.INSTANCE.loadCallback(runnable);
+	}
+
+	public void unloadCallback(Runnable runnable) {
+		NetworkManager.INSTANCE.unloadCallback(runnable);
 	}
 }

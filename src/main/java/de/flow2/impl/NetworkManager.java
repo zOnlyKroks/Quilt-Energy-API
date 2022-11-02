@@ -5,7 +5,6 @@ import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
 import de.flow.FlowApi;
-import de.flow.impl.NetworkImpl;
 import de.flow2.api.Type;
 import de.flow2.api.networks.Network;
 import net.minecraft.server.MinecraftServer;
@@ -22,6 +21,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class NetworkManager {
+
+	public static final NetworkManager INSTANCE = new NetworkManager();
 
 	private Map<Type<?>, List<Network<?>>> networks = new HashMap<>();
 
@@ -90,7 +91,7 @@ public class NetworkManager {
 		if (persistentStateManager != null) return;
 		this.networksDir = networksDir;
 		networksDir.mkdirs();
-		// TODO: FlowApi.LOGGER.info("Loading networks...");
+		FlowApi.LOGGER.info("Loading networks...");
 		persistentStateManager = new PersistentStateManager(networksDir, new DataFixer() {
 			@Override
 			public <T> Dynamic<T> update(DSL.TypeReference type, Dynamic<T> input, int version, int newVersion) {
@@ -114,27 +115,25 @@ public class NetworkManager {
 		for (File networkFile : files) {
 			if (!networkFile.getName().endsWith(".dat")) continue;
 			String name = networkFile.getName().substring(0, networkFile.getName().length() - 4);
-			/* TODO
 			Network<?> network = persistentStateManager.get(nbtCompound -> new NetworkImpl<>(UUID.fromString(name), nbtCompound, worlds), name);
 			networks.computeIfAbsent(network.type(), ignore -> new ArrayList<>()).add(network);
-			 */
 		}
 	}
 
 	public void tick() {
-
+		networks.values().forEach(networks -> networks.forEach(Network::tick));
 	}
 
 	public void save() {
 		if (persistentStateManager == null) return;
-		// TODO: FlowApi.LOGGER.info("Saving networks...");
+		FlowApi.LOGGER.info("Saving networks...");
 		persistentStateManager.save();
 	}
 
 	public void unloadNetworks() {
 		if (persistentStateManager == null) return;
 		save();
-		// TODO: FlowApi.LOGGER.info("Unloading networks...");
+		FlowApi.LOGGER.info("Unloading networks...");
 		persistentStateManager = null;
 		networks.clear();
 		unloadCallbacks.forEach(Runnable::run);

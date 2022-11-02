@@ -6,7 +6,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -43,14 +45,23 @@ public abstract class AbstractMachineEntity extends BlockEntity implements Machi
 	}
 
 	@Override
-	public <T> void addIOToNetwork(Network<T> network) {
+	public void iterate(TriConsumer<World, BlockPos, Typed<?>> consumer) {
+		io.forEach((type, typeds) -> {
+			for (Typed<?> typed : typeds) {
+				consumer.accept(getWorld(), getPos(), typed);
+			}
+		});
+	}
+
+	@Override
+	public <T extends Serializable> void addIOToNetwork(Network<T> network) {
 		io.getOrDefault(network.type(), Collections.emptyList()).forEach(typed -> {
 			network.add(getWorld(), getPos(), (Typed<T>) typed);
 		});
 	}
 
 	@Override
-	public <T> void removeIOFromNetwork(Network<T> network) {
+	public <T extends Serializable> void removeIOFromNetwork(Network<T> network) {
 		io.getOrDefault(network.type(), Collections.emptyList()).forEach(typed -> {
 			network.remove(getWorld(), getPos(), (Typed<T>) typed);
 		});
