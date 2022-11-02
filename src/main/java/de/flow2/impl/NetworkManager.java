@@ -16,7 +16,6 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,11 +31,11 @@ public class NetworkManager {
 	private File networksDir;
 	private PersistentStateManager persistentStateManager;
 
-	private <T extends Serializable> File getFile(Network<T> network) {
+	private <T> File getFile(Network<T> network) {
 		return new File(networksDir, network.getId().toString() + ".dat");
 	}
 
-	public <T extends Serializable> void add(Network<T> network) {
+	public <T> void add(Network<T> network) {
 		if (!(network instanceof PersistentState)) return;
 		networks.computeIfAbsent(network.type(), __ -> new ArrayList<>()).add(network);
 		persistentStateManager.set(network.getId().toString(), (PersistentState) network);
@@ -48,14 +47,14 @@ public class NetworkManager {
 		}
 	}
 
-	public <T extends Serializable> void remove(Network<T> network) {
+	public <T> void remove(Network<T> network) {
 		if (!(network instanceof PersistentState)) return;
 		networks.computeIfAbsent(network.type(), __ -> new ArrayList<>()).remove(network);
 		persistentStateManager.set(network.getId().toString(), null);
 		getFile(network).delete();
 	}
 
-	public <T extends Serializable> @Nullable Network<T> get(UUID uuid) {
+	public <T> @Nullable Network<T> get(UUID uuid) {
 		return (Network<T>) networks.values()
 				.stream()
 				.flatMap(Collection::stream)
@@ -64,7 +63,7 @@ public class NetworkManager {
 				.orElse(null);
 	}
 
-	public <T extends Serializable> @Nullable Network<T> get(Type<T> type, World world, BlockPos blockPos) {
+	public <T> @Nullable Network<T> get(Type<T> type, World world, BlockPos blockPos) {
 		return (Network<T>) get(world, blockPos).get(type);
 	}
 
@@ -76,7 +75,7 @@ public class NetworkManager {
 				.collect(Collectors.toMap(Network::type, network -> network));
 	}
 
-	public <T extends Serializable> List<Network<T>> get(Type<T> type) {
+	public <T> List<Network<T>> get(Type<T> type) {
 		return networks.getOrDefault(type, Collections.emptyList())
 				.stream()
 				.map(network -> (Network<T>) network)

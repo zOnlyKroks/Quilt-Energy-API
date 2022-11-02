@@ -3,7 +3,7 @@ package de.flow.test.item.iteminput;
 import com.google.common.util.concurrent.AtomicDouble;
 import de.flow.api.*;
 import de.flow.test.item.ItemBlockEntityInit;
-import de.flow.test.item.itemoutput.ItemOutputEntity;
+import de.flow2.api.utils.ItemStackContainer;
 import lombok.Getter;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;

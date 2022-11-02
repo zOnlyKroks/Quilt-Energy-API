@@ -2,11 +2,10 @@ package de.flow2.api.machines.input;
 
 import de.flow2.api.Type;
 
-import java.io.Serializable;
 import java.util.function.Consumer;
 
 // TODO: Add JavaDoc
-public class DefaultInput<T extends Serializable> extends AbstractInput<T> {
+public class DefaultInput<T> extends AbstractInput<T> {
 
 	private Consumer<T> consumer;
 

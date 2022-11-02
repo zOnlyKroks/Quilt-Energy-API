@@ -7,14 +7,13 @@ import de.flow2.api.machines.Typed;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 // TODO: Add JavaDoc
-public interface Network<T extends Serializable> {
+public interface Network<T> {
 
 	/**
 	 * Internal API

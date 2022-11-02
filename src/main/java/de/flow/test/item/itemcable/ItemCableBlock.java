@@ -1,9 +1,9 @@
 package de.flow.test.item.itemcable;
 
 import de.flow.api.AbstractCableBlock;
-import de.flow.api.ItemStackContainer;
 import de.flow.api.Type;
 import de.flow.api.Utils;
+import de.flow2.api.utils.ItemStackContainer;
 import net.minecraft.block.*;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.fluid.Fluid;

@@ -5,7 +5,6 @@ import lombok.NonNull;
 import net.minecraft.util.Identifier;
 
 import javax.annotation.Nullable;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +21,7 @@ public class TypeManager {
 		return new ArrayList<>(typeMap.values());
 	}
 
-	public <T extends Serializable> void register(@NonNull Type<T> type, @NonNull Identifier name) {
+	public <T> void register(@NonNull Type<T> type, @NonNull Identifier name) {
 		if (typeMap.containsKey(name)) {
 			if (typeMap.get(name) != type) {
 				throw new IllegalArgumentException("Type with name '" + name + "' already registered");
@@ -41,7 +40,7 @@ public class TypeManager {
 		nameMap.put(type, name);
 	}
 
-	public <T extends Serializable> boolean isRegistered(@NonNull Type<T> type) {
+	public <T> boolean isRegistered(@NonNull Type<T> type) {
 		return nameMap.containsKey(type);
 	}
 
@@ -49,11 +48,11 @@ public class TypeManager {
 		return typeMap.containsKey(name);
 	}
 
-	public <T extends Serializable> @Nullable Type<T> type(@NonNull Identifier name) {
+	public <T> @Nullable Type<T> type(@NonNull Identifier name) {
 		return (Type<T>) typeMap.get(name);
 	}
 
-	public <T extends Serializable> @Nullable Identifier type(@NonNull Type<T> type) {
+	public <T> @Nullable Identifier type(@NonNull Type<T> type) {
 		return nameMap.get(type);
 	}
 }

@@ -1,25 +1,37 @@
 package de.flow2.api;
 
+import de.flow.FlowApi;
+import de.flow2.api.utils.ItemStackContainer;
+import de.flow2.api.utils.SerializableMap;
 import de.flow2.impl.TypeManager;
 import lombok.experimental.UtilityClass;
 import net.minecraft.util.Identifier;
 
 import javax.annotation.Nullable;
-import java.io.Serializable;
 import java.util.List;
 
 @UtilityClass
 public class Types {
 
+	public static void init() {
+		register(ENERGY_TYPE, new Identifier(FlowApi.MODID, "energy"));
+		register(REDSTONE_TYPE, new Identifier(FlowApi.MODID, "redstone"));
+		register(ITEM_TYPE, new Identifier(FlowApi.MODID, "item"));
+	}
+
+	public static final Type<Double> ENERGY_TYPE = new EnergyType();
+	public static final Type<Integer> REDSTONE_TYPE = new RedstoneType();
+	public static final Type<SerializableMap<ItemStackContainer, Long>> ITEM_TYPE = new ItemType();
+
 	public List<Type<?>> types() {
 		return TypeManager.INSTANCE.types();
 	}
 
-	public <T extends Serializable> void register(Type<T> type, Identifier name) {
+	public <T> void register(Type<T> type, Identifier name) {
 		TypeManager.INSTANCE.register(type, name);
 	}
 
-	public <T extends Serializable> boolean isRegistered(Type<T> type) {
+	public <T> boolean isRegistered(Type<T> type) {
 		return TypeManager.INSTANCE.isRegistered(type);
 	}
 
@@ -27,11 +39,11 @@ public class Types {
 		return TypeManager.INSTANCE.isRegistered(name);
 	}
 
-	public <T extends Serializable> @Nullable Type<T> type(Identifier name) {
+	public <T> @Nullable Type<T> type(Identifier name) {
 		return TypeManager.INSTANCE.type(name);
 	}
 
-	public <T extends Serializable> @Nullable Identifier type(Type<T> type) {
+	public <T> @Nullable Identifier type(Type<T> type) {
 		return TypeManager.INSTANCE.type(type);
 	}
 }

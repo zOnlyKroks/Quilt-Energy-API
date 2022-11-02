@@ -8,7 +8,6 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -54,14 +53,14 @@ public abstract class AbstractMachineEntity extends BlockEntity implements Machi
 	}
 
 	@Override
-	public <T extends Serializable> void addIOToNetwork(Network<T> network) {
+	public <T> void addIOToNetwork(Network<T> network) {
 		io.getOrDefault(network.type(), Collections.emptyList()).forEach(typed -> {
 			network.add(getWorld(), getPos(), (Typed<T>) typed);
 		});
 	}
 
 	@Override
-	public <T extends Serializable> void removeIOFromNetwork(Network<T> network) {
+	public <T> void removeIOFromNetwork(Network<T> network) {
 		io.getOrDefault(network.type(), Collections.emptyList()).forEach(typed -> {
 			network.remove(getWorld(), getPos(), (Typed<T>) typed);
 		});

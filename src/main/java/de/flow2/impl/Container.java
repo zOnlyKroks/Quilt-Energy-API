@@ -1,6 +1,8 @@
-package de.flow.impl;
+package de.flow2.impl;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.function.BiPredicate;
 import java.util.function.ToIntFunction;
@@ -8,6 +10,7 @@ import java.util.function.ToIntFunction;
 public class Container<C> {
 
 	@Getter
+	@Setter(AccessLevel.PROTECTED)
 	private C value;
 	private BiPredicate<C, C> equals;
 	private ToIntFunction<C> hashCode;

@@ -1,9 +1,7 @@
 package de.flow2.api.machines.output;
 
-import java.io.Serializable;
-
 // TODO: Add JavaDoc
-public class LimitingOutput<T extends Serializable> extends DelegatingOutput<T> {
+public class LimitingOutput<T> extends DelegatingOutput<T> {
 
 	private T limit;
 

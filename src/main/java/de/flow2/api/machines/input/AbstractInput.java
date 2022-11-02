@@ -2,10 +2,8 @@ package de.flow2.api.machines.input;
 
 import de.flow2.api.Type;
 
-import java.io.Serializable;
-
 // TODO: Add JavaDoc
-public abstract class AbstractInput<T extends Serializable> implements Input<T> {
+public abstract class AbstractInput<T> implements Input<T> {
 
 	private Type<T> type;
 

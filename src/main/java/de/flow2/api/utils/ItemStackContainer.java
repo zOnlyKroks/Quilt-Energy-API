@@ -1,6 +1,6 @@
-package de.flow.api;
+package de.flow2.api.utils;
 
-import de.flow.impl.Container;
+import de.flow2.impl.Container;
 import net.minecraft.item.ItemStack;
 
 import java.util.Objects;

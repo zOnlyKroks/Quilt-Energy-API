@@ -7,7 +7,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -15,19 +14,19 @@ import java.util.UUID;
 @UtilityClass
 public class Networks {
 
-	public <T extends Serializable> void add(Network<T> network) {
+	public <T> void add(Network<T> network) {
 		NetworkManager.INSTANCE.add(network);
 	}
 
-	public <T extends Serializable> void remove(Network<T> network) {
+	public <T> void remove(Network<T> network) {
 		NetworkManager.INSTANCE.remove(network);
 	}
 
-	public <T extends Serializable> @Nullable Network<T> get(UUID uuid) {
+	public <T> @Nullable Network<T> get(UUID uuid) {
 		return NetworkManager.INSTANCE.get(uuid);
 	}
 
-	public <T extends Serializable> @Nullable Network<T> get(Type<T> type, World world, BlockPos blockPos) {
+	public <T> @Nullable Network<T> get(Type<T> type, World world, BlockPos blockPos) {
 		return (Network<T>) get(world, blockPos).get(type);
 	}
 
@@ -35,7 +34,7 @@ public class Networks {
 		return NetworkManager.INSTANCE.get(world, blockPos);
 	}
 
-	public <T extends Serializable> List<Network<T>> get(Type<T> type) {
+	public <T> List<Network<T>> get(Type<T> type) {
 		return NetworkManager.INSTANCE.get(type);
 	}
 

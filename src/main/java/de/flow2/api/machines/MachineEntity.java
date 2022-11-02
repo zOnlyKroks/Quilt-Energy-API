@@ -7,7 +7,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-import java.io.Serializable;
 import java.lang.reflect.Field;
 
 // TODO: Add JavaDoc
@@ -52,7 +51,7 @@ public interface MachineEntity extends TypeCheck {
 		void accept(T t, U u, V v);
 	}
 
-	default <T extends Serializable> void addIOToNetwork(Network<T> network) {
+	default <T> void addIOToNetwork(Network<T> network) {
 		iterate((world, blockPos, typed) -> {
 			if (typed.type() == network.type()) {
 				network.add(world, blockPos, (Typed<T>) typed);
@@ -60,7 +59,7 @@ public interface MachineEntity extends TypeCheck {
 		});
 	}
 
-	default <T extends Serializable> void removeIOFromNetwork(Network<T> network) {
+	default <T> void removeIOFromNetwork(Network<T> network) {
 		iterate((world, blockPos, typed) -> {
 			if (typed.type() == network.type()) {
 				network.remove(world, blockPos, (Typed<T>) typed);

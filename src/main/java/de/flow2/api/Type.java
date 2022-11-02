@@ -1,8 +1,7 @@
 package de.flow2.api;
 
 import lombok.NonNull;
-
-import java.io.Serializable;
+import net.minecraft.nbt.NbtCompound;
 
 /**
  * <h1>Type</h1>
@@ -21,7 +20,7 @@ import java.io.Serializable;
  *
  * @param <T> The type of the elements that can be transferred by the network.
  */
-public interface Type<T extends Serializable> {
+public interface Type<T> {
 
 	/**
 	 * Returns a new instance of the container that is used to store the elements.
@@ -76,6 +75,10 @@ public interface Type<T extends Serializable> {
 	 */
 	@NonNull T available(T container, T needed);
 
+	// TODO: Add JavaDoc
+	void writeNBT(T value, NbtCompound nbt);
+	T readNBT(NbtCompound nbt);
+
 	class IntegerType implements Type<Integer> {
 
 		@Override
@@ -105,6 +108,16 @@ public interface Type<T extends Serializable> {
 			} else {
 				return container;
 			}
+		}
+
+		@Override
+		public void writeNBT(Integer value, NbtCompound nbt) {
+			nbt.putInt("value", value);
+		}
+
+		@Override
+		public Integer readNBT(NbtCompound nbt) {
+			return nbt.getInt("value");
 		}
 	}
 }

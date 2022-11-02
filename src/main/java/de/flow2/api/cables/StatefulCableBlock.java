@@ -5,8 +5,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.io.Serializable;
-
 // TODO: Add JavaDoc
 public interface StatefulCableBlock extends CableBlock {
 
@@ -18,5 +16,5 @@ public interface StatefulCableBlock extends CableBlock {
 	 * @param blockState the current block state
 	 * @param availableAmount the available amount in the current tick
 	 */
-	<T extends Serializable> void changeCableState(World world, BlockPos blockPos, BlockState blockState, Type<T> type, T availableAmount);
+	<T> void changeCableState(World world, BlockPos blockPos, BlockState blockState, Type<T> type, T availableAmount);
 }

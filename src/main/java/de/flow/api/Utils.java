@@ -1,6 +1,7 @@
 package de.flow.api;
 
 import com.google.common.util.concurrent.AtomicDouble;
+import de.flow2.api.utils.ItemStackContainer;
 import lombok.experimental.UtilityClass;
 
 import java.math.BigInteger;

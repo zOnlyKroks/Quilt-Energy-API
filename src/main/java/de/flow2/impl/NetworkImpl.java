@@ -17,10 +17,9 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
-import java.io.Serializable;
 import java.util.*;
 
-public class NetworkImpl<T extends Serializable> extends PersistentState implements Network<T> {
+public class NetworkImpl<T> extends PersistentState implements Network<T> {
 
 	private Type<T> type;
 	private UUID id;
