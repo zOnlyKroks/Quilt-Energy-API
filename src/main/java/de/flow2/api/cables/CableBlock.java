@@ -1,6 +1,6 @@
 package de.flow2.api.cables;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import de.flow2.api.Type;
 import de.flow2.api.TypeCheck;
 import lombok.NonNull;
@@ -20,12 +20,11 @@ public interface CableBlock extends TypeCheck {
 	 *
 	 * @return the types the cable should be able to transfer
 	 */
-	@NonNull ImmutableList<Type<?>> types();
+	@NonNull ImmutableSet<Type<?>> types();
 
 	@Override
 	default boolean hasType(Type<?> type) {
-		return types().stream()
-				.anyMatch(t -> t == type);
+		return types().contains(type);
 	}
 
 	boolean recalculateDirection(World world, BlockPos pos, Direction direction, boolean place);

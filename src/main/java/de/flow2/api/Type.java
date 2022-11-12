@@ -12,7 +12,7 @@ import net.minecraft.nbt.NbtCompound;
  * <br><br><b>Contract:</b>
  * <ul>
  * <li>the generic {@code T} should never be null</li>
- * <li>networks will never input null into the methods</li>
+ * <li>networks will never input null into any method</li>
  * <li>if {@code T} is a container (e.g. List, Map, Set, etc.) the network never checks internal values of those containers, they can have null values stored inside</li>
  * <li>Every method should be treated as a pure function, meaning that the output should only depend on the input and not on the state of any other object</li>
  * <li>{@code T} should never be negative in case of numbers</li>
@@ -75,49 +75,19 @@ public interface Type<T> {
 	 */
 	@NonNull T available(T container, T needed);
 
-	// TODO: Add JavaDoc
+	/**
+	 * Writes the value to the NBT compound.
+	 *
+	 * @param value The value to write
+	 * @param nbt The NBT compound to write to
+	 */
 	void writeNBT(T value, NbtCompound nbt);
+
+	/**
+	 * Reads the value from the NBT compound.
+	 *
+	 * @param nbt The NBT compound to read from
+	 * @return non-null value
+	 */
 	T readNBT(NbtCompound nbt);
-
-	class IntegerType implements Type<Integer> {
-
-		@Override
-		public @NonNull Integer defaultValue() {
-			return 0;
-		}
-
-		@Override
-		public @NonNull Integer add(Integer a, Integer b) {
-			return a + b;
-		}
-
-		@Override
-		public @NonNull Integer subtract(Integer a, Integer b) {
-			return a - b;
-		}
-
-		@Override
-		public boolean containsAll(Integer container, Integer shouldContain) {
-			return container >= shouldContain;
-		}
-
-		@Override
-		public @NonNull Integer available(Integer container, Integer needed) {
-			if (container >= needed) {
-				return needed;
-			} else {
-				return container;
-			}
-		}
-
-		@Override
-		public void writeNBT(Integer value, NbtCompound nbt) {
-			nbt.putInt("value", value);
-		}
-
-		@Override
-		public Integer readNBT(NbtCompound nbt) {
-			return nbt.getInt("value");
-		}
-	}
 }

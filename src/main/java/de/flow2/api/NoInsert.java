@@ -1,6 +1,6 @@
 package de.flow2.api;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import lombok.NonNull;
 
 /**
@@ -19,11 +19,16 @@ public interface NoInsert extends TypeCheck {
 	/**
 	 * @return types that should not be allowed to be inserted
 	 */
-	@NonNull ImmutableList<Type<?>> types();
+	@NonNull ImmutableSet<Type<?>> types();
 
+	/**
+	 * Checks if the type is not allowed to be inserted.
+	 *
+	 * @param type the type to check
+	 * @return true if the type is not allowed to be inserted, false otherwise
+	 */
 	@Override
 	default boolean hasType(Type<?> type) {
-		return types().stream()
-				.anyMatch(t -> t == type);
+		return types().contains(type);
 	}
 }
